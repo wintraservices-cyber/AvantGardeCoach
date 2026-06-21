@@ -85,6 +85,37 @@ any HTML or JS file.**
    picks up new environment variables on a fresh deployment, so if you
    already deployed once before adding the key, you need to redeploy.
 
+### 4b. Set up automatic email sending (Resend)
+
+The booking page can send the AI chat's context note directly to Mahal by
+email — but only after the visitor reviews the exact text and clicks
+"Send." Nothing sends automatically without that approval step.
+
+1. Create a free account at [resend.com](https://resend.com).
+2. Go to **API Keys** in the Resend dashboard and create a new key.
+3. In Vercel, add another environment variable:
+   - **Name:** `RESEND_API_KEY`
+   - **Value:** the key from Resend
+4. Redeploy.
+
+**Important — domain verification:** Resend's free tier requires a
+verified sending domain to deliver to arbitrary recipients (like Mahal's
+real inbox). Until you verify a domain, `api/send-context.js` is set up to
+send from Resend's shared test address (`onboarding@resend.dev`), which
+only reliably delivers to the email on your own Resend account — fine for
+testing, not yet for real visitors.
+
+**To verify your domain (do this before relying on this in production):**
+1. In Resend, go to **Domains → Add Domain**, enter `avant-gardecoach.ca`
+   (or a subdomain like `mail.avant-gardecoach.ca`).
+2. Add the DNS records Resend gives you, at wherever your domain is
+   registered (same place you added the Vercel records).
+3. Once verified, open `api/send-context.js` and change the
+   `FROM_ADDRESS` constant near the top from
+   `'Avant-Garde Coach <onboarding@resend.dev>'` to something like
+   `'Avant-Garde Coach <hello@avant-gardecoach.ca>'`.
+4. Commit, push, and redeploy.
+
 ### 5. Connect your real domain
 
 1. In your Vercel project, go to **Settings → Domains**.
@@ -104,6 +135,10 @@ Once deployed, visit your live Vercel URL (something like
 - Try the "Find Your Fit" assistant on the landing page.
 - Try the discovery-call assistant on the booking page, and confirm the
   Cal.com calendar appears.
+- Try the "Review & send this context to Mahal too" flow — you should see
+  the exact email text before anything sends. Until your domain is
+  verified in Resend, this will only actually deliver to the email address
+  on your own Resend account, which is fine for confirming it works.
 - If the AI chat shows a "having trouble connecting" message, double-check
   the environment variable name is exactly `GEMINI_API_KEY` and that you
   redeployed after adding it. The Vercel function logs (Deployments → your

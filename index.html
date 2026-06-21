@@ -18,6 +18,31 @@
     --vermillion-bright:#E1582E;
     --rule:#2E2A25;
     --rule-light:#D8CDB8;
+    --muted:#6B6459;
+    --photo-tint:19,17,15;
+  }
+
+  /* Light mode: not an inversion of the dark theme, but a second register
+     of the same brand — warm ivory ground instead of ink, deep warm
+     charcoal text instead of bone, the same vermillion accent throughout.
+     Think "the manifesto printed on cream paper" rather than "dark mode
+     with the colors flipped." */
+  html[data-theme="light"]{
+    --ink:#F6F1E9;
+    --ink-soft:#EDE5D6;
+    --bone:#221F1B;
+    --bone-dim:#5A5347;
+    --clay:#8A6F4E;
+    --vermillion:#C8401E;
+    --vermillion-bright:#A8341A;
+    --rule:#D9CDB8;
+    --rule-light:#B8A788;
+    --muted:#8A8070;
+    --photo-tint:90,80,64;
+  }
+  html[data-theme="light"] body::before{
+    opacity:0.025;
+    mix-blend-mode:multiply;
   }
 
   *{margin:0;padding:0;box-sizing:border-box;}
@@ -100,6 +125,28 @@
     transition:all 0.25s ease;
   }
   .nav-cta:hover{background:var(--bone);color:var(--ink);}
+
+  .theme-toggle{
+    background:none;
+    appearance:none;
+    -webkit-appearance:none;
+    border:1px solid var(--rule-light);
+    border-radius:50%;
+    width:34px;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--bone-dim);
+    cursor:pointer;
+    transition:border-color 0.25s ease, color 0.25s ease;
+    flex-shrink:0;
+  }
+  .theme-toggle:hover{border-color:var(--vermillion-bright); color:var(--vermillion-bright);}
+  .theme-toggle svg{width:16px; height:16px;}
+  .theme-toggle .tt-icon-light{display:none;}
+  html[data-theme="light"] .theme-toggle .tt-icon-dark{display:none;}
+  html[data-theme="light"] .theme-toggle .tt-icon-light{display:block;}
 
   @media (max-width:760px){
     .nav-links{display:none;}
@@ -470,7 +517,7 @@
     content:"";
     position:absolute;
     inset:0;
-    background:linear-gradient(165deg, rgba(200,64,30,0.18), rgba(19,17,15,0.35) 60%, rgba(19,17,15,0.55));
+    background:linear-gradient(165deg, rgba(200,64,30,0.18), rgba(var(--photo-tint),0.35) 60%, rgba(var(--photo-tint),0.55));
     pointer-events:none;
   }
   .founder-frame .frame-label{
@@ -563,6 +610,188 @@
     transition:opacity 0.7s ease, transform 0.7s ease;
   }
   .reveal.in{opacity:1; transform:translateY(0);}
+
+  /* ===== BOOKS SECTION ===== */
+  .books-intro{
+    max-width:640px;
+    font-size:0.95rem;
+    line-height:1.7;
+    color:var(--bone-dim);
+    margin-bottom:3rem;
+  }
+  .books-intro em{font-style:italic; color:var(--bone);}
+
+  .books-featured{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:var(--rule);
+    border:1px solid var(--rule);
+    margin-bottom:1px;
+  }
+  @media(max-width:760px){ .books-featured{grid-template-columns:1fr;} }
+
+  .book-feature-card{
+    background:var(--ink);
+    padding:2.2rem 1.8rem;
+    display:flex;
+    flex-direction:column;
+  }
+  .book-feature-card .btag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.65rem;
+    letter-spacing:0.08em;
+    color:var(--vermillion-bright);
+    text-transform:uppercase;
+    margin-bottom:1rem;
+  }
+  .book-feature-card h4{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:1.2rem;
+    line-height:1.3;
+    margin-bottom:0.8rem;
+  }
+  .book-feature-card p{
+    font-size:0.85rem;
+    line-height:1.6;
+    color:var(--bone-dim);
+  }
+
+  .books-list-wrap{
+    border:1px solid var(--rule);
+    border-top:none;
+  }
+  .books-list{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0;
+  }
+  @media(max-width:700px){ .books-list{grid-template-columns:1fr;} }
+
+  .book-row{
+    padding:1rem 1.6rem;
+    border-bottom:1px solid var(--rule);
+    font-size:0.88rem;
+    color:var(--bone-dim);
+    display:flex;
+    gap:0.8rem;
+  }
+  .books-list .book-row:nth-child(odd){border-right:1px solid var(--rule);}
+  @media(max-width:700px){ .books-list .book-row:nth-child(odd){border-right:none;} }
+  .book-row .bnum{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.7rem;
+    color:var(--clay);
+    flex-shrink:0;
+    padding-top:0.15rem;
+  }
+  .book-row .btitle{color:var(--bone);}
+
+  .books-note{
+    margin-top:1.6rem;
+    font-size:0.8rem;
+    color:var(--clay);
+  }
+  .books-note a{color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);}
+
+  /* ===== BOOK MATCHER ===== */
+  .bookm-shell{
+    border:1px solid var(--rule);
+    background:var(--ink-soft);
+    display:flex;
+    flex-direction:column;
+    min-height:360px;
+    margin-bottom:2.6rem;
+  }
+  .bookm-log{
+    flex:1;
+    padding:1.8rem 1.8rem 1rem;
+    display:flex;
+    flex-direction:column;
+    gap:1.2rem;
+    overflow-y:auto;
+    max-height:420px;
+  }
+  .bookm-msg{display:flex; gap:0.8rem; max-width:88%;}
+  .bookm-msg.user{align-self:flex-end; flex-direction:row-reverse;}
+  .bookm-msg .bmbadge{
+    width:26px; height:26px;
+    border-radius:50%;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-style:italic; font-size:0.72rem;
+  }
+  .bookm-msg.bot .bmbadge{background:var(--vermillion); color:var(--bone);}
+  .bookm-msg.user .bmbadge{background:var(--rule-light); color:var(--bone-dim);}
+  .bookm-msg .bmbubble{
+    background:var(--ink);
+    border:1px solid var(--rule);
+    padding:0.85rem 1.1rem;
+    border-radius:3px;
+    font-size:0.88rem;
+    line-height:1.6;
+  }
+  .bookm-msg.user .bmbubble{background:var(--ink-card, var(--ink-soft));}
+
+  .bookm-typing{display:flex; gap:5px; padding:0.3rem 0;}
+  .bookm-typing span{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--clay);
+    animation:bmbounce 1.2s infinite ease-in-out;
+  }
+  .bookm-typing span:nth-child(2){animation-delay:0.15s;}
+  .bookm-typing span:nth-child(3){animation-delay:0.3s;}
+  @keyframes bmbounce{
+    0%,80%,100%{transform:translateY(0); opacity:0.5;}
+    40%{transform:translateY(-4px); opacity:1;}
+  }
+
+  .bookm-chips{display:flex; gap:0.6rem; flex-wrap:wrap; padding:0 1.8rem 1rem;}
+  .bookm-chip{
+    border:1px solid var(--rule-light);
+    background:var(--ink);
+    padding:0.45rem 0.9rem;
+    font-size:0.78rem;
+    border-radius:20px;
+    color:var(--bone-dim);
+    appearance:none;
+    -webkit-appearance:none;
+    cursor:pointer;
+    transition:all 0.2s ease;
+  }
+  .bookm-chip:hover{border-color:var(--vermillion); color:var(--bone);}
+
+  .bookm-input-row{display:flex; gap:0.7rem; padding:1.1rem 1.6rem; border-top:1px solid var(--rule);}
+  .bookm-input-row input{
+    flex:1;
+    background:var(--ink);
+    border:1px solid var(--rule-light);
+    color:var(--bone);
+    padding:0.8rem 1rem;
+    font-size:0.88rem;
+    font-family:'Inter',sans-serif;
+    border-radius:2px;
+  }
+  .bookm-input-row input:focus{border-color:var(--vermillion); outline:none;}
+  .bookm-input-row input::placeholder{color:var(--muted);}
+  .bookm-send{
+    background:var(--vermillion);
+    color:var(--bone);
+    padding:0.8rem 1.4rem;
+    font-size:0.82rem;
+    letter-spacing:0.04em;
+    border-radius:2px;
+    appearance:none;
+    -webkit-appearance:none;
+    cursor:pointer;
+    border:none;
+    transition:background 0.25s ease;
+    flex-shrink:0;
+  }
+  .bookm-send:hover{background:var(--vermillion-bright);}
+  .bookm-send:disabled{opacity:0.4; cursor:default;}
 
   /* ===== INTAKE ASSISTANT SECTION ===== */
   .intake-shell{
@@ -658,7 +887,7 @@
     border-radius:2px;
   }
   .intake-input-row input:focus{border-color:var(--vermillion); outline:none;}
-  .intake-input-row input::placeholder{color:#5C564C;}
+  .intake-input-row input::placeholder{color:var(--muted);}
   .intake-send{
     background:var(--vermillion);
     color:var(--bone);
@@ -703,7 +932,7 @@
     margin-top:1.6rem;
     font-size:0.78rem;
     line-height:1.6;
-    color:#6B6459;
+    color:var(--muted);
     border-top:1px solid var(--rule);
     padding-top:1.2rem;
   }
@@ -714,6 +943,18 @@
     outline-offset:3px;
   }
 </style>
+<script>
+  // Runs before paint to avoid a flash of the wrong theme on load.
+  // Shared key across all three pages so the choice persists site-wide.
+  (function(){
+    try{
+      const saved = localStorage.getItem('agc-theme');
+      if(saved === 'light'){
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    }catch(e){ /* localStorage unavailable — default dark theme applies */ }
+  })();
+</script>
 </head>
 <body>
 
@@ -725,6 +966,10 @@
     <a href="#approach">Approach</a>
     <a href="#programs">Programs</a>
     <a href="#founder">Founder</a>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Switch to light mode" title="Switch theme">
+      <svg class="tt-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+      <svg class="tt-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
     <a href="booking.html" class="nav-cta">Book a Session</a>
   </div>
 </nav>
@@ -754,6 +999,7 @@
       <div><strong>1:1</strong> Performance Coaching</div>
       <div><strong>Co-Active</strong> Trained Methodology</div>
       <div><strong>Phone / Video</strong> — Your Schedule</div>
+      <a href="#books" style="text-decoration:none; color:inherit;"><div><strong>18-Book</strong> Author & TV Host</div></a>
     </div>
   </div>
 </header>
@@ -882,6 +1128,13 @@
             <p>Grounded in Co-Active coaching methodology, with backgrounds spanning leadership training, career counseling, and team advocacy.</p>
           </div>
         </div>
+        <div class="approach-row reveal">
+          <div class="rn">D.</div>
+          <div>
+            <h4>Tested in public, not just in sessions</h4>
+            <p>Eighteen published books and a weekly TV talk show — the same ideas you'll work through in coaching, already stress-tested in front of an audience that doesn't let her get away with vague advice. <a href="#books" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">See the books →</a></p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -957,10 +1210,12 @@
         <div class="founder-bio">
           <p>"I'm a dreamer, optimist, and a visionary. I want to feel alive every day — to be brave and authentic, and to empower one soul at a time." That line has anchored Avant-Garde Coach since the beginning, and it still does.</p>
           <p>Trained through the Co-Active coaching tradition, Mahal works with individuals and teams navigating turning points — the conversation you're avoiding, the decision you're circling, the version of yourself you're growing into.</p>
+          <p>She's also the author of <em>Superheroes Unmasked: 10 Powerful Ways to Lead Without Fear</em>, and hosts <em>Get Real with Mahal Hudson</em>, a TV talk show built on unfiltered, unbiased conversations about the issues people are usually too polite to bring up.</p>
         </div>
         <div class="founder-creds">
           <span>Co-Active Coach (CTI)</span>
-          <span>Leadership Training</span>
+          <span>Author, Superheroes Unmasked</span>
+          <span>Host, Get Real with Mahal Hudson</span>
           <span>Toronto, Canada</span>
         </div>
       </div>
@@ -968,9 +1223,81 @@
   </div>
 </section>
 
+<section id="books">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num">VI — Further Reading</div>
+        <h2 class="section-title">Words, when a session <em>isn't enough.</em></h2>
+      </div>
+      <p class="section-note">Mahal writes the way she coaches — directly, without padding. These are available on Amazon, most free with Kindle Unlimited.</p>
+    </div>
+
+    <p class="books-intro reveal">Beyond <em>Superheroes Unmasked</em>, Mahal has written across leadership, courage, and the quieter work of rebuilding a life on your own terms — eighteen titles in all. A few sit closest to the coaching work itself:</p>
+
+    <div class="bookm-shell reveal">
+      <div class="bookm-log" id="bookm-log">
+        <div class="bookm-msg bot">
+          <div class="bmbadge">AG</div>
+          <div class="bmbubble">Eighteen books is a lot to scroll through. Tell me what's on your mind right now and I'll point you to the one or two that fit.</div>
+        </div>
+      </div>
+      <div class="bookm-chips" id="bookm-chips">
+        <button class="bookm-chip" onclick="bookmQuick('I am dealing with self-doubt')">Self-doubt</button>
+        <button class="bookm-chip" onclick="bookmQuick('I am burned out')">Burnout</button>
+        <button class="bookm-chip" onclick="bookmQuick('I am trying to lead a team better')">Leading a team</button>
+        <button class="bookm-chip" onclick="bookmQuick('I want something on kindness and gratitude')">Kindness & gratitude</button>
+      </div>
+      <div class="bookm-input-row">
+        <input type="text" id="bookm-input" placeholder="What's going on for you right now?" autocomplete="off">
+        <button class="bookm-send" id="bookm-send">Send</button>
+      </div>
+    </div>
+
+    <div class="books-featured reveal">
+      <div class="book-feature-card">
+        <div class="btag">On Leadership</div>
+        <h4>Unleashing Authentic Leadership</h4>
+        <p>A journey from hypocrisy to integrity — for anyone leading a team while quietly wondering if they're leading themselves honestly.</p>
+      </div>
+      <div class="book-feature-card">
+        <div class="btag">On Fear</div>
+        <h4>Superheroes Unmasked</h4>
+        <p>10 powerful ways to lead without fear. The book this practice's whole philosophy traces back to.</p>
+      </div>
+      <div class="book-feature-card">
+        <div class="btag">On Reinvention</div>
+        <h4>Beyond the Boardroom</h4>
+        <p>Redefining leadership in action — for the chapter after the title changes but the real work is just beginning.</p>
+      </div>
+    </div>
+
+    <div class="books-list-wrap reveal">
+      <div class="books-list">
+        <div class="book-row"><span class="bnum">01</span><span class="btitle">Shine Bright: The Path to Kindness</span></div>
+        <div class="book-row"><span class="bnum">02</span><span class="btitle">Breaking Free from the "Trying" Stage</span></div>
+        <div class="book-row"><span class="bnum">03</span><span class="btitle">Dream Big, Act Fearlessly</span></div>
+        <div class="book-row"><span class="bnum">04</span><span class="btitle">Reframing Doubt: Turning Negative Thoughts into Positive Action</span></div>
+        <div class="book-row"><span class="bnum">05</span><span class="btitle">Decode the Boss Code</span></div>
+        <div class="book-row"><span class="bnum">06</span><span class="btitle">Igniting the Flame Within</span></div>
+        <div class="book-row"><span class="bnum">07</span><span class="btitle">Burnout to Breakthrough: A Weekend Retreat for Powerful Women</span></div>
+        <div class="book-row"><span class="bnum">08</span><span class="btitle">Unlocking Joy: A Gratitude-Fueled Journey</span></div>
+        <div class="book-row"><span class="bnum">09</span><span class="btitle">Choosing Hope: A Journey of Heartache, Healing & the Power of Choice</span></div>
+        <div class="book-row"><span class="bnum">10</span><span class="btitle">Unlock the Fast Lane to Your Dream Job</span></div>
+        <div class="book-row"><span class="bnum">11</span><span class="btitle">Financial Freedom Made Simple</span></div>
+        <div class="book-row"><span class="bnum">12</span><span class="btitle">A Hilarious Guide to Unleashing Your Inner Leader</span></div>
+        <div class="book-row"><span class="bnum">13</span><span class="btitle">SheIgnites: A Woman's Manifesto to Unleashing Power</span></div>
+        <div class="book-row"><span class="bnum">14</span><span class="btitle">Leadership Mastery: Unleashing Your Full Potential</span></div>
+        <div class="book-row"><span class="bnum">15</span><span class="btitle">Awakening Love Within</span></div>
+      </div>
+    </div>
+    <p class="books-note reveal">All eighteen titles, including the three above, are available on <a href="https://www.amazon.ca/stores/author/B07D1SJNPH" target="_blank" rel="noopener">Mahal's Amazon author page →</a></p>
+  </div>
+</section>
+
 <section id="contact" class="cta-section">
   <div class="wrap">
-    <div class="section-num reveal">VI — Begin</div>
+    <div class="section-num reveal">VII — Begin</div>
     <h2 class="section-title reveal">Pick up the phone.<br>The rest <em>follows.</em></h2>
     <div class="cta-grid reveal">
       <a href="booking.html" class="btn-primary">Book a discovery call →</a>
@@ -991,6 +1318,33 @@
 </footer>
 
 <script>
+  /* ===== Theme toggle ===== */
+  (function(){
+    const toggle = document.getElementById('theme-toggle');
+    if(!toggle) return;
+
+    function updateLabel(){
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      const nextLabel = isLight ? 'Switch to dark mode' : 'Switch to light mode';
+      toggle.setAttribute('aria-label', nextLabel);
+      toggle.setAttribute('title', nextLabel);
+    }
+
+    updateLabel();
+
+    toggle.addEventListener('click', function(){
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      if(isLight){
+        document.documentElement.removeAttribute('data-theme');
+        try{ localStorage.setItem('agc-theme', 'dark'); }catch(e){}
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        try{ localStorage.setItem('agc-theme', 'light'); }catch(e){}
+      }
+      updateLabel();
+    });
+  })();
+
   const reveals = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
@@ -1042,6 +1396,7 @@
 3. "Transformational Retreats" — an in-person, small-group, multi-day reset for people who want more than a phone call — space to step back and reflect more deeply. Best for people describing burnout, a need for a bigger reset, or wanting community/group format.
 
 Conversation rules:
+- Respond in the same language the visitor writes in — English, French, or Filipino (Tagalog). Match their language exactly, including the "why" field in the JSON block below.
 - Ask at most 1-2 short clarifying questions before recommending — don't interrogate.
 - Keep every message to 2-4 sentences, warm but efficient, matching a calm editorial brand voice (no exclamation points, no corporate cheer, no therapy-speak).
 - Never diagnose, label, or assume a mental health condition. If someone describes something that sounds like a mental health crisis or risk to their safety, gently say this assistant isn't equipped for that and they should reach out to a crisis line or their doctor, and stop the intake there.
@@ -1132,6 +1487,533 @@ Only output that JSON block once you're actually ready to recommend. The "progra
     handleIntakeSend(text);
   }
   window.sendIntakeQuick = sendIntakeQuick;
+
+  /* ===== Book recommendation matcher ===== */
+  const bookmLog = document.getElementById('bookm-log');
+  const bookmInput = document.getElementById('bookm-input');
+  const bookmSend = document.getElementById('bookm-send');
+  const bookmChips = document.getElementById('bookm-chips');
+  let bookmConversation = [];
+
+  const BOOKM_SYSTEM_PROMPT = `You are a brief, warm book-recommendation assistant for Mahal Hudson's published work, on the "Avant-Garde Coach" website. You ONLY recommend from the real list of 18 books below — never invent a title, never recommend a book not on this list.
+
+REAL BOOK LIST:
+1. Superheroes Unmasked: 10 Powerful Ways to Lead Without Fear — on leading without fear, the book this coaching practice's philosophy traces back to.
+2. Unleashing Authentic Leadership: A Journey from Hypocrisy to Integrity — for leaders quietly wondering if they're leading themselves honestly.
+3. Beyond the Boardroom: Redefining Leadership in Action — for the chapter after a title changes but the real work is just beginning.
+4. Shine Bright: The Path to Kindness
+5. Breaking Free from the "Trying" Stage: The Blueprint for Authentic Life
+6. Dream Big, Act Fearlessly
+7. Reframing Doubt: Turning Negative Thoughts into Positive Action
+8. Decode the Boss Code
+9. Igniting the Flame Within: A Guide to Sustaining Your Passionate Fight
+10. Burnout to Breakthrough: A Weekend Retreat for Powerful Women
+11. Unlocking Joy: A Gratitude-Fueled Journey to Self-Discovery and Fulfillment
+12. Choosing Hope: A Journey of Heartache, Healing, and the Power of Choice
+13. Unlock the Fast Lane to Your Dream Job: A Skilled Immigrant's Blueprint to Rapid Success
+14. Financial Freedom Made Simple: A Guide to Money Management Inspired by Dave Ramsey
+15. A Hilarious Guide to Unleashing Your Inner Leader
+16. SheIgnites: A Woman's Manifesto to Unleashing Power and Living Boldly
+17. Leadership Mastery: Unleashing Your Full Potential
+18. Awakening Love Within: A Journey to Your Inner Sanctuary
+
+RULES:
+- Respond in the same language the visitor writes in — English, French, or Filipino (Tagalog). The book titles themselves stay in English exactly as listed above (they are not published in other languages) — only your surrounding sentences switch language.
+- Ask at most ONE short clarifying question if needed, otherwise recommend right away.
+- Recommend 1-2 titles max, each with a one-sentence reason tied to what the person actually said.
+- Keep the whole reply to 2-4 sentences. No exclamation points, no corporate cheer.
+- Always mention that all books are available on Mahal's Amazon author page, and that most are free with Kindle Unlimited.
+- Never diagnose, give therapy advice, or treat this as a substitute for coaching — these are just books.
+- If something suggests a mental health crisis or risk to safety, do not recommend a book for it — gently say this isn't the right tool for that and suggest a crisis line, a doctor, or reaching out to Mahal directly, and stop there.`;
+
+  function bookmEscape(str){
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function bookmAddMsg(role, html){
+    const wrap = document.createElement('div');
+    wrap.className = 'bookm-msg ' + (role === 'user' ? 'user' : 'bot');
+    wrap.innerHTML = `<div class="bmbadge">${role === 'user' ? 'You' : 'AG'}</div><div class="bmbubble">${html}</div>`;
+    bookmLog.appendChild(wrap);
+    bookmLog.scrollTop = bookmLog.scrollHeight;
+  }
+
+  function bookmAddTyping(){
+    const wrap = document.createElement('div');
+    wrap.className = 'bookm-msg bot';
+    wrap.id = 'bookm-typing';
+    wrap.innerHTML = `<div class="bmbadge">AG</div><div class="bmbubble"><div class="bookm-typing"><span></span><span></span><span></span></div></div>`;
+    bookmLog.appendChild(wrap);
+    bookmLog.scrollTop = bookmLog.scrollHeight;
+  }
+
+  function bookmRemoveTyping(){
+    const el = document.getElementById('bookm-typing');
+    if(el) el.remove();
+  }
+
+  async function handleBookmSend(userText){
+    if(!userText || userText.trim().length === 0) return;
+    if(bookmChips) bookmChips.style.display = 'none';
+
+    bookmAddMsg('user', bookmEscape(userText));
+    bookmConversation.push({ role: 'user', content: userText });
+    bookmInput.value = '';
+    bookmInput.disabled = true;
+    bookmSend.disabled = true;
+
+    bookmAddTyping();
+
+    try{
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          max_tokens: 300,
+          system: BOOKM_SYSTEM_PROMPT,
+          messages: bookmConversation
+        })
+      });
+
+      const data = await response.json();
+      bookmRemoveTyping();
+
+      if(!response.ok){
+        throw new Error(data.error || 'Request failed');
+      }
+
+      const replyText = data.content?.filter(b => b.type === 'text').map(b => b.text).join('\n') || "Not sure what to recommend from that — try browsing the list below, or ask me something else.";
+      bookmAddMsg('bot', bookmEscape(replyText).replace(/\n/g, '<br>').replace(/Amazon author page/, '<a href="https://www.amazon.ca/stores/author/B07D1SJNPH" target="_blank" rel="noopener" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">Amazon author page</a>'));
+      bookmConversation.push({ role: 'assistant', content: replyText });
+
+    }catch(err){
+      bookmRemoveTyping();
+      bookmAddMsg('bot', "Having trouble connecting right now — feel free to browse the full list below instead.");
+      console.error(err);
+    }finally{
+      bookmInput.disabled = false;
+      bookmSend.disabled = false;
+      bookmInput.focus();
+    }
+  }
+
+  bookmSend.addEventListener('click', () => handleBookmSend(bookmInput.value));
+  bookmInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') handleBookmSend(bookmInput.value);
+  });
+
+  function bookmQuick(text){
+    handleBookmSend(text);
+  }
+  window.bookmQuick = bookmQuick;
+</script>
+
+<!-- ================================================================
+     FAQ CONCIERGE WIDGET — shared across index.html, booking.html,
+     and dashboard.html. This block is intentionally self-contained
+     (its own CSS namespaced under .faqw-, its own JS in an IIFE) so it
+     can be pasted identically into multiple pages without colliding
+     with page-specific styles or variable names that differ between
+     them (e.g. --rule-light is NOT used here, since its value differs
+     between index.html and the other two pages).
+
+     Scope: this assistant answers general questions about the practice
+     (hours, location, format, what a discovery call is, pricing status,
+     etc.) using ONLY a fixed FAQ context written below — it does not
+     replace the discovery-call intake assistant or the booking page's
+     context-gathering chat, and is told to defer to them by name.
+     ================================================================ -->
+<style>
+  .faqw-launcher-wrap{
+    position:fixed;
+    bottom:1.6rem;
+    right:1.6rem;
+    z-index:200;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+  }
+
+  .faqw-tooltip{
+    margin-right:0.8rem;
+    background:var(--ink-soft);
+    border:1px solid var(--rule);
+    color:var(--bone);
+    padding:0.55rem 0.95rem;
+    border-radius:20px;
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:0.85rem;
+    white-space:nowrap;
+    opacity:0;
+    transform:translateX(6px);
+    transition:opacity 0.25s ease, transform 0.25s ease;
+    pointer-events:none;
+    box-shadow:0 4px 14px rgba(0,0,0,0.3);
+  }
+  .faqw-launcher-wrap:hover .faqw-tooltip{
+    opacity:1;
+    transform:translateX(0);
+  }
+  .faqw-launcher-wrap.faqw-is-open .faqw-tooltip{
+    opacity:0 !important;
+  }
+
+  .faqw-launcher{
+    position:static;
+    bottom:auto;
+    right:auto;
+    z-index:auto;
+    width:54px;
+    height:54px;
+    border-radius:50%;
+    background:var(--vermillion);
+    border:none;
+    appearance:none;
+    -webkit-appearance:none;
+    color:var(--bone);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 4px 18px rgba(0,0,0,0.35);
+    flex-shrink:0;
+    transition:transform 0.2s ease, background 0.2s ease;
+    font-family:'JetBrains Mono', monospace;
+  }
+  .faqw-launcher:hover{background:var(--vermillion-bright); transform:scale(1.05);}
+  .faqw-launcher svg{width:22px; height:22px;}
+  .faqw-launcher .faqw-close-icon{display:none;}
+  .faqw-launcher.open .faqw-chat-icon{display:none;}
+  .faqw-launcher.open .faqw-close-icon{display:block;}
+
+  .faqw-panel{
+    position:fixed;
+    bottom:5.4rem;
+    right:1.6rem;
+    z-index:200;
+    width:min(360px, calc(100vw - 2.4rem));
+    max-height:min(520px, calc(100vh - 8rem));
+    background:var(--ink-soft);
+    border:1px solid var(--rule);
+    border-radius:6px;
+    display:none;
+    flex-direction:column;
+    overflow:hidden;
+    box-shadow:0 10px 40px rgba(0,0,0,0.5);
+    font-family:'Inter', sans-serif;
+  }
+  .faqw-panel.open{display:flex;}
+
+  .faqw-header{
+    padding:1rem 1.2rem;
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:var(--ink);
+  }
+  .faqw-header .faqw-title{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:0.95rem;
+    color:var(--bone);
+  }
+  .faqw-header .faqw-title em{font-style:italic; color:var(--vermillion-bright);}
+  .faqw-header .faqw-sub{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.62rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--clay);
+    margin-top:0.2rem;
+  }
+
+  .faqw-log{
+    flex:1;
+    padding:1rem 1.1rem;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:0.9rem;
+    min-height:180px;
+    max-height:340px;
+  }
+
+  .faqw-msg{
+    display:flex;
+    gap:0.6rem;
+    max-width:90%;
+  }
+  .faqw-msg.faqw-user{align-self:flex-end; flex-direction:row-reverse;}
+  .faqw-msg .faqw-badge{
+    width:22px; height:22px;
+    border-radius:50%;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:0.65rem;
+  }
+  .faqw-msg.faqw-bot .faqw-badge{background:var(--vermillion); color:var(--bone);}
+  .faqw-msg.faqw-user .faqw-badge{background:var(--rule); color:var(--bone-dim);}
+  .faqw-msg .faqw-bubble{
+    background:var(--ink);
+    border:1px solid var(--rule);
+    padding:0.65rem 0.9rem;
+    border-radius:3px;
+    font-size:0.82rem;
+    line-height:1.55;
+    color:var(--bone-dim);
+  }
+  .faqw-msg.faqw-user .faqw-bubble{background:var(--ink-soft);}
+
+  .faqw-typing{display:flex; gap:4px; padding:0.25rem 0;}
+  .faqw-typing span{
+    width:5px; height:5px; border-radius:50%;
+    background:var(--clay);
+    animation:faqwbounce 1.2s infinite ease-in-out;
+  }
+  .faqw-typing span:nth-child(2){animation-delay:0.15s;}
+  .faqw-typing span:nth-child(3){animation-delay:0.3s;}
+  @keyframes faqwbounce{
+    0%,80%,100%{transform:translateY(0); opacity:0.5;}
+    40%{transform:translateY(-3px); opacity:1;}
+  }
+
+  .faqw-chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0.4rem;
+    padding:0 1.1rem 0.8rem;
+  }
+  .faqw-chip{
+    background:var(--ink);
+    border:1px solid var(--rule);
+    color:var(--bone-dim);
+    font-size:0.7rem;
+    padding:0.35rem 0.7rem;
+    border-radius:14px;
+    appearance:none;
+    -webkit-appearance:none;
+    cursor:pointer;
+    transition:border-color 0.2s ease, color 0.2s ease;
+  }
+  .faqw-chip:hover{border-color:var(--vermillion); color:var(--bone);}
+
+  .faqw-input-row{
+    display:flex;
+    gap:0.5rem;
+    padding:0.8rem 1rem;
+    border-top:1px solid var(--rule);
+  }
+  .faqw-input-row input{
+    flex:1;
+    background:var(--ink);
+    border:1px solid var(--rule);
+    color:var(--bone);
+    padding:0.55rem 0.8rem;
+    font-size:0.82rem;
+    font-family:'Inter', sans-serif;
+    border-radius:3px;
+  }
+  .faqw-input-row input:focus{border-color:var(--vermillion); outline:none;}
+  .faqw-input-row input::placeholder{color:var(--clay);}
+  .faqw-send{
+    background:var(--vermillion);
+    color:var(--bone);
+    border:none;
+    appearance:none;
+    -webkit-appearance:none;
+    padding:0.55rem 0.9rem;
+    font-size:0.78rem;
+    border-radius:3px;
+    cursor:pointer;
+    flex-shrink:0;
+    transition:background 0.2s ease;
+  }
+  .faqw-send:hover{background:var(--vermillion-bright);}
+  .faqw-send:disabled{opacity:0.4; cursor:default;}
+
+  @media (max-width:480px){
+    .faqw-panel{right:1.2rem; left:1.2rem; width:auto;}
+    .faqw-launcher-wrap{right:1.2rem;}
+  }
+</style>
+
+<div class="faqw-launcher-wrap" id="faqw-launcher-wrap">
+  <span class="faqw-tooltip">How are you feeling?</span>
+  <button class="faqw-launcher" id="faqw-launcher" aria-label="Open FAQ chat" aria-expanded="false">
+    <svg class="faqw-chat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+    <svg class="faqw-close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  </button>
+</div>
+
+<div class="faqw-panel" id="faqw-panel" role="dialog" aria-label="Frequently asked questions chat">
+  <div class="faqw-header">
+    <div>
+      <div class="faqw-title">Quick <em>Questions</em></div>
+      <div class="faqw-sub">Avant-Garde Coach</div>
+    </div>
+  </div>
+  <div class="faqw-log" id="faqw-log">
+    <div class="faqw-msg faqw-bot">
+      <div class="faqw-badge">AG</div>
+      <div class="faqw-bubble">Hi — ask me anything about how coaching works here: format, location, what to expect, that kind of thing.</div>
+    </div>
+  </div>
+  <div class="faqw-chips" id="faqw-chips">
+    <button class="faqw-chip" onclick="faqwQuick('Is this phone or video?')">Phone or video?</button>
+    <button class="faqw-chip" onclick="faqwQuick('Where is Avant-Garde Coach located?')">Location</button>
+    <button class="faqw-chip" onclick="faqwQuick('How much does coaching cost?')">Pricing</button>
+    <button class="faqw-chip" onclick="faqwQuick('What is a discovery call?')">What's a discovery call?</button>
+  </div>
+  <div class="faqw-input-row">
+    <input type="text" id="faqw-input" placeholder="Type a question..." autocomplete="off">
+    <button class="faqw-send" id="faqw-send">Send</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const launcher = document.getElementById('faqw-launcher');
+  const launcherWrap = document.getElementById('faqw-launcher-wrap');
+  const panel = document.getElementById('faqw-panel');
+  const log = document.getElementById('faqw-log');
+  const input = document.getElementById('faqw-input');
+  const sendBtn = document.getElementById('faqw-send');
+  const chips = document.getElementById('faqw-chips');
+
+  let faqwConversation = [];
+  let faqwOpened = false;
+
+  const FAQW_SYSTEM_PROMPT = `You are a brief, friendly FAQ assistant for "Avant-Garde Coach," a life and leadership coaching practice in Toronto run by Mahal Hudson. You ONLY answer general factual questions about the practice using the facts below. You are NOT the discovery-call intake assistant and NOT the booking assistant — if someone wants to actually book a call or describe a personal situation they want coaching on, tell them briefly to use the "Find Your Fit" assistant on the homepage or the booking page chat, rather than trying to do that yourself.
+
+FACTS YOU KNOW:
+- Coaching happens by phone or video call, based on the client's preference.
+- Based in Toronto, Canada.
+- Programs: Check-In Coaching (short focused sessions, 5 x 30 min, for a specific decision or conversation), Executive & Career Coaching (ongoing 1:1 for leaders/professionals at a turning point), Transformational Retreats (in-person, small-group, multi-day).
+- Pricing for all programs is currently being finalized — do not invent numbers. Say pricing is TBD and the team will confirm on a discovery call.
+- A "discovery call" is a free, no-pressure first conversation with Mahal to figure out what someone needs.
+- Mahal is trained through the Co-Active coaching tradition (CTI), and the practice's philosophy is "no shame, guilt, or fear."
+- Mahal is also the author of 18 books (including "Superheroes Unmasked: 10 Powerful Ways to Lead Without Fear") and hosts a TV talk show, "Get Real with Mahal Hudson."
+- Booking is done via a live calendar on the booking page (real availability, not estimated).
+
+RULES:
+- Respond in the same language the visitor writes in — English, French, or Filipino (Tagalog).
+- Keep answers to 1-3 sentences. No corporate cheer, no exclamation points.
+- If you don't know something or it's not in the facts above, say so plainly and suggest emailing hello@avant-gardecoach.ca — do not guess or invent details.
+- Never diagnose, give therapy advice, or discuss anyone's personal situation in depth — redirect to the discovery call for that.
+- If someone describes a mental health crisis or risk to their safety, do not try to help with that here — gently say this chat isn't equipped for that and they should contact a crisis line, their doctor, or Mahal directly.`;
+
+  function faqwOpen(){
+    panel.classList.add('open');
+    launcher.classList.add('open');
+    launcherWrap.classList.add('faqw-is-open');
+    launcher.setAttribute('aria-expanded', 'true');
+    if(!faqwOpened){
+      faqwOpened = true;
+      input.focus();
+    }
+  }
+
+  function faqwClose(){
+    panel.classList.remove('open');
+    launcher.classList.remove('open');
+    launcherWrap.classList.remove('faqw-is-open');
+    launcher.setAttribute('aria-expanded', 'false');
+  }
+
+  launcher.addEventListener('click', () => {
+    if(panel.classList.contains('open')){
+      faqwClose();
+    } else {
+      faqwOpen();
+    }
+  });
+
+  function faqwEscape(str){
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function faqwAddMsg(role, html){
+    const wrap = document.createElement('div');
+    wrap.className = 'faqw-msg ' + (role === 'user' ? 'faqw-user' : 'faqw-bot');
+    wrap.innerHTML = `<div class="faqw-badge">${role === 'user' ? 'You' : 'AG'}</div><div class="faqw-bubble">${html}</div>`;
+    log.appendChild(wrap);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function faqwAddTyping(){
+    const wrap = document.createElement('div');
+    wrap.className = 'faqw-msg faqw-bot';
+    wrap.id = 'faqw-typing';
+    wrap.innerHTML = `<div class="faqw-badge">AG</div><div class="faqw-bubble"><div class="faqw-typing"><span></span><span></span><span></span></div></div>`;
+    log.appendChild(wrap);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function faqwRemoveTyping(){
+    const el = document.getElementById('faqw-typing');
+    if(el) el.remove();
+  }
+
+  async function faqwSend(text){
+    if(!text || text.trim().length === 0) return;
+    if(chips) chips.style.display = 'none';
+
+    faqwAddMsg('user', faqwEscape(text));
+    faqwConversation.push({ role: 'user', content: text });
+    input.value = '';
+    input.disabled = true;
+    sendBtn.disabled = true;
+
+    faqwAddTyping();
+
+    try{
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          max_tokens: 300,
+          system: FAQW_SYSTEM_PROMPT,
+          messages: faqwConversation
+        })
+      });
+
+      const data = await response.json();
+      faqwRemoveTyping();
+
+      if(!response.ok){
+        throw new Error(data.error || 'Request failed');
+      }
+
+      const replyText = data.content?.filter(b => b.type === 'text').map(b => b.text).join('\n') || "I'm not sure how to answer that — try hello@avant-gardecoach.ca.";
+      faqwAddMsg('bot', faqwEscape(replyText).replace(/\n/g, '<br>'));
+      faqwConversation.push({ role: 'assistant', content: replyText });
+
+    }catch(err){
+      faqwRemoveTyping();
+      faqwAddMsg('bot', "I'm having trouble connecting right now — you can email <a href=\"mailto:hello@avant-gardecoach.ca\" style=\"color:var(--vermillion-bright);\">hello@avant-gardecoach.ca</a> directly.");
+      console.error(err);
+    }finally{
+      input.disabled = false;
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+
+  sendBtn.addEventListener('click', () => faqwSend(input.value));
+  input.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') faqwSend(input.value);
+  });
+
+  window.faqwQuick = function(text){ faqwSend(text); };
+})();
 </script>
 
 </body>
