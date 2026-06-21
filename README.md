@@ -3,8 +3,8 @@
 This repo contains the full Avant-Garde Coach site: the landing page, the
 discovery-call booking page (with a live Cal.com calendar embed), and a
 client dashboard mockup. Two pages include an AI chat assistant powered by
-Claude, routed through a small serverless function so the real API key
-never reaches the browser.
+Google's Gemini API (free tier), routed through a small serverless
+function so the real API key never reaches the browser.
 
 ## Files
 
@@ -15,8 +15,9 @@ never reaches the browser.
 - `dashboard.html` — client dashboard mockup (no real backend/auth yet —
   this is a visual prototype, not a real login system)
 - `api/chat.js` — Vercel serverless function. This is the *only* place the
-  real Anthropic API key is used. It receives requests from the two chat
-  assistants and forwards them to Anthropic's API server-side.
+  real Gemini API key is used. It receives requests from the two chat
+  assistants, forwards them to Google's Gemini API, and reshapes the
+  response so the frontend code didn't need to change.
 - `vercel.json` — tells Vercel to serve `index.html` at the root URL
 - `package.json` — minimal project file so Vercel recognizes this as a
   Node-based project (needed for the `api/` function to run)
@@ -54,22 +55,37 @@ git push -u origin main
 4. **Before clicking Deploy**, add your environment variable (next step) —
    or add it right after and redeploy.
 
-### 3. Add your Anthropic API key as an environment variable
+### 3. Get a free Gemini API key
+
+1. Go to [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+   and sign in with any Google account.
+2. Click **"Create API Key"**. No credit card or billing setup is required
+   for the free tier.
+3. Copy the key (starts with `AIza...`).
+
+This free tier currently allows roughly 1,500 requests per day on the
+`gemini-2.5-flash` model this project uses — far more than a single
+coaching site's chat traffic will realistically need. One thing worth
+knowing: on the free tier, Google's terms allow your API inputs/outputs to
+be used to improve their models. If that matters for your use case,
+revisit this once the site has real traffic.
+
+### 4. Add the API key to Vercel
 
 This is the step that keeps your key safe. **Never paste your API key into
 any HTML or JS file.**
 
 1. In your Vercel project, go to **Settings → Environment Variables**.
 2. Add a new variable:
-   - **Name:** `ANTHROPIC_API_KEY`
-   - **Value:** your real API key (starts with `sk-ant-...`)
+   - **Name:** `GEMINI_API_KEY`
+   - **Value:** the key you copied from Google AI Studio
    - **Environment:** check Production (and Preview/Development too, if
      you want preview deployments to also have working AI chat)
 3. Save, then go to the **Deployments** tab and **redeploy** — Vercel only
    picks up new environment variables on a fresh deployment, so if you
    already deployed once before adding the key, you need to redeploy.
 
-### 4. Connect your real domain
+### 5. Connect your real domain
 
 1. In your Vercel project, go to **Settings → Domains**.
 2. Add `avant-gardecoach.ca` (and `www.avant-gardecoach.ca` if you want
@@ -80,7 +96,7 @@ any HTML or JS file.**
 4. DNS changes can take anywhere from a few minutes to a few hours to
    take effect.
 
-### 5. Test it for real
+### 6. Test it for real
 
 Once deployed, visit your live Vercel URL (something like
 `your-project.vercel.app`) before the domain finishes propagating:
@@ -89,8 +105,10 @@ Once deployed, visit your live Vercel URL (something like
 - Try the discovery-call assistant on the booking page, and confirm the
   Cal.com calendar appears.
 - If the AI chat shows a "having trouble connecting" message, double-check
-  the environment variable name is exactly `ANTHROPIC_API_KEY` and that you
-  redeployed after adding it.
+  the environment variable name is exactly `GEMINI_API_KEY` and that you
+  redeployed after adding it. The Vercel function logs (Deployments → your
+  deployment → Functions → chat.js) will show the exact error if it's
+  still failing.
 
 ## Things to revisit later
 
@@ -102,3 +120,8 @@ Once deployed, visit your live Vercel URL (something like
   separate, larger project.
 - **Pricing** — every program card currently says "PRICE TBD" on purpose.
   Update those once pricing is finalized.
+- **AI provider** — this project currently uses Gemini's free tier to
+  avoid upfront cost. If you later want to switch to Anthropic's Claude
+  (e.g. for higher quality responses or to avoid Google's free-tier data
+  terms), `api/chat.js` is the only file that needs to change — it's
+  written so the frontend pages don't care which provider is behind it.
