@@ -191,6 +191,9 @@
 
   .login-demo{
     width:100%;
+    appearance:none;
+    -webkit-appearance:none;
+    background:var(--ink);
     border:1px solid var(--rule-light);
     padding:0.85rem;
     font-size:0.82rem;
@@ -199,7 +202,7 @@
     transition:all 0.25s ease;
     color:var(--bone-dim);
   }
-  .login-demo:hover{border-color:var(--bone); color:var(--bone);}
+  .login-demo:hover{border-color:var(--bone); color:var(--bone); background:var(--ink-card);}
 
   .login-note{
     margin-top:1.8rem;
@@ -259,7 +262,9 @@
     font-size:0.85rem;
     color:var(--bone);
   }
-  .logout-btn{color:var(--clay); transition:color 0.25s ease; letter-spacing:0.04em;}
+  .back-to-site{color:var(--clay); transition:color 0.25s ease; letter-spacing:0.04em; text-decoration:none;}
+  .back-to-site:hover{color:var(--vermillion-bright);}
+  .logout-btn{background:none; appearance:none; -webkit-appearance:none; color:var(--clay); transition:color 0.25s ease; letter-spacing:0.04em;}
   .logout-btn:hover{color:var(--vermillion-bright);}
 
   .dash-wrap{
@@ -478,6 +483,9 @@
   }
   .save-row .saved-note.show{opacity:1;}
   .save-btn{
+    background:none;
+    appearance:none;
+    -webkit-appearance:none;
     font-size:0.78rem;
     color:var(--vermillion-bright);
     border-bottom:1px solid var(--vermillion);
@@ -555,7 +563,7 @@
 <div id="login-view">
   <div class="login-shell">
     <div class="login-side">
-      <div class="login-logo">Avant-Garde <em>Coach</em></div>
+      <a href="index.html" class="login-logo" style="text-decoration:none;">Avant-Garde <em>Coach</em></a>
       <div>
         <p class="login-side-quote">"You have the power to <span class="mark">choose</span> when coaching happens — this is where you track what happens next."</p>
         <p class="login-side-attr">CLIENT WORKSPACE</p>
@@ -592,8 +600,9 @@
 <!-- ============ DASHBOARD VIEW ============ -->
 <div id="dashboard-view">
   <nav class="dash-nav">
-    <div class="dash-logo">Avant-Garde <em>Coach</em></div>
+    <a href="index.html" class="dash-logo" style="text-decoration:none;">Avant-Garde <em>Coach</em></a>
     <div class="dash-user">
+      <a href="index.html" class="back-to-site" style="margin-right:0.4rem;">← Back to site</a>
       <span id="user-label">Welcome back</span>
       <span class="avatar">J</span>
       <button class="logout-btn" id="logout-btn">Sign out</button>

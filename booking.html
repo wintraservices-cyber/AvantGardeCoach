@@ -236,6 +236,9 @@
     padding:0 2rem 1.2rem;
   }
   .chip{
+    appearance:none;
+    -webkit-appearance:none;
+    background:var(--ink-soft);
     border:1px solid var(--rule-light);
     padding:0.45rem 0.9rem;
     font-size:0.78rem;
@@ -243,7 +246,7 @@
     color:var(--bone-dim);
     transition:all 0.2s ease;
   }
-  .chip:hover{border-color:var(--vermillion); color:var(--bone);}
+  .chip:hover{border-color:var(--vermillion); color:var(--bone); background:var(--ink-card);}
 
   /* ===== summary panel (final state) ===== */
   .summary-panel{
@@ -373,17 +376,20 @@
     <div class="eyebrow">What I Understood</div>
     <h2 id="summary-title">Here's what you shared</h2>
     <div class="summary-row"><span class="k">CONTEXT NOTED</span><span class="v" id="sum-when">—</span></div>
-    <div class="summary-note">Real, live availability is below — pick whatever actually works. The note above is just what you told the assistant, for Mahal's reference.</div>
+    <div class="summary-note">This note is already included in your calendar booking below, in the notes field Mahal sees. You can also send it directly by email — this won't happen automatically, you'll need to click and hit send yourself.</div>
+    <div class="summary-actions" id="email-context-row" style="display:none;">
+      <a href="#" id="email-context-link" class="btn-ghost-sm">Email this context to Mahal too →</a>
+    </div>
   </div>
 
   <div class="calendar-panel" id="calendar-panel">
     <div class="eyebrow">Live Availability</div>
     <h2>Pick your time</h2>
-    <p class="cal-sub">This calendar reflects Mahal's real schedule — what you book here is booked.</p>
+    <p class="cal-sub">This calendar reflects Mahal's real schedule — what you book here is booked. Any context you shared above is already prefilled into the notes field.</p>
     <div id="cal-embed-inline" style="width:100%; min-height:600px; overflow:visible;"></div>
   </div>
 
-  <p class="disclosure"><strong>How this works —</strong> the chat above uses AI to understand a little about what's bringing you to coaching, so Mahal has context before your call. The calendar itself is a live connection to her real availability — slots you see are accurate, and booking one confirms it immediately.</p>
+  <p class="disclosure"><strong>How this works —</strong> the chat above uses AI to understand a little about what's bringing you to coaching, so Mahal has context before your call. That context is passed into the booking's notes field automatically. The calendar itself is a live connection to her real availability — slots you see are accurate, and booking one confirms it immediately.</p>
 </div>
 
 <script type="text/javascript">
@@ -416,15 +422,10 @@
 
   Cal("init", { origin: "https://cal.com" });
 
-  // Live connection to Mahal's real Cal.com discovery call event type.
-  Cal("inline", {
-    elementOrSelector: "#cal-embed-inline",
-    calLink: "wintra-services-mkzw1b/discovery",
-    config: {
-      theme: "dark",
-      layout: "week_view"
-    }
-  });
+  // NOTE: the actual "inline" call that renders the calendar now happens
+  // later, inside initCalEmbed() in the main script block below — once we
+  // know the AI conversation summary, so we can prefill it into the
+  // booking form's notes field for Mahal to see.
 
   Cal("ui", {
     theme: "dark",
@@ -524,10 +525,62 @@ Only include that JSON block once, when you're ready to direct them to the calen
     return { displayText, slotData };
   }
 
+  let calEmbedRendered = false;
+
+  function buildContextNote(){
+    // Build a plain-text summary of the conversation so far, for both the
+    // Cal.com notes field and the email to Mahal.
+    if(conversation.length === 0) return '';
+    const userLines = conversation
+      .filter(m => m.role === 'user')
+      .map(m => m.content);
+    return userLines.join(' / ');
+  }
+
+  function initCalEmbed(contextNote){
+    const config = {
+      theme: "dark",
+      layout: "week_view"
+    };
+    // Prefill the event type's "Additional notes" field with what the
+    // visitor shared in chat, so Mahal sees it directly on the booking
+    // details page — no separate lookup required.
+    if(contextNote){
+      config.notes = contextNote;
+    }
+
+    Cal("inline", {
+      elementOrSelector: "#cal-embed-inline",
+      calLink: "wintra-services-mkzw1b/discovery",
+      config: config
+    });
+    calEmbedRendered = true;
+  }
+
+  function revealCalendar(contextNote){
+    document.getElementById('calendar-panel').classList.add('show');
+    if(!calEmbedRendered){
+      initCalEmbed(contextNote);
+    }
+    document.getElementById('calendar-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function sendContextEmail(contextNote){
+    const subject = encodeURIComponent('New discovery call inquiry — context from chat');
+    const body = encodeURIComponent(
+      `Hi Mahal,\n\nSomeone used the booking assistant and shared this before booking:\n\n"${contextNote}"\n\nThey're booking (or have booked) a discovery call via the calendar on the site. This note is just so you have context ahead of the call.\n\n— Sent automatically from the Avant-Garde Coach booking assistant`
+    );
+    const link = `mailto:hello@avant-gardecoach.ca?subject=${subject}&body=${body}`;
+    document.getElementById('email-context-link').href = link;
+    document.getElementById('email-context-row').style.display = 'flex';
+  }
+
   function showSummary(slotData){
     document.getElementById('sum-when').textContent = slotData.summary || '—';
     summaryPanel.classList.add('show');
-    document.getElementById('calendar-panel').classList.add('show');
+    const contextNote = slotData.summary || buildContextNote();
+    revealCalendar(contextNote);
+    sendContextEmail(contextNote);
     summaryPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
@@ -556,8 +609,9 @@ Only include that JSON block once, when you're ready to direct them to the calen
       } else if(turnCount >= 3){
         // Safety net: if the AI hasn't signaled readiness within a few
         // exchanges, surface the calendar anyway rather than stalling.
-        document.getElementById('calendar-panel').classList.add('show');
-        document.getElementById('calendar-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        const fallbackNote = buildContextNote();
+        revealCalendar(fallbackNote);
+        if(fallbackNote) sendContextEmail(fallbackNote);
       }
     }catch(err){
       removeTyping();
@@ -582,8 +636,7 @@ Only include that JSON block once, when you're ready to direct them to the calen
   function skipToCalendar(){
     if(quickChips) quickChips.style.display = 'none';
     addMessage('bot', "No problem — here's the real calendar.");
-    document.getElementById('calendar-panel').classList.add('show');
-    document.getElementById('calendar-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    revealCalendar(buildContextNote());
   }
   window.skipToCalendar = skipToCalendar;
 
