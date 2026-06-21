@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Dashboard — Avant-Garde Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#13110F;
+    --ink-soft:#1C1916;
+    --ink-card:#201C18;
+    --bone:#F6F1E9;
+    --bone-dim:#E8E0D2;
+    --clay:#9C8466;
+    --vermillion:#C8401E;
+    --vermillion-bright:#E1582E;
+    --rule:#2E2A25;
+    --rule-light:#3A352E;
+    --sage:#7C8F6E;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--bone);
+    font-family:'Inter',sans-serif;
+    font-weight:300;
+    min-height:100vh;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+
+  a{color:inherit; text-decoration:none;}
+  button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit;}
+
+  a:focus-visible, button:focus-visible, input:focus-visible{
+    outline:2px solid var(--vermillion-bright);
+    outline-offset:3px;
+  }
+
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.7rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--clay);
+  }
+
+  /* ============ LOGIN VIEW ============ */
+  #login-view{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:2rem;
+    position:relative;
+  }
+
+  .login-rule{
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:1px;
+    background:var(--rule);
+    left:50%;
+    display:none;
+  }
+  @media(min-width:860px){ .login-rule{display:block;} }
+
+  .login-shell{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    max-width:920px;
+    width:100%;
+    border:1px solid var(--rule);
+    background:var(--ink-soft);
+  }
+  @media(max-width:860px){ .login-shell{grid-template-columns:1fr;} }
+
+  .login-side{
+    padding:3.4rem 3rem;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    background:linear-gradient(160deg, var(--ink-card), var(--ink));
+    border-right:1px solid var(--rule);
+  }
+  @media(max-width:860px){ .login-side{border-right:none; border-bottom:1px solid var(--rule);} }
+
+  .login-logo{
+    font-family:'Fraunces',serif;
+    font-size:1.1rem;
+    font-weight:500;
+  }
+  .login-logo em{font-style:italic; color:var(--vermillion-bright);}
+
+  .login-side-quote{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-size:1.5rem;
+    line-height:1.4;
+    margin-top:3rem;
+  }
+  .login-side-quote .mark{color:var(--vermillion-bright); font-style:normal;}
+  .login-side-attr{
+    margin-top:1.2rem;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.68rem;
+    color:var(--clay);
+    letter-spacing:0.05em;
+  }
+
+  .login-form-wrap{
+    padding:3.4rem 3rem;
+  }
+
+  .login-form-wrap h1{
+    font-family:'Fraunces',serif;
+    font-weight:400;
+    font-size:2rem;
+    margin-top:0.6rem;
+    margin-bottom:0.5rem;
+  }
+  .login-form-wrap .sub{
+    font-size:0.9rem;
+    color:var(--bone-dim);
+    line-height:1.5;
+    margin-bottom:2.2rem;
+  }
+
+  .field{
+    margin-bottom:1.4rem;
+  }
+  .field label{
+    display:block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.68rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--clay);
+    margin-bottom:0.5rem;
+  }
+  .field input{
+    width:100%;
+    background:var(--ink);
+    border:1px solid var(--rule-light);
+    color:var(--bone);
+    padding:0.85rem 1rem;
+    font-size:0.92rem;
+    font-family:'Inter',sans-serif;
+    border-radius:2px;
+    transition:border-color 0.25s ease;
+  }
+  .field input:focus{border-color:var(--vermillion); outline:none;}
+  .field input::placeholder{color:#5C564C;}
+
+  .login-submit{
+    width:100%;
+    background:var(--vermillion);
+    color:var(--bone);
+    padding:0.95rem;
+    font-size:0.85rem;
+    letter-spacing:0.05em;
+    border-radius:2px;
+    margin-top:0.6rem;
+    transition:background 0.25s ease;
+  }
+  .login-submit:hover{background:var(--vermillion-bright);}
+
+  .login-divider{
+    display:flex;
+    align-items:center;
+    gap:0.8rem;
+    margin:1.6rem 0;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.65rem;
+    color:var(--clay);
+    letter-spacing:0.08em;
+  }
+  .login-divider::before, .login-divider::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--rule-light);
+  }
+
+  .login-demo{
+    width:100%;
+    border:1px solid var(--rule-light);
+    padding:0.85rem;
+    font-size:0.82rem;
+    letter-spacing:0.03em;
+    border-radius:2px;
+    transition:all 0.25s ease;
+    color:var(--bone-dim);
+  }
+  .login-demo:hover{border-color:var(--bone); color:var(--bone);}
+
+  .login-note{
+    margin-top:1.8rem;
+    font-size:0.76rem;
+    line-height:1.6;
+    color:#6B6459;
+    border-top:1px solid var(--rule);
+    padding-top:1.2rem;
+  }
+  .login-note strong{color:var(--clay); font-weight:500;}
+
+  .login-error{
+    font-size:0.8rem;
+    color:var(--vermillion-bright);
+    margin-bottom:1rem;
+    display:none;
+  }
+  .login-error.show{display:block;}
+
+  /* ============ DASHBOARD VIEW ============ */
+  #dashboard-view{
+    display:none;
+    min-height:100vh;
+  }
+  #dashboard-view.active{display:block;}
+  #login-view.hidden{display:none;}
+
+  .dash-nav{
+    position:sticky;
+    top:0;
+    z-index:40;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:1.4rem 6vw;
+    border-bottom:1px solid var(--rule);
+    background:rgba(19,17,15,0.92);
+    backdrop-filter:blur(6px);
+  }
+  .dash-logo{font-family:'Fraunces',serif; font-size:1.05rem; font-weight:500;}
+  .dash-logo em{font-style:italic; color:var(--vermillion-bright);}
+  .dash-user{
+    display:flex;
+    align-items:center;
+    gap:1.2rem;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.74rem;
+    color:var(--bone-dim);
+  }
+  .dash-user .avatar{
+    width:30px; height:30px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--vermillion), #8a2c14);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-size:0.85rem;
+    color:var(--bone);
+  }
+  .logout-btn{color:var(--clay); transition:color 0.25s ease; letter-spacing:0.04em;}
+  .logout-btn:hover{color:var(--vermillion-bright);}
+
+  .dash-wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:3rem 6vw 6rem;
+  }
+
+  .dash-hero{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:1.5rem;
+    margin-bottom:3rem;
+    padding-bottom:2.2rem;
+    border-bottom:1px solid var(--rule);
+  }
+  .dash-hero h1{
+    font-family:'Fraunces',serif;
+    font-weight:400;
+    font-size:clamp(1.8rem, 3.4vw, 2.6rem);
+    margin-top:0.5rem;
+  }
+  .dash-hero h1 em{font-style:italic; color:var(--vermillion-bright);}
+  .dash-hero .sub{color:var(--bone-dim); font-size:0.92rem; margin-top:0.4rem; max-width:420px;}
+
+  .next-session-card{
+    background:var(--ink-card);
+    border:1px solid var(--rule);
+    padding:1.4rem 1.7rem;
+    min-width:260px;
+  }
+  .next-session-card .eyebrow{margin-bottom:0.6rem;}
+  .next-session-card .when{
+    font-family:'Fraunces',serif;
+    font-size:1.25rem;
+    margin-bottom:0.3rem;
+  }
+  .next-session-card .with{font-size:0.82rem; color:var(--bone-dim);}
+  .next-session-card .btn-small{
+    display:inline-block;
+    margin-top:1rem;
+    font-size:0.78rem;
+    color:var(--vermillion-bright);
+    border-bottom:1px solid var(--vermillion);
+    padding-bottom:0.2rem;
+  }
+
+  /* journey path */
+  .journey-section{margin-bottom:4rem;}
+  .section-label{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:1.8rem;
+    flex-wrap:wrap;
+    gap:0.8rem;
+  }
+  .section-label h2{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:1.4rem;
+  }
+  .section-label .count{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    color:var(--clay);
+  }
+
+  .journey-path{
+    display:flex;
+    flex-direction:column;
+    border-left:2px solid var(--rule);
+    margin-left:0.9rem;
+  }
+
+  .milestone{
+    position:relative;
+    padding:0 0 2.2rem 2.4rem;
+    margin-left:-2px;
+  }
+  .milestone:last-child{padding-bottom:0;}
+
+  .milestone-dot{
+    position:absolute;
+    left:-9px;
+    top:0.15rem;
+    width:16px; height:16px;
+    border-radius:50%;
+    background:var(--ink);
+    border:2px solid var(--rule-light);
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.3s ease;
+  }
+  .milestone.complete .milestone-dot{
+    border-color:var(--vermillion);
+    background:var(--vermillion);
+  }
+  .milestone.complete .milestone-dot::after{
+    content:"";
+    width:5px; height:5px;
+    border-radius:50%;
+    background:var(--ink);
+  }
+  .milestone.active .milestone-dot{
+    border-color:var(--vermillion-bright);
+  }
+  .milestone.active .milestone-dot::after{
+    content:"";
+    width:6px; height:6px;
+    border-radius:50%;
+    background:var(--vermillion-bright);
+    animation:pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1;}
+    50%{opacity:0.4;}
+  }
+
+  .milestone-card{
+    background:var(--ink-card);
+    border:1px solid var(--rule);
+    padding:1.5rem 1.7rem;
+    cursor:pointer;
+    transition:border-color 0.25s ease, transform 0.2s ease;
+  }
+  .milestone.locked .milestone-card{
+    opacity:0.45;
+    cursor:default;
+  }
+  .milestone-card:not(.locked-card):hover{
+    border-color:var(--vermillion);
+  }
+
+  .milestone-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:1rem;
+  }
+  .milestone-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.65rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--clay);
+    margin-bottom:0.5rem;
+  }
+  .milestone.complete .milestone-tag{color:var(--vermillion-bright);}
+  .milestone-card h3{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:1.15rem;
+    margin-bottom:0.4rem;
+  }
+  .milestone-card p{
+    font-size:0.86rem;
+    line-height:1.6;
+    color:var(--bone-dim);
+    max-width:560px;
+  }
+  .milestone-status{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.68rem;
+    letter-spacing:0.05em;
+    white-space:nowrap;
+    padding:0.3rem 0.7rem;
+    border-radius:2px;
+    border:1px solid var(--rule-light);
+    color:var(--bone-dim);
+  }
+  .milestone.complete .milestone-status{border-color:var(--vermillion); color:var(--vermillion-bright);}
+  .milestone.active .milestone-status{border-color:var(--bone-dim); color:var(--bone);}
+
+  .milestone-detail{
+    display:none;
+    margin-top:1.2rem;
+    padding-top:1.2rem;
+    border-top:1px solid var(--rule);
+  }
+  .milestone-detail.open{display:block;}
+  .milestone-detail .prompt{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-size:1rem;
+    color:var(--bone-dim);
+    margin-bottom:1rem;
+  }
+  .milestone-detail textarea{
+    width:100%;
+    min-height:90px;
+    background:var(--ink);
+    border:1px solid var(--rule-light);
+    color:var(--bone);
+    padding:0.8rem 1rem;
+    font-family:'Inter',sans-serif;
+    font-size:0.88rem;
+    border-radius:2px;
+    resize:vertical;
+  }
+  .milestone-detail textarea:focus{border-color:var(--vermillion); outline:none;}
+  .milestone-detail .save-row{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:1rem;
+    margin-top:0.8rem;
+  }
+  .save-row .saved-note{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.7rem;
+    color:var(--sage);
+    opacity:0;
+    transition:opacity 0.3s ease;
+  }
+  .save-row .saved-note.show{opacity:1;}
+  .save-btn{
+    font-size:0.78rem;
+    color:var(--vermillion-bright);
+    border-bottom:1px solid var(--vermillion);
+    padding-bottom:0.15rem;
+  }
+
+  /* bottom grid: sessions + resources */
+  .dash-grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:1px;
+    background:var(--rule);
+    border:1px solid var(--rule);
+  }
+  @media(max-width:860px){ .dash-grid{grid-template-columns:1fr;} }
+
+  .dash-panel{
+    background:var(--ink-soft);
+    padding:2rem 2.2rem;
+  }
+  .dash-panel h3{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:1.15rem;
+    margin-bottom:1.4rem;
+  }
+
+  .session-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0.9rem 0;
+    border-bottom:1px solid var(--rule);
+    font-size:0.86rem;
+  }
+  .session-row:last-child{border-bottom:none;}
+  .session-row .date{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.74rem;
+    color:var(--clay);
+    width:90px;
+    flex-shrink:0;
+  }
+  .session-row .topic{color:var(--bone-dim); flex-grow:1; padding:0 1rem;}
+  .session-row .tagdone{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.65rem;
+    color:var(--sage);
+  }
+
+  .resource-row{
+    display:flex;
+    gap:0.9rem;
+    padding:0.85rem 0;
+    border-bottom:1px solid var(--rule);
+  }
+  .resource-row:last-child{border-bottom:none;}
+  .resource-row .ic{
+    font-family:'JetBrains Mono',monospace;
+    color:var(--vermillion-bright);
+    font-size:0.8rem;
+    flex-shrink:0;
+    padding-top:0.1rem;
+  }
+  .resource-row .rtext h4{font-size:0.88rem; font-weight:500; margin-bottom:0.2rem;}
+  .resource-row .rtext p{font-size:0.78rem; color:var(--clay);}
+
+  .reveal{opacity:0; transform:translateY(14px); transition:opacity 0.6s ease, transform 0.6s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN VIEW ============ -->
+<div id="login-view">
+  <div class="login-shell">
+    <div class="login-side">
+      <div class="login-logo">Avant-Garde <em>Coach</em></div>
+      <div>
+        <p class="login-side-quote">"You have the power to <span class="mark">choose</span> when coaching happens — this is where you track what happens next."</p>
+        <p class="login-side-attr">CLIENT WORKSPACE</p>
+      </div>
+    </div>
+    <div class="login-form-wrap">
+      <div class="eyebrow">Client Login</div>
+      <h1>Welcome back.</h1>
+      <p class="sub">Sign in to view your milestones, sessions, and reflections.</p>
+
+      <div class="login-error" id="login-error">That combination doesn't look right yet — try again, or use the demo below.</div>
+
+      <form id="login-form" autocomplete="off">
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="you@email.com">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••">
+        </div>
+        <button type="submit" class="login-submit">Sign in →</button>
+      </form>
+
+      <div class="login-divider">OR</div>
+
+      <button class="login-demo" id="demo-btn">View demo dashboard</button>
+
+      <p class="login-note"><strong>Note —</strong> this workspace is a preview. No accounts or passwords are stored yet; any details entered, or the demo button, will open the same sample dashboard.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD VIEW ============ -->
+<div id="dashboard-view">
+  <nav class="dash-nav">
+    <div class="dash-logo">Avant-Garde <em>Coach</em></div>
+    <div class="dash-user">
+      <span id="user-label">Welcome back</span>
+      <span class="avatar">J</span>
+      <button class="logout-btn" id="logout-btn">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="dash-wrap">
+    <div class="dash-hero reveal">
+      <div>
+        <div class="eyebrow">Your Workspace</div>
+        <h1>Three sessions in. The thread is <em>coming back.</em></h1>
+        <p class="sub">Here's where things stand — your milestones, your next session, and the reflections you've logged along the way.</p>
+      </div>
+      <div class="next-session-card">
+        <div class="eyebrow">Next Session</div>
+        <div class="when">Thu, June 25 — 4:30 PM</div>
+        <div class="with">With Mahal Hudson · Video call</div>
+        <a href="https://cal.com/wintra-services-mkzw1b/appointment" class="btn-small" target="_blank" rel="noopener">Reschedule →</a>
+      </div>
+    </div>
+
+    <div class="journey-section reveal">
+      <div class="section-label">
+        <h2>Your milestones</h2>
+        <div class="count">2 of 4 in progress</div>
+      </div>
+
+      <div class="journey-path">
+
+        <div class="milestone complete" data-id="m1">
+          <div class="milestone-dot"></div>
+          <div class="milestone-card" onclick="toggleMilestone('m1')">
+            <div class="milestone-top">
+              <div>
+                <div class="milestone-tag">Standing Question I</div>
+                <h3>Naming the decision you've been circling</h3>
+                <p>Get the decision out of your head and onto the table — what it actually is, and what's been making it hard to trust your own read on it.</p>
+              </div>
+              <div class="milestone-status">Complete</div>
+            </div>
+            <div class="milestone-detail" id="detail-m1">
+              <p class="prompt">"What did you decide, and what finally made it clear?"</p>
+              <textarea placeholder="Your reflection...">I decided to turn down the relocation. What made it clear was realizing I'd been treating it as an obligation, not a choice.</textarea>
+              <div class="save-row">
+                <span class="saved-note">Saved</span>
+                <button class="save-btn" onclick="saveNote(event, 'm1')">Save reflection</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="milestone active" data-id="m2">
+          <div class="milestone-dot"></div>
+          <div class="milestone-card" onclick="toggleMilestone('m2')">
+            <div class="milestone-top">
+              <div>
+                <div class="milestone-tag">Standing Question II — In Progress</div>
+                <h3>Having the conversation you've been avoiding</h3>
+                <p>Map out what you actually need to say, separate from how you're afraid it'll land — then plan when and how to say it.</p>
+              </div>
+              <div class="milestone-status">In progress</div>
+            </div>
+            <div class="milestone-detail" id="detail-m2">
+              <p class="prompt">"What's the one sentence you keep avoiding saying out loud?"</p>
+              <textarea placeholder="Write it here, even if it's rough..."></textarea>
+              <div class="save-row">
+                <span class="saved-note">Saved</span>
+                <button class="save-btn" onclick="saveNote(event, 'm2')">Save reflection</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="milestone locked" data-id="m3">
+          <div class="milestone-dot"></div>
+          <div class="milestone-card locked-card">
+            <div class="milestone-top">
+              <div>
+                <div class="milestone-tag">Standing Question III</div>
+                <h3>Picking the thread back up</h3>
+                <p>Reconnect with the version of yourself that had a clear sense of direction — and figure out what's worth carrying forward.</p>
+              </div>
+              <div class="milestone-status">Unlocks after Session 4</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="milestone locked" data-id="m4">
+          <div class="milestone-dot"></div>
+          <div class="milestone-card locked-card">
+            <div class="milestone-top">
+              <div>
+                <div class="milestone-tag">Standing Question IV</div>
+                <h3>Catching up to who you've become</h3>
+                <p>Name the transformation that's already happened, and build the version of your routine that actually fits it.</p>
+              </div>
+              <div class="milestone-status">Unlocks after Session 4</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="dash-grid reveal">
+      <div class="dash-panel">
+        <h3>Session history</h3>
+        <div class="session-row">
+          <span class="date">JUN 11</span>
+          <span class="topic">The relocation decision — final call</span>
+          <span class="tagdone">Logged</span>
+        </div>
+        <div class="session-row">
+          <span class="date">MAY 28</span>
+          <span class="topic">Weighing values vs. expectations</span>
+          <span class="tagdone">Logged</span>
+        </div>
+        <div class="session-row">
+          <span class="date">MAY 14</span>
+          <span class="topic">Discovery call — where things stand</span>
+          <span class="tagdone">Logged</span>
+        </div>
+      </div>
+      <div class="dash-panel">
+        <h3>From Mahal</h3>
+        <div class="resource-row">
+          <span class="ic">→</span>
+          <div class="rtext">
+            <h4>Before our next session</h4>
+            <p>Write down the sentence you're avoiding — even half-formed.</p>
+          </div>
+        </div>
+        <div class="resource-row">
+          <span class="ic">→</span>
+          <div class="rtext">
+            <h4>Reading</h4>
+            <p>"Difficult Conversations" — chapters 1–3</p>
+          </div>
+        </div>
+        <div class="resource-row">
+          <span class="ic">→</span>
+          <div class="rtext">
+            <h4>Reminder</h4>
+            <p>No shame, no guilt. Just bring the truth of it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const loginForm = document.getElementById('login-form');
+  const demoBtn = document.getElementById('demo-btn');
+  const loginView = document.getElementById('login-view');
+  const dashView = document.getElementById('dashboard-view');
+  const logoutBtn = document.getElementById('logout-btn');
+  const userLabel = document.getElementById('user-label');
+  const loginError = document.getElementById('login-error');
+
+  function enterDashboard(name){
+    loginView.classList.add('hidden');
+    dashView.classList.add('active');
+    if(name){ userLabel.textContent = 'Welcome back, ' + name; }
+    revealOnEnter();
+    window.scrollTo(0,0);
+  }
+
+  loginForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    // mockup: any non-empty input signs you in to the same demo data
+    if(email.length === 0){
+      loginError.classList.add('show');
+      return;
+    }
+    loginError.classList.remove('show');
+    const first = email.split('@')[0].split(/[._-]/)[0];
+    const display = first.charAt(0).toUpperCase() + first.slice(1);
+    enterDashboard(display);
+  });
+
+  demoBtn.addEventListener('click', function(){
+    enterDashboard('Jordan');
+  });
+
+  logoutBtn.addEventListener('click', function(){
+    dashView.classList.remove('active');
+    loginView.classList.remove('hidden');
+    document.getElementById('email').value = '';
+    document.getElementById('password').value = '';
+    window.scrollTo(0,0);
+  });
+
+  function toggleMilestone(id){
+    const detail = document.getElementById('detail-' + id);
+    if(!detail) return;
+    detail.classList.toggle('open');
+  }
+
+  function saveNote(e, id){
+    e.stopPropagation();
+    const card = e.target.closest('.save-row');
+    const note = card.querySelector('.saved-note');
+    note.classList.add('show');
+    setTimeout(() => note.classList.remove('show'), 2000);
+  }
+
+  function revealOnEnter(){
+    const reveals = document.querySelectorAll('#dashboard-view .reveal');
+    reveals.forEach((el, i) => {
+      setTimeout(() => el.classList.add('in'), i * 90);
+    });
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "avant-garde-coach",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Avant-Garde Coach \u2014 website and AI-assisted booking/intake, deployed on Vercel.",
+  "engines": {
+    "node": ">=18"
+  }
+}

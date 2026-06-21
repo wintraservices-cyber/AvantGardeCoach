@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book a Session — Avant-Garde Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#13110F;
+    --ink-soft:#1C1916;
+    --ink-card:#201C18;
+    --bone:#F6F1E9;
+    --bone-dim:#E8E0D2;
+    --clay:#9C8466;
+    --vermillion:#C8401E;
+    --vermillion-bright:#E1582E;
+    --rule:#2E2A25;
+    --rule-light:#3A352E;
+    --sage:#7C8F6E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--ink);
+    color:var(--bone);
+    font-family:'Inter',sans-serif;
+    font-weight:300;
+    min-height:100vh;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+  a{color:inherit; text-decoration:none;}
+  button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit;}
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible{
+    outline:2px solid var(--vermillion-bright);
+    outline-offset:3px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.7rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--clay);
+  }
+
+  nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:1.4rem 6vw;
+    border-bottom:1px solid var(--rule);
+  }
+  .nav-logo{font-family:'Fraunces',serif; font-size:1.05rem; font-weight:500;}
+  .nav-logo em{font-style:italic; color:var(--vermillion-bright);}
+  .nav-back{
+    font-size:0.8rem;
+    color:var(--bone-dim);
+    letter-spacing:0.03em;
+    transition:color 0.25s ease;
+  }
+  .nav-back:hover{color:var(--vermillion-bright);}
+
+  .page-wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:3.4rem 6vw 5rem;
+  }
+
+  .page-head{
+    margin-bottom:2.6rem;
+    padding-bottom:2.2rem;
+    border-bottom:1px solid var(--rule);
+  }
+  .page-head h1{
+    font-family:'Fraunces',serif;
+    font-weight:400;
+    font-size:clamp(1.9rem, 4vw, 2.8rem);
+    margin-top:0.6rem;
+    line-height:1.1;
+  }
+  .page-head h1 em{font-style:italic; color:var(--vermillion-bright);}
+  .page-head .sub{
+    color:var(--bone-dim);
+    font-size:0.95rem;
+    margin-top:0.6rem;
+    max-width:560px;
+    line-height:1.6;
+  }
+
+  /* ===== chat shell ===== */
+  .chat-shell{
+    border:1px solid var(--rule);
+    background:var(--ink-soft);
+    display:flex;
+    flex-direction:column;
+    min-height:480px;
+  }
+
+  .chat-log{
+    flex:1;
+    padding:2rem 2rem 1rem;
+    display:flex;
+    flex-direction:column;
+    gap:1.4rem;
+    overflow-y:auto;
+    max-height:520px;
+  }
+
+  .msg{
+    display:flex;
+    gap:0.9rem;
+    max-width:88%;
+  }
+  .msg.user{align-self:flex-end; flex-direction:row-reverse;}
+  .msg .badge{
+    width:28px; height:28px;
+    border-radius:50%;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-style:italic; font-size:0.78rem;
+  }
+  .msg.bot .badge{background:var(--vermillion); color:var(--bone);}
+  .msg.user .badge{background:var(--rule-light); color:var(--bone-dim);}
+
+  .msg .bubble{
+    background:var(--ink-card);
+    border:1px solid var(--rule);
+    padding:0.95rem 1.2rem;
+    border-radius:3px;
+    font-size:0.92rem;
+    line-height:1.6;
+  }
+  .msg.user .bubble{
+    background:var(--ink);
+    border-color:var(--rule-light);
+  }
+  .msg.bot .bubble{border-color:var(--rule);}
+
+  .typing-dots{
+    display:flex;
+    gap:5px;
+    padding:0.4rem 0;
+  }
+  .typing-dots span{
+    width:6px; height:6px;
+    border-radius:50%;
+    background:var(--clay);
+    animation:bounce 1.2s infinite ease-in-out;
+  }
+  .typing-dots span:nth-child(2){animation-delay:0.15s;}
+  .typing-dots span:nth-child(3){animation-delay:0.3s;}
+  @keyframes bounce{
+    0%,80%,100%{transform:translateY(0); opacity:0.5;}
+    40%{transform:translateY(-4px); opacity:1;}
+  }
+
+  /* slot suggestion card inside chat */
+  .slot-card{
+    border:1px solid var(--vermillion);
+    background:linear-gradient(160deg, rgba(200,64,30,0.08), transparent);
+    padding:1.1rem 1.3rem;
+    margin-top:0.6rem;
+    border-radius:3px;
+  }
+  .slot-card .slot-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.66rem;
+    letter-spacing:0.08em;
+    color:var(--vermillion-bright);
+    text-transform:uppercase;
+    margin-bottom:0.5rem;
+  }
+  .slot-options{
+    display:flex;
+    flex-direction:column;
+    gap:0.5rem;
+    margin-top:0.6rem;
+  }
+  .slot-option{
+    text-align:left;
+    border:1px solid var(--rule-light);
+    background:var(--ink);
+    padding:0.7rem 1rem;
+    font-size:0.86rem;
+    border-radius:2px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    transition:border-color 0.2s ease, background 0.2s ease;
+  }
+  .slot-option:hover{border-color:var(--vermillion); background:var(--ink-card);}
+  .slot-option .arrow{color:var(--vermillion-bright); font-family:'JetBrains Mono',monospace;}
+  .slot-option.chosen{
+    border-color:var(--vermillion);
+    background:rgba(200,64,30,0.12);
+  }
+
+  .chat-input-row{
+    display:flex;
+    gap:0.8rem;
+    padding:1.2rem 2rem;
+    border-top:1px solid var(--rule);
+  }
+  .chat-input-row input{
+    flex:1;
+    background:var(--ink);
+    border:1px solid var(--rule-light);
+    color:var(--bone);
+    padding:0.85rem 1.1rem;
+    font-size:0.9rem;
+    font-family:'Inter',sans-serif;
+    border-radius:2px;
+  }
+  .chat-input-row input:focus{border-color:var(--vermillion); outline:none;}
+  .chat-input-row input::placeholder{color:#5C564C;}
+  .chat-send{
+    background:var(--vermillion);
+    color:var(--bone);
+    padding:0.85rem 1.6rem;
+    font-size:0.84rem;
+    letter-spacing:0.04em;
+    border-radius:2px;
+    transition:background 0.25s ease;
+    flex-shrink:0;
+  }
+  .chat-send:hover{background:var(--vermillion-bright);}
+  .chat-send:disabled{opacity:0.4; cursor:default;}
+
+  .quick-chips{
+    display:flex;
+    gap:0.6rem;
+    flex-wrap:wrap;
+    padding:0 2rem 1.2rem;
+  }
+  .chip{
+    border:1px solid var(--rule-light);
+    padding:0.45rem 0.9rem;
+    font-size:0.78rem;
+    border-radius:20px;
+    color:var(--bone-dim);
+    transition:all 0.2s ease;
+  }
+  .chip:hover{border-color:var(--vermillion); color:var(--bone);}
+
+  /* ===== summary panel (final state) ===== */
+  .summary-panel{
+    display:none;
+    margin-top:2rem;
+    border:1px solid var(--vermillion);
+    background:var(--ink-card);
+    padding:2.2rem;
+  }
+  .summary-panel.show{display:block;}
+  .summary-panel .eyebrow{color:var(--vermillion-bright); margin-bottom:0.8rem;}
+  .summary-panel h2{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:1.5rem;
+    margin-bottom:1.4rem;
+  }
+  .summary-row{
+    display:flex;
+    justify-content:space-between;
+    padding:0.7rem 0;
+    border-bottom:1px solid var(--rule);
+    font-size:0.88rem;
+  }
+  .summary-row:last-child{border-bottom:none;}
+  .summary-row .k{color:var(--clay); font-family:'JetBrains Mono',monospace; font-size:0.74rem; letter-spacing:0.04em;}
+  .summary-row .v{color:var(--bone); text-align:right;}
+
+  .summary-note{
+    margin-top:1.4rem;
+    font-size:0.84rem;
+    line-height:1.6;
+    color:var(--bone-dim);
+    padding-top:1.2rem;
+    border-top:1px solid var(--rule);
+  }
+  .summary-actions{
+    margin-top:1.6rem;
+    display:flex;
+    gap:1rem;
+    flex-wrap:wrap;
+  }
+  .btn-primary{
+    background:var(--vermillion);
+    color:var(--bone);
+    padding:0.85rem 1.6rem;
+    font-size:0.82rem;
+    letter-spacing:0.04em;
+    border-radius:2px;
+    transition:background 0.25s ease;
+  }
+  .btn-primary:hover{background:var(--vermillion-bright);}
+  .btn-ghost-sm{
+    font-size:0.82rem;
+    color:var(--bone-dim);
+    border-bottom:1px solid var(--rule-light);
+    padding-bottom:0.25rem;
+    transition:color 0.25s ease;
+  }
+  .btn-ghost-sm:hover{color:var(--bone);}
+
+  .disclosure{
+    margin-top:1.8rem;
+    font-size:0.76rem;
+    line-height:1.65;
+    color:#6B6459;
+  }
+  .disclosure strong{color:var(--clay); font-weight:500;}
+
+  .calendar-panel{
+    display:none;
+    margin-top:1.4rem;
+    border:1px solid var(--rule);
+    background:var(--ink-soft);
+    padding:2rem 2rem 0.5rem;
+  }
+  .calendar-panel.show{display:block;}
+  .calendar-panel h2{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:1.4rem;
+    margin:0.5rem 0 0.4rem;
+  }
+  .calendar-panel .cal-sub{
+    font-size:0.88rem;
+    color:var(--bone-dim);
+    margin-bottom:1.4rem;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Avant-Garde <em>Coach</em></div>
+  <a href="index.html" class="nav-back">← Back to site</a>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-head">
+    <div class="eyebrow">Book a Discovery Call</div>
+    <h1>Let's find your <em>starting point.</em></h1>
+    <p class="sub">A discovery call is a free, no-pressure conversation with Mahal to figure out what you need — whether that's a few focused sessions or something more ongoing. Tell the assistant a bit about what's going on, or skip straight to <a href="#calendar-panel" onclick="document.getElementById('calendar-panel').classList.add('show')" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">real availability</a>.</p>
+  </div>
+
+  <div class="chat-shell">
+    <div class="chat-log" id="chat-log">
+      <div class="msg bot">
+        <div class="badge">AG</div>
+        <div class="bubble">Hi — I'm here to help you get ready for your discovery call. What's going on for you right now, or what made you look into coaching today?</div>
+      </div>
+    </div>
+
+    <div class="quick-chips" id="quick-chips">
+      <button class="chip" onclick="sendQuickReply('I keep avoiding a difficult conversation')">Avoiding a conversation</button>
+      <button class="chip" onclick="sendQuickReply('I am stuck on a big decision')">Stuck on a decision</button>
+      <button class="chip" onclick="sendQuickReply('I am navigating a career or leadership transition')">Career transition</button>
+      <button class="chip" onclick="skipToCalendar()">Just show me times</button>
+    </div>
+
+    <div class="chat-input-row">
+      <input type="text" id="chat-input" placeholder="e.g. Tuesday afternoons or Thursday after 5..." autocomplete="off">
+      <button class="chat-send" id="chat-send">Send →</button>
+    </div>
+  </div>
+
+  <div class="summary-panel" id="summary-panel">
+    <div class="eyebrow">What I Understood</div>
+    <h2 id="summary-title">Here's what you shared</h2>
+    <div class="summary-row"><span class="k">CONTEXT NOTED</span><span class="v" id="sum-when">—</span></div>
+    <div class="summary-note">Real, live availability is below — pick whatever actually works. The note above is just what you told the assistant, for Mahal's reference.</div>
+  </div>
+
+  <div class="calendar-panel" id="calendar-panel">
+    <div class="eyebrow">Live Availability</div>
+    <h2>Pick your time</h2>
+    <p class="cal-sub">This calendar reflects Mahal's real schedule — what you book here is booked.</p>
+    <div id="cal-embed-inline" style="width:100%; min-height:600px; overflow:visible;"></div>
+  </div>
+
+  <p class="disclosure"><strong>How this works —</strong> the chat above uses AI to understand a little about what's bringing you to coaching, so Mahal has context before your call. The calendar itself is a live connection to her real availability — slots you see are accurate, and booking one confirms it immediately.</p>
+</div>
+
+<script type="text/javascript">
+  (function (C, A, L) {
+    let p = function (a, ar) { a.q.push(ar); };
+    let d = C.document;
+    C.Cal = C.Cal || function () {
+      let cal = C.Cal;
+      let ar = arguments;
+      if (!cal.loaded) {
+        cal.ns = {};
+        cal.q = cal.q || [];
+        d.head.appendChild(d.createElement("script")).src = A;
+        cal.loaded = true;
+      }
+      if (ar[0] === L) {
+        const api = function () { p(api, arguments); };
+        const namespace = ar[1];
+        api.q = api.q || [];
+        if (typeof namespace === "string") {
+          cal.ns[namespace] = cal.ns[namespace] || api;
+          p(cal.ns[namespace], ar);
+          p(cal, ["initNamespace", namespace]);
+        } else p(cal, ar);
+        return;
+      }
+      p(cal, ar);
+    };
+  })(window, "https://app.cal.com/embed/embed.js", "init");
+
+  Cal("init", { origin: "https://cal.com" });
+
+  // Live connection to Mahal's real Cal.com discovery call event type.
+  Cal("inline", {
+    elementOrSelector: "#cal-embed-inline",
+    calLink: "wintra-services-mkzw1b/discovery",
+    config: {
+      theme: "dark",
+      layout: "week_view"
+    }
+  });
+
+  Cal("ui", {
+    theme: "dark",
+    styles: {
+      branding: { brandColor: "#C8401E" }
+    },
+    hideEventTypeDetails: false
+  });
+</script>
+
+<script>
+  const chatLog = document.getElementById('chat-log');
+  const chatInput = document.getElementById('chat-input');
+  const chatSend = document.getElementById('chat-send');
+  const summaryPanel = document.getElementById('summary-panel');
+  const quickChips = document.getElementById('quick-chips');
+
+  let conversation = [];
+  let turnCount = 0;
+
+  function addMessage(role, html){
+    const wrap = document.createElement('div');
+    wrap.className = 'msg ' + (role === 'user' ? 'user' : 'bot');
+    wrap.innerHTML = `<div class="badge">${role === 'user' ? 'You' : 'AG'}</div><div class="bubble">${html}</div>`;
+    chatLog.appendChild(wrap);
+    chatLog.scrollTop = chatLog.scrollHeight;
+    return wrap;
+  }
+
+  function addTyping(){
+    const wrap = document.createElement('div');
+    wrap.className = 'msg bot';
+    wrap.id = 'typing-indicator';
+    wrap.innerHTML = `<div class="badge">AG</div><div class="bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+    chatLog.appendChild(wrap);
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+
+  function removeTyping(){
+    const el = document.getElementById('typing-indicator');
+    if(el) el.remove();
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  async function callClaude(userText){
+    const systemPrompt = `You are a warm, concise assistant helping visitors prepare for a free discovery call with Mahal Hudson, founder of "Avant-Garde Coach," a life and leadership coaching practice in Toronto.
+
+Your job in this conversation:
+1. Understand a little about what's bringing the person to coaching right now (a decision, a conversation, a transition, burnout, etc.) so Mahal has helpful context before the call.
+2. You do NOT have access to the real calendar and must NEVER invent or state a specific date/time as available — real availability is shown separately in a live calendar below the chat, not generated by you.
+3. Keep responses short — 2-4 sentences, warm but efficient, matching a calm editorial brand voice (no exclamation points, no corporate cheer, no therapy-speak).
+4. Never diagnose, label, or assume a mental health condition. If someone describes something that sounds like a mental health crisis or risk to their safety, gently say this assistant isn't equipped for that and they should reach out to a crisis line or their doctor, and stop there.
+5. Once you have a short useful sense of their situation (usually after 1-2 exchanges), let them know their real calendar options are ready below, and include a JSON block at the very end on its own line in this exact format:
+<<<READY_FOR_CALENDAR>>>{"summary": "short plain-language note for Mahal, e.g. 'Navigating a difficult conversation with a manager'"}<<<END>>>
+Only include that JSON block once, when you're ready to direct them to the calendar.
+6. Do not invent pricing. If asked about cost, say pricing is being finalized and Mahal will discuss it on the call.`;
+
+    const messages = conversation.map(m => ({ role: m.role, content: m.content }));
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: messages
+      })
+    });
+
+    if(!response.ok){
+      const errBody = await response.json().catch(() => ({}));
+      throw new Error(errBody.error || ("API request failed: " + response.status));
+    }
+
+    const data = await response.json();
+    const textBlocks = data.content.filter(b => b.type === "text").map(b => b.text);
+    return textBlocks.join("\n");
+  }
+
+  function parseAndRenderSlot(rawText){
+    const marker = /<<<READY_FOR_CALENDAR>>>([\s\S]*?)<<<END>>>/;
+    const match = rawText.match(marker);
+    let displayText = rawText.replace(marker, '').trim();
+    let slotData = null;
+    if(match){
+      try{
+        slotData = JSON.parse(match[1]);
+      }catch(e){
+        slotData = null;
+      }
+    }
+    return { displayText, slotData };
+  }
+
+  function showSummary(slotData){
+    document.getElementById('sum-when').textContent = slotData.summary || '—';
+    summaryPanel.classList.add('show');
+    document.getElementById('calendar-panel').classList.add('show');
+    summaryPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  async function handleSend(userText){
+    if(!userText || userText.trim().length === 0) return;
+    if(quickChips) quickChips.style.display = 'none';
+
+    addMessage('user', escapeHtml(userText));
+    conversation.push({ role: 'user', content: userText });
+    chatInput.value = '';
+    chatInput.disabled = true;
+    chatSend.disabled = true;
+    turnCount++;
+
+    addTyping();
+
+    try{
+      const raw = await callClaude(userText);
+      removeTyping();
+      const { displayText, slotData } = parseAndRenderSlot(raw);
+      addMessage('bot', escapeHtml(displayText).replace(/\n/g, '<br>'));
+      conversation.push({ role: 'assistant', content: raw });
+
+      if(slotData && slotData.summary){
+        showSummary(slotData);
+      } else if(turnCount >= 3){
+        // Safety net: if the AI hasn't signaled readiness within a few
+        // exchanges, surface the calendar anyway rather than stalling.
+        document.getElementById('calendar-panel').classList.add('show');
+        document.getElementById('calendar-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }catch(err){
+      removeTyping();
+      addMessage('bot', "I'm having trouble connecting right now. You're welcome to email <a href=\"mailto:hello@avant-gardecoach.ca\" style=\"color:var(--vermillion-bright)\">hello@avant-gardecoach.ca</a> directly to set up a time.");
+      console.error(err);
+    }finally{
+      chatInput.disabled = false;
+      chatSend.disabled = false;
+      chatInput.focus();
+    }
+  }
+
+  chatSend.addEventListener('click', () => handleSend(chatInput.value));
+  chatInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') handleSend(chatInput.value);
+  });
+
+  function sendQuickReply(text){
+    handleSend(text);
+  }
+
+  function skipToCalendar(){
+    if(quickChips) quickChips.style.display = 'none';
+    addMessage('bot', "No problem — here's the real calendar.");
+    document.getElementById('calendar-panel').classList.add('show');
+    document.getElementById('calendar-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  window.skipToCalendar = skipToCalendar;
+
+  function resetChat(){
+    conversation = [];
+    turnCount = 0;
+    summaryPanel.classList.remove('show');
+    chatLog.innerHTML = `<div class="msg bot"><div class="badge">AG</div><div class="bubble">Hi — I'm the scheduling assistant for Avant-Garde Coach. What kind of session are you looking to book, and when's generally good for you?</div></div>`;
+    quickChips.style.display = 'flex';
+    chatInput.focus();
+  }
+
+  window.sendQuickReply = sendQuickReply;
+  window.resetChat = resetChat;
+</script>
+
+</body>
+</html>
