@@ -1168,6 +1168,25 @@ RULES:
     if(el) el.remove();
   }
 
+  function faqwLinkify(html){
+    const linkMap = [
+      [/Find Your Fit/i, '<a href="index.html#intake" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">Find Your Fit</a>'],
+      [/Amazon author page/i, `<a href="https://www.amazon.ca/stores/author/B07D1SJNPH" target="_blank" rel="noopener" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">Amazon author page</a>`],
+      [/homepage/i, '<a href="index.html" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">homepage</a>']
+    ];
+    let result = html;
+    linkMap.forEach(([pattern, replacement]) => {
+      result = result.replace(pattern, (match, offset, str) => {
+        const before = str.slice(0, offset);
+        const openTags = (before.match(/<a /g) || []).length;
+        const closeTags = (before.match(/<\/a>/g) || []).length;
+        if(openTags > closeTags) return match;
+        return replacement;
+      });
+    });
+    return result;
+  }
+
   async function faqwSend(text){
     if(!text || text.trim().length === 0) return;
     if(chips) chips.style.display = 'none';
@@ -1199,7 +1218,7 @@ RULES:
       }
 
       const replyText = data.content?.filter(b => b.type === 'text').map(b => b.text).join('\n') || "I'm not sure how to answer that — try hello@avant-gardecoach.ca.";
-      faqwAddMsg('bot', faqwEscape(replyText).replace(/\n/g, '<br>'));
+      faqwAddMsg('bot', faqwLinkify(faqwEscape(replyText).replace(/\n/g, '<br>')));
       faqwConversation.push({ role: 'assistant', content: replyText });
 
     }catch(err){
