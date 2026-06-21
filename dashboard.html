@@ -962,7 +962,9 @@ If anything in their entry suggests a mental health crisis or risk to their safe
 
       const data = await response.json();
       if(!response.ok){
-        throw new Error(data.error || 'Request failed');
+        const err = new Error(data.error || 'Request failed');
+        err.status = response.status;
+        throw err;
       }
 
       const text = data.content?.filter(b => b.type === 'text').map(b => b.text).join('\n') || '';
@@ -970,7 +972,11 @@ If anything in their entry suggests a mental health crisis or risk to their safe
 
     }catch(err){
       console.error(err);
-      followupText.textContent = "Couldn't generate a follow-up right now — your reflection is still saved, and Mahal will see it either way.";
+      if(err.status === 429){
+        followupText.textContent = "This is getting more use than the free AI tier allows right now — your reflection is still saved, and Mahal will see it either way. Try again in a moment for a follow-up question.";
+      } else {
+        followupText.textContent = "Couldn't generate a follow-up right now — your reflection is still saved, and Mahal will see it either way.";
+      }
     }
   }
 
@@ -1404,7 +1410,9 @@ RULES:
       faqwRemoveTyping();
 
       if(!response.ok){
-        throw new Error(data.error || 'Request failed');
+        const err = new Error(data.error || 'Request failed');
+        err.status = response.status;
+        throw err;
       }
 
       const replyText = data.content?.filter(b => b.type === 'text').map(b => b.text).join('\n') || "I'm not sure how to answer that — try hello@avant-gardecoach.ca.";
@@ -1413,7 +1421,11 @@ RULES:
 
     }catch(err){
       faqwRemoveTyping();
-      faqwAddMsg('bot', "I'm having trouble connecting right now — you can email <a href=\"mailto:hello@avant-gardecoach.ca\" style=\"color:var(--vermillion-bright);\">hello@avant-gardecoach.ca</a> directly.");
+      if(err.status === 429){
+        faqwAddMsg('bot', "This chat has hit its usage limit for the moment — please try again shortly, or email <a href=\"mailto:hello@avant-gardecoach.ca\" style=\"color:var(--vermillion-bright);\">hello@avant-gardecoach.ca</a> directly.");
+      } else {
+        faqwAddMsg('bot', "I'm having trouble connecting right now — you can email <a href=\"mailto:hello@avant-gardecoach.ca\" style=\"color:var(--vermillion-bright);\">hello@avant-gardecoach.ca</a> directly.");
+      }
       console.error(err);
     }finally{
       input.disabled = false;

@@ -574,7 +574,9 @@ Only include that JSON block once, when you're ready to direct them to the calen
 
     if(!response.ok){
       const errBody = await response.json().catch(() => ({}));
-      throw new Error(errBody.error || ("API request failed: " + response.status));
+      const err = new Error(errBody.error || ("API request failed: " + response.status));
+      err.status = response.status;
+      throw err;
     }
 
     const data = await response.json();
@@ -755,7 +757,11 @@ Only include that JSON block once, when you're ready to direct them to the calen
       }
     }catch(err){
       removeTyping();
-      addMessage('bot', "I'm having trouble connecting right now. You're welcome to email <a href=\"mailto:hello@avant-gardecoach.ca\" style=\"color:var(--vermillion-bright)\">hello@avant-gardecoach.ca</a> directly to set up a time.");
+      if(err.status === 429){
+        addMessage('bot', "This assistant has hit its usage limit for the moment (the free AI tier allows a limited number of requests per minute). Please try again shortly, or email <a href=\"mailto:hello@avant-gardecoach.ca\" style=\"color:var(--vermillion-bright)\">hello@avant-gardecoach.ca</a> directly to set up a time.");
+      } else {
+        addMessage('bot', "I'm having trouble connecting right now. You're welcome to email <a href=\"mailto:hello@avant-gardecoach.ca\" style=\"color:var(--vermillion-bright)\">hello@avant-gardecoach.ca</a> directly to set up a time.");
+      }
       console.error(err);
     }finally{
       chatInput.disabled = false;
@@ -1214,7 +1220,9 @@ RULES:
       faqwRemoveTyping();
 
       if(!response.ok){
-        throw new Error(data.error || 'Request failed');
+        const err = new Error(data.error || 'Request failed');
+        err.status = response.status;
+        throw err;
       }
 
       const replyText = data.content?.filter(b => b.type === 'text').map(b => b.text).join('\n') || "I'm not sure how to answer that — try hello@avant-gardecoach.ca.";
@@ -1223,7 +1231,11 @@ RULES:
 
     }catch(err){
       faqwRemoveTyping();
-      faqwAddMsg('bot', "I'm having trouble connecting right now — you can email <a href=\"mailto:hello@avant-gardecoach.ca\" style=\"color:var(--vermillion-bright);\">hello@avant-gardecoach.ca</a> directly.");
+      if(err.status === 429){
+        faqwAddMsg('bot', "This chat has hit its usage limit for the moment — please try again shortly, or email <a href=\"mailto:hello@avant-gardecoach.ca\" style=\"color:var(--vermillion-bright);\">hello@avant-gardecoach.ca</a> directly.");
+      } else {
+        faqwAddMsg('bot', "I'm having trouble connecting right now — you can email <a href=\"mailto:hello@avant-gardecoach.ca\" style=\"color:var(--vermillion-bright);\">hello@avant-gardecoach.ca</a> directly.");
+      }
       console.error(err);
     }finally{
       input.disabled = false;
