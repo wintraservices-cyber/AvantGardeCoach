@@ -417,6 +417,7 @@
       <button class="tab-btn active" data-tab="programs">Programs</button>
       <button class="tab-btn" data-tab="books">Books</button>
       <button class="tab-btn" data-tab="site">Founder &amp; Site Info</button>
+      <button class="tab-btn" data-tab="users">Users</button>
     </div>
 
     <!-- PROGRAMS TAB -->
@@ -444,8 +445,18 @@
       </div>
     </div>
 
+    <!-- USERS TAB -->
+    <div class="tab-panel" id="panel-users">
+      <div class="panel-toolbar">
+        <div class="count" id="users-count">Loading…</div>
+      </div>
+      <div class="login-note" style="margin-top:0; margin-bottom:1.6rem;"><strong>Note —</strong> any admin can manage any other admin's account, including resetting passwords. There's no separate "super admin" role — this is intentional for a small, trusted team. The last remaining admin account can't be deleted, so the panel can't be accidentally locked out entirely.</div>
+      <div id="users-list" class="loading-state">Loading users…</div>
+      <div class="add-new-card" id="add-user-btn">+ Add a new admin</div>
+    </div>
+
     <div class="deploy-note">
-      <strong>About this editor —</strong> saves write to a placeholder JSON-file data store. In local development these changes persist normally. Once deployed to Vercel, writes are not guaranteed to persist between requests until a real database (Vercel Postgres or similar) is connected — see <code>api/_db.js</code> for the exact swap-in steps.
+      <strong>About this editor —</strong> content saves write directly to the connected Postgres database and take effect immediately on the public site once it's wired up to read from <code>/api/content</code>.
     </div>
   </div>
 </div>
@@ -487,6 +498,8 @@
   const statusBanner = document.getElementById('status-banner');
 
   let currentContent = { programs: [], books: [], siteContent: {} };
+  let currentUsers = [];
+  let currentUserEmail = '';
 
   function showStatus(message, type){
     statusBanner.textContent = message;
@@ -524,7 +537,9 @@
     loginView.style.display = 'none';
     adminView.classList.add('show');
     whoLabel.textContent = email || '';
+    currentUserEmail = email || '';
     loadAllContent();
+    loadUsers();
   }
 
   loginForm.addEventListener('submit', async function(e){
@@ -871,6 +886,143 @@
       }
     });
   }
+
+  // ---------- USERS ----------
+  async function loadUsers(){
+    try{
+      const res = await fetch('/api/users');
+      const data = await res.json();
+      if(res.ok){
+        currentUsers = data.users || [];
+        renderUsers();
+      } else {
+        document.getElementById('users-list').innerHTML = '<p style="color:var(--vermillion-bright); font-size:0.85rem;">Could not load users: ' + escapeHtml(data.error || 'unknown error') + '</p>';
+      }
+    }catch(err){
+      document.getElementById('users-list').innerHTML = '<p style="color:var(--vermillion-bright); font-size:0.85rem;">Could not reach the server.</p>';
+    }
+  }
+
+  function formatDate(iso){
+    if(!iso) return '';
+    try{
+      return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    }catch(e){ return ''; }
+  }
+
+  function renderUsers(){
+    const list = document.getElementById('users-list');
+    document.getElementById('users-count').textContent = currentUsers.length + (currentUsers.length === 1 ? ' admin' : ' admins');
+
+    if(currentUsers.length === 0){
+      list.innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">No admins found.</p>';
+      return;
+    }
+
+    list.innerHTML = currentUsers.map(u => userCardHtml(u)).join('');
+    currentUsers.forEach(u => wireUserCard(u.id));
+  }
+
+  function userCardHtml(u){
+    const id = escapeHtml(u.id);
+    const isYou = u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase();
+    return `
+      <div class="item-card" data-user-id="${id}">
+        <div class="item-card-head">
+          <div>
+            <h3>${escapeHtml(u.email)}${isYou ? ' <span style="color:var(--clay); font-size:0.75rem; font-family:\'JetBrains Mono\',monospace; text-transform:uppercase; letter-spacing:0.05em;">(you)</span>' : ''}</h3>
+            <div class="tag-pill">Admin since ${escapeHtml(formatDate(u.createdAt))}</div>
+          </div>
+          <div class="item-card-actions">
+            <button class="btn-danger-sm" data-action="delete-user">Delete</button>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>New password</label>
+            <input type="password" data-field="newPassword" placeholder="At least 8 characters" autocomplete="new-password">
+          </div>
+          <div class="field" style="display:flex; align-items:flex-end;">
+            <button class="btn-primary" data-action="reset-password" style="width:100%; justify-content:center;">Set new password</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function wireUserCard(id){
+    const card = document.querySelector(`[data-user-id="${id}"]`);
+    if(!card) return;
+
+    card.querySelector('[data-action="reset-password"]').addEventListener('click', async () => {
+      const input = card.querySelector('[data-field="newPassword"]');
+      const newPassword = input.value;
+      if(!newPassword || newPassword.length < 8){
+        showStatus('Password must be at least 8 characters.', 'error');
+        return;
+      }
+      try{
+        const res = await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'reset-password', id, newPassword })
+        });
+        const data = await res.json();
+        if(res.ok){
+          showStatus('Password updated.', 'success');
+          input.value = '';
+        } else {
+          showStatus(data.error || 'Could not update password.', 'error');
+        }
+      }catch(err){
+        showStatus('Could not reach the server.', 'error');
+      }
+    });
+
+    card.querySelector('[data-action="delete-user"]').addEventListener('click', async () => {
+      if(!confirm('Delete this admin account? This cannot be undone.')) return;
+      try{
+        const res = await fetch('/api/users', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        if(res.ok){
+          showStatus('Admin removed.', 'success');
+          await loadUsers();
+        } else {
+          showStatus(data.error || 'Could not delete this admin.', 'error');
+        }
+      }catch(err){
+        showStatus('Could not reach the server.', 'error');
+      }
+    });
+  }
+
+  document.getElementById('add-user-btn').addEventListener('click', async () => {
+    const email = prompt('Email for the new admin:');
+    if(!email) return;
+    const password = prompt('Initial password (at least 8 characters):');
+    if(!password) return;
+
+    try{
+      const res = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'create', email, password })
+      });
+      const data = await res.json();
+      if(res.ok){
+        showStatus('Admin added.', 'success');
+        await loadUsers();
+      } else {
+        showStatus(data.error || 'Could not add this admin.', 'error');
+      }
+    }catch(err){
+      showStatus('Could not reach the server.', 'error');
+    }
+  });
 
   // ---------- Shared save/delete helpers ----------
   async function saveResource(resource, item, isNew){

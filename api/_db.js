@@ -122,6 +122,55 @@ async function deleteBook(id) {
   return rows.length > 0;
 }
 
+function rowToUser(row) {
+  return {
+    id: row.id,
+    email: row.email,
+    createdAt: row.created_at,
+  };
+}
+
+async function getUsers() {
+  const rows = await sql`SELECT id, email, created_at FROM users ORDER BY created_at ASC`;
+  return rows.map(rowToUser);
+}
+
+async function getUserWithPasswordHash(email) {
+  if (!email) return null;
+  const rows = await sql`SELECT * FROM users WHERE lower(email) = lower(${email})`;
+  if (!rows[0]) return null;
+  return {
+    id: rows[0].id,
+    email: rows[0].email,
+    passwordHash: rows[0].password_hash,
+    createdAt: rows[0].created_at,
+  };
+}
+
+async function createUser(user) {
+  if (!user || !user.id || !user.email || !user.passwordHash) {
+    throw new Error('createUser requires { id, email, passwordHash }.');
+  }
+  const rows = await sql`
+    INSERT INTO users (id, email, password_hash)
+    VALUES (${user.id}, ${user.email}, ${user.passwordHash})
+    RETURNING id, email, created_at
+  `;
+  return rowToUser(rows[0]);
+}
+
+async function updateUserPassword(id, passwordHash) {
+  const rows = await sql`
+    UPDATE users SET password_hash = ${passwordHash} WHERE id = ${id} RETURNING id
+  `;
+  return rows.length > 0;
+}
+
+async function deleteUser(id) {
+  const rows = await sql`DELETE FROM users WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
 async function getSiteContent() {
   const rows = await sql`SELECT data FROM site_content WHERE id = 1`;
   return rows[0] ? rows[0].data : {};
@@ -156,6 +205,11 @@ module.exports = {
   getBooks,
   saveBook,
   deleteBook,
+  getUsers,
+  getUserWithPasswordHash,
+  createUser,
+  updateUserPassword,
+  deleteUser,
   getSiteContent,
   updateSiteContent,
   getAllContent,
