@@ -218,6 +218,24 @@
     height:100%;
     display:block;
   }
+
+  .hero-lineart-drift{
+    width:100%;
+    height:100%;
+    animation:lineartDrift 48s ease-in-out infinite;
+  }
+  @keyframes lineartDrift{
+    0%   { transform:translate(0, 0); }
+    16%  { transform:translate(14px, -10px); }
+    33%  { transform:translate(4px, 16px); }
+    50%  { transform:translate(-12px, 6px); }
+    66%  { transform:translate(-6px, -14px); }
+    83%  { transform:translate(10px, -2px); }
+    100% { transform:translate(0, 0); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hero-lineart-drift{ animation:none; }
+  }
   .hero-lineart .lineart-path-main{
     fill:none;
     stroke:var(--vermillion);
@@ -1107,12 +1125,14 @@
       </div>
     </div>
     <div class="hero-lineart" aria-hidden="true">
-      <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid meet">
-        <path class="lineart-path-secondary" d="M 340 40 C 290 90, 310 140, 250 170 C 190 200, 150 160, 110 210 C 70 260, 120 290, 90 340 C 60 390, 30 400, 40 450" />
-        <path class="lineart-path-main" d="M 360 30 C 320 70, 330 110, 280 140 C 220 175, 230 230, 170 250 C 120 267, 95 235, 60 270 C 25 305, 55 350, 35 400 C 20 435, 45 455, 50 470" />
-        <circle class="lineart-dot" cx="50" cy="470" r="5" />
-        <circle class="lineart-dot" cx="360" cy="30" r="4" style="animation-delay:0.2s;" />
-      </svg>
+      <div class="hero-lineart-drift">
+        <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid meet">
+          <path class="lineart-path-secondary" d="M 340 40 C 290 90, 310 140, 250 170 C 190 200, 150 160, 110 210 C 70 260, 120 290, 90 340 C 60 390, 30 400, 40 450" />
+          <path class="lineart-path-main" d="M 360 30 C 320 70, 330 110, 280 140 C 220 175, 230 230, 170 250 C 120 267, 95 235, 60 270 C 25 305, 55 350, 35 400 C 20 435, 45 455, 50 470" />
+          <circle class="lineart-dot" cx="50" cy="470" r="5" />
+          <circle class="lineart-dot" cx="360" cy="30" r="4" style="animation-delay:0.2s;" />
+        </svg>
+      </div>
     </div>
   </div>
 </header>
@@ -1504,11 +1524,199 @@
     }, { passive: true });
   })();
 
+  (function(){
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(prefersReducedMotion) return;
+
+    const mainPath = document.querySelector('.lineart-path-main');
+    const secondaryPath = document.querySelector('.lineart-path-secondary');
+    const dots = document.querySelectorAll('.lineart-dot');
+    if(!mainPath || !secondaryPath) return;
+
+    const ERASE_MS = 900;
+    const PAUSE_MS = 350;
+    const DRAW_MS = 3000;
+    const HOLD_MS = 16000;
+
+    function rand(min, max){ return min + Math.random() * (max - min); }
+
+    function generatePath(){
+      const startX = rand(330, 370), startY = rand(20, 45);
+      const endX = rand(30, 60), endY = rand(440, 470);
+      const dx = (startX - endX) / 4;
+      const dy = (endY - startY) / 4;
+
+      let x = startX, y = startY;
+      let d = `M ${x.toFixed(0)} ${y.toFixed(0)}`;
+      for(let i = 0; i < 4; i++){
+        const targetX = startX - dx * (i + 1);
+        const targetY = startY + dy * (i + 1);
+        const c1x = x - dx * rand(0.3, 0.9) + rand(-25, 25);
+        const c1y = y + dy * rand(0.2, 0.6) + rand(-20, 20);
+        const c2x = targetX + dx * rand(0.2, 0.6) + rand(-25, 25);
+        const c2y = targetY - dy * rand(0.3, 0.9) + rand(-20, 20);
+        d += ` C ${c1x.toFixed(0)} ${c1y.toFixed(0)}, ${c2x.toFixed(0)} ${c2y.toFixed(0)}, ${targetX.toFixed(0)} ${targetY.toFixed(0)}`;
+        x = targetX; y = targetY;
+      }
+      return { d, startX, startY, endX: x, endY: y };
+    }
+
+    function offsetPath(base){
+      const jitter = () => rand(-18, 18);
+      return base.replace(/(-?\d+(\.\d+)?)/g, (num) => {
+        return (parseFloat(num) + jitter()).toFixed(0);
+      });
+    }
+
+    function redraw(){
+      const primary = generatePath();
+      const secondaryD = offsetPath(primary.d);
+
+      mainPath.style.animation = 'none';
+      secondaryPath.style.animation = 'none';
+      dots.forEach(dot => { dot.style.animation = 'none'; });
+
+      dots.forEach(dot => { dot.style.transition = 'opacity 0.4s ease'; dot.style.opacity = '0'; });
+
+      mainPath.style.transition = `stroke-dashoffset ${ERASE_MS}ms ease-in`;
+      secondaryPath.style.transition = `stroke-dashoffset ${ERASE_MS}ms ease-in`;
+      void mainPath.getBoundingClientRect();
+      mainPath.style.strokeDashoffset = '1400';
+      secondaryPath.style.strokeDashoffset = '1100';
+
+      setTimeout(() => {
+        mainPath.setAttribute('d', primary.d);
+        secondaryPath.setAttribute('d', secondaryD);
+        dots[0] && dots[0].setAttribute('cx', primary.endX.toFixed(0));
+        dots[0] && dots[0].setAttribute('cy', primary.endY.toFixed(0));
+        dots[1] && dots[1].setAttribute('cx', primary.startX.toFixed(0));
+        dots[1] && dots[1].setAttribute('cy', primary.startY.toFixed(0));
+
+        setTimeout(() => {
+          mainPath.style.transition = `stroke-dashoffset ${DRAW_MS}ms cubic-bezier(0.65, 0, 0.35, 1)`;
+          secondaryPath.style.transition = `stroke-dashoffset ${DRAW_MS + 400}ms cubic-bezier(0.65, 0, 0.35, 1)`;
+          void mainPath.getBoundingClientRect();
+          mainPath.style.strokeDashoffset = '0';
+          secondaryPath.style.strokeDashoffset = '0';
+
+          setTimeout(() => {
+            dots.forEach(dot => { dot.style.opacity = '1'; });
+          }, DRAW_MS + 100);
+        }, PAUSE_MS);
+      }, ERASE_MS);
+    }
+
+    setInterval(redraw, ERASE_MS + PAUSE_MS + DRAW_MS + HOLD_MS);
+  })();
+
   const reveals = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold: 0.15 });
   reveals.forEach(el => io.observe(el));
+
+  /* ===== Dynamic content from the CMS (/api/content) =====
+     On load, fetch live data and replace the static markup below with
+     it. If the fetch fails for any reason (offline, API down, CORS),
+     we deliberately do nothing further — the hardcoded HTML already in
+     this file stays exactly as-is and the page works normally. That
+     hardcoded HTML is also the fallback/seed content, so visitors never
+     see a broken or empty section just because a fetch failed. */
+  (function(){
+    function escapeHtml(str){
+      const d = document.createElement('div');
+      d.textContent = str == null ? '' : str;
+      return d.innerHTML;
+    }
+
+    function renderPrograms(programs){
+      const grid = document.querySelector('.programs-grid');
+      if(!grid || !programs || !programs.length) return;
+
+      grid.innerHTML = programs.map(p => {
+        const tbdBadge = p.priceTbd ? '<span class="tbd">PRICE TBD</span>' : '';
+        const features = (p.features || []).map(f => `<span>${escapeHtml(f)}</span>`).join('');
+        const featuredClass = p.featured ? ' featured' : '';
+        return `
+          <div class="program-card${featuredClass}">
+            <div class="program-tag">${escapeHtml(p.tag)}</div>
+            <div class="program-name">${escapeHtml(p.name)}</div>
+            <p class="program-desc">${escapeHtml(p.description)}</p>
+            <div class="program-price">${escapeHtml(p.priceLabel)} ${tbdBadge}</div>
+            <div class="program-feat">${features}</div>
+            <a href="${escapeHtml(p.ctaHref || 'booking')}" class="program-cta">${escapeHtml(p.ctaText || 'Book a discovery call →')}</a>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderFounder(siteContent){
+      if(!siteContent) return;
+
+      const nameEl = document.querySelector('.founder-name');
+      const titleEl = document.querySelector('.founder-title');
+      const bioEl = document.querySelector('.founder-bio');
+      const credsEl = document.querySelector('.founder-creds');
+
+      if(nameEl && siteContent.founderName) nameEl.textContent = siteContent.founderName;
+      if(titleEl && siteContent.founderTitle) titleEl.textContent = siteContent.founderTitle;
+
+      if(bioEl && siteContent.founderBioParagraphs && siteContent.founderBioParagraphs.length){
+        bioEl.innerHTML = siteContent.founderBioParagraphs
+          .map(p => `<p>${escapeHtml(p)}</p>`)
+          .join('');
+      }
+
+      if(credsEl && siteContent.founderCredentials && siteContent.founderCredentials.length){
+        credsEl.innerHTML = siteContent.founderCredentials
+          .map(c => `<span>${escapeHtml(c)}</span>`)
+          .join('');
+      }
+    }
+
+    function renderBooks(books){
+      if(!books || !books.length) return;
+
+      const featured = books.filter(b => b.featured);
+      const rest = books.filter(b => !b.featured);
+
+      const featuredWrap = document.querySelector('.books-featured');
+      if(featuredWrap && featured.length){
+        featuredWrap.innerHTML = featured.map(b => `
+          <div class="book-feature-card">
+            <div class="btag">${escapeHtml(b.tag)}</div>
+            <h4><a href="${escapeHtml(b.amazonUrl)}" target="_blank" rel="noopener">${escapeHtml(b.title)}</a></h4>
+            <p>${escapeHtml(b.blurb)}</p>
+          </div>
+        `).join('');
+      }
+
+      const listWrap = document.querySelector('.books-list');
+      if(listWrap && rest.length){
+        listWrap.innerHTML = rest.map((b, i) => `
+          <div class="book-row">
+            <span class="bnum">${String(i + 1).padStart(2, '0')}</span>
+            <span class="btitle"><a href="${escapeHtml(b.amazonUrl)}" target="_blank" rel="noopener">${escapeHtml(b.title)}</a></span>
+          </div>
+        `).join('');
+      }
+    }
+
+    fetch('/api/content')
+      .then(res => {
+        if(!res.ok) throw new Error('Content API returned ' + res.status);
+        return res.json();
+      })
+      .then(data => {
+        renderPrograms(data.programs);
+        renderFounder(data.siteContent);
+        renderBooks(data.books);
+      })
+      .catch(err => {
+        console.warn('[dynamic content] Falling back to static markup:', err.message);
+      });
+  })();
+
 
   /* ===== Discovery-call intake assistant ===== */
   const intakeLog = document.getElementById('intake-log');
