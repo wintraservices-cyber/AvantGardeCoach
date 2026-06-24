@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Avant-Garde Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#13110F;
+    --ink-soft:#1C1916;
+    --ink-card:#201C18;
+    --bone:#F6F1E9;
+    --bone-dim:#E8E0D2;
+    --clay:#9C8466;
+    --vermillion:#C8401E;
+    --vermillion-bright:#E1582E;
+    --rule:#2E2A25;
+    --rule-light:#3A352E;
+    --sage:#7C8F6E;
+    --muted:#6B6459;
+    --photo-tint:19,17,15;
+  }
+
+  html[data-theme="light"]{
+    --ink:#F6F1E9;
+    --ink-soft:#EDE5D6;
+    --ink-card:#E3D9C6;
+    --bone:#221F1B;
+    --bone-dim:#5A5347;
+    --clay:#8A6F4E;
+    --vermillion:#C8401E;
+    --vermillion-bright:#A8341A;
+    --rule:#D9CDB8;
+    --rule-light:#C4B596;
+    --sage:#5F7350;
+    --muted:#8A8070;
+    --photo-tint:90,80,64;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--bone);
+    font-family:'Inter',sans-serif;
+    font-weight:300;
+    min-height:100vh;
+  }
+  a{color:inherit;text-decoration:none;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+
+  .wrap{max-width:1100px; margin:0 auto; padding:0 6vw;}
+
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.7rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--clay);
+  }
+
+  .theme-toggle{
+    background:none;
+    border:1px solid var(--rule-light);
+    border-radius:50%;
+    width:34px;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--bone-dim);
+    cursor:pointer;
+    transition:border-color 0.25s ease, color 0.25s ease;
+    flex-shrink:0;
+  }
+  .theme-toggle:hover{border-color:var(--vermillion-bright); color:var(--vermillion-bright);}
+  .theme-toggle svg{width:16px; height:16px;}
+  .theme-toggle .tt-icon-light{display:none;}
+  html[data-theme="light"] .theme-toggle .tt-icon-dark{display:none;}
+  html[data-theme="light"] .theme-toggle .tt-icon-light{display:block;}
+
+  /* ============ LOGIN VIEW (reused pattern from dashboard.html) ============ */
+  #login-view{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:2rem 6vw;
+  }
+  .login-shell{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    max-width:920px;
+    width:100%;
+    border:1px solid var(--rule);
+    background:var(--ink-soft);
+  }
+  @media(max-width:860px){ .login-shell{grid-template-columns:1fr;} }
+
+  .login-side{
+    padding:3.4rem 3rem;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    background:linear-gradient(160deg, var(--ink-card), var(--ink));
+    border-right:1px solid var(--rule);
+  }
+  @media(max-width:860px){ .login-side{border-right:none; border-bottom:1px solid var(--rule);} }
+
+  .login-logo{font-family:'Fraunces',serif; font-size:1.1rem; font-weight:500;}
+  .login-logo em{font-style:italic; color:var(--vermillion-bright);}
+
+  .login-side-quote{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-size:1.5rem;
+    line-height:1.4;
+    margin-top:3rem;
+  }
+  .login-side-quote .mark{color:var(--vermillion-bright); font-style:normal;}
+  .login-side-attr{
+    margin-top:1.2rem;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.68rem;
+    color:var(--clay);
+    letter-spacing:0.05em;
+  }
+
+  .login-form-wrap{padding:3.4rem 3rem;}
+  .login-form-wrap h1{
+    font-family:'Fraunces',serif;
+    font-weight:400;
+    font-size:2rem;
+    margin-top:0.6rem;
+    margin-bottom:0.5rem;
+  }
+  .login-form-wrap .sub{
+    font-size:0.9rem;
+    color:var(--bone-dim);
+    line-height:1.5;
+    margin-bottom:2.2rem;
+  }
+
+  .field{margin-bottom:1.4rem;}
+  .field label{
+    display:block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.68rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--clay);
+    margin-bottom:0.5rem;
+  }
+  .field input, .field textarea{
+    width:100%;
+    background:var(--ink);
+    border:1px solid var(--rule-light);
+    color:var(--bone);
+    padding:0.85rem 1rem;
+    font-size:0.92rem;
+    font-family:'Inter',sans-serif;
+    border-radius:2px;
+    transition:border-color 0.25s ease;
+  }
+  .field input:focus, .field textarea:focus{border-color:var(--vermillion); outline:none;}
+  .field input::placeholder, .field textarea::placeholder{color:var(--muted);}
+  .field textarea{resize:vertical; line-height:1.5;}
+  .field-hint{font-size:0.74rem; color:var(--muted); margin-top:0.4rem;}
+
+  .btn-primary, .login-submit{
+    background:var(--vermillion);
+    color:var(--bone);
+    padding:0.85rem 1.6rem;
+    font-size:0.85rem;
+    letter-spacing:0.05em;
+    border-radius:2px;
+    transition:background 0.25s ease;
+    border:none;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:0.5rem;
+  }
+  .btn-primary:hover, .login-submit:hover{background:var(--vermillion-bright);}
+  .login-submit{width:100%; margin-top:0.6rem;}
+
+  .btn-ghost-sm{
+    background:none;
+    border:1px solid var(--rule-light);
+    color:var(--bone-dim);
+    padding:0.7rem 1.2rem;
+    font-size:0.8rem;
+    border-radius:2px;
+    cursor:pointer;
+    transition:all 0.25s ease;
+  }
+  .btn-ghost-sm:hover{border-color:var(--bone); color:var(--bone);}
+
+  .btn-danger-sm{
+    background:none;
+    border:1px solid var(--vermillion);
+    color:var(--vermillion-bright);
+    padding:0.6rem 1rem;
+    font-size:0.76rem;
+    border-radius:2px;
+    cursor:pointer;
+    transition:all 0.2s ease;
+  }
+  .btn-danger-sm:hover{background:var(--vermillion); color:var(--bone);}
+
+  .login-note{
+    margin-top:1.8rem;
+    font-size:0.76rem;
+    line-height:1.6;
+    color:var(--muted);
+    border-top:1px solid var(--rule);
+    padding-top:1.2rem;
+  }
+  .login-note strong{color:var(--clay); font-weight:500;}
+
+  .login-error{
+    font-size:0.8rem;
+    color:var(--vermillion-bright);
+    margin-bottom:1rem;
+    display:none;
+  }
+  .login-error.show{display:block;}
+
+  /* ============ ADMIN EDITOR VIEW ============ */
+  #admin-view{display:none; min-height:100vh;}
+  #admin-view.show{display:block;}
+
+  .admin-nav{
+    border-bottom:1px solid var(--rule);
+    padding:1.4rem 0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .admin-logo{font-family:'Fraunces',serif; font-size:1.05rem; font-weight:500;}
+  .admin-logo em{font-style:italic; color:var(--vermillion-bright);}
+  .admin-nav-right{display:flex; align-items:center; gap:1rem;}
+  .admin-nav-right .who{font-size:0.78rem; color:var(--bone-dim);}
+  .admin-nav-right a.back{font-size:0.78rem; color:var(--bone-dim); border-bottom:1px solid var(--rule-light);}
+  .admin-nav-right a.back:hover{color:var(--vermillion-bright); border-color:var(--vermillion-bright);}
+
+  .admin-header{padding:2.6rem 0 1.6rem;}
+  .admin-header h1{font-family:'Fraunces',serif; font-size:1.9rem; font-weight:400; margin-top:0.4rem;}
+
+  .tabs{display:flex; gap:0.4rem; border-bottom:1px solid var(--rule); margin-bottom:2.2rem;}
+  .tab-btn{
+    background:none;
+    border:none;
+    color:var(--bone-dim);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.74rem;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    padding:0.9rem 1.2rem;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    transition:color 0.2s ease, border-color 0.2s ease;
+  }
+  .tab-btn:hover{color:var(--bone);}
+  .tab-btn.active{color:var(--vermillion-bright); border-color:var(--vermillion-bright);}
+
+  .tab-panel{display:none; padding-bottom:5rem;}
+  .tab-panel.active{display:block;}
+
+  .panel-toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:1.6rem; gap:1rem; flex-wrap:wrap;}
+  .panel-toolbar .count{font-size:0.82rem; color:var(--muted);}
+
+  .item-card{
+    border:1px solid var(--rule);
+    background:var(--ink-soft);
+    padding:1.6rem;
+    margin-bottom:1rem;
+    border-radius:2px;
+  }
+  .item-card-head{display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:1.1rem;}
+  .item-card-head h3{font-family:'Fraunces',serif; font-size:1.15rem; font-weight:500;}
+  .item-card-head .tag-pill{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.65rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--clay);
+    margin-top:0.3rem;
+  }
+  .item-card-actions{display:flex; gap:0.6rem; flex-shrink:0;}
+
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:1rem;}
+  @media(max-width:700px){ .field-row{grid-template-columns:1fr;} }
+
+  .features-list textarea{min-height:90px;}
+
+  .featured-toggle{display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; color:var(--bone-dim); margin-bottom:1.4rem;}
+  .featured-toggle input{width:auto;}
+
+  .add-new-card{
+    border:1px dashed var(--rule-light);
+    background:transparent;
+    padding:1.4rem;
+    text-align:center;
+    border-radius:2px;
+    cursor:pointer;
+    color:var(--bone-dim);
+    font-size:0.86rem;
+    transition:all 0.2s ease;
+  }
+  .add-new-card:hover{border-color:var(--vermillion-bright); color:var(--vermillion-bright);}
+
+  .save-row{display:flex; justify-content:flex-end; gap:0.7rem; margin-top:1.2rem;}
+
+  .status-banner{
+    font-size:0.82rem;
+    padding:0.8rem 1rem;
+    border-radius:2px;
+    margin-bottom:1.4rem;
+    display:none;
+  }
+  .status-banner.show{display:block;}
+  .status-banner.success{background:rgba(124,143,110,0.12); color:var(--sage); border:1px solid var(--sage);}
+  .status-banner.error{background:rgba(200,64,30,0.1); color:var(--vermillion-bright); border:1px solid var(--vermillion);}
+
+  .site-content-form .field textarea{min-height:80px;}
+
+  .loading-state{padding:3rem 0; text-align:center; color:var(--muted); font-size:0.88rem;}
+
+  .deploy-note{
+    margin-top:3rem;
+    padding-top:1.6rem;
+    border-top:1px solid var(--rule);
+    font-size:0.78rem;
+    line-height:1.6;
+    color:var(--muted);
+  }
+  .deploy-note strong{color:var(--clay); font-weight:500;}
+</style>
+<script>
+  (function(){
+    try{
+      const saved = localStorage.getItem('agc-theme');
+      if(saved === 'light'){
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    }catch(e){}
+  })();
+</script>
+</head>
+<body>
+
+<!-- ============ LOGIN VIEW ============ -->
+<div id="login-view">
+  <div class="login-shell">
+    <div class="login-side">
+      <a href="index.html" class="login-logo">Avant-Garde <em>Coach</em></a>
+      <div>
+        <p class="login-side-quote">"You have the power to <span class="mark">choose</span> when coaching happens — this is where you shape what visitors see."</p>
+        <p class="login-side-attr">ADMIN WORKSPACE</p>
+      </div>
+    </div>
+    <div class="login-form-wrap">
+      <div class="eyebrow">Admin Login</div>
+      <h1>Edit the site.</h1>
+      <p class="sub">Sign in to update programs, books, and founder content. Changes go live on the public site immediately after saving.</p>
+
+      <div class="login-error" id="login-error">Incorrect email or password — try again.</div>
+
+      <form id="login-form" autocomplete="off">
+        <div class="field">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="you@avant-gardecoach.ca" required>
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="login-submit" id="login-submit-btn">Sign in →</button>
+      </form>
+
+      <p class="login-note"><strong>Note —</strong> this is a placeholder authentication system backed by a JSON file, suitable for development and testing. Provision a real database before relying on this for production content edits — see the README for setup steps.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADMIN EDITOR VIEW ============ -->
+<div id="admin-view">
+  <div class="wrap">
+    <nav class="admin-nav">
+      <a href="index.html" class="admin-logo" style="text-decoration:none;">Avant-Garde <em>Coach</em></a>
+      <div class="admin-nav-right">
+        <a href="index.html" class="back">← Back to site</a>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Switch to light mode" title="Switch theme">
+          <svg class="tt-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+          <svg class="tt-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+        <span class="who" id="who-label"></span>
+        <button class="btn-ghost-sm" id="logout-btn">Sign out</button>
+      </div>
+    </nav>
+
+    <div class="admin-header">
+      <div class="eyebrow">Content Editor</div>
+      <h1>What visitors see, in your words.</h1>
+    </div>
+
+    <div class="status-banner" id="status-banner"></div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="programs">Programs</button>
+      <button class="tab-btn" data-tab="books">Books</button>
+      <button class="tab-btn" data-tab="site">Founder &amp; Site Info</button>
+    </div>
+
+    <!-- PROGRAMS TAB -->
+    <div class="tab-panel active" id="panel-programs">
+      <div class="panel-toolbar">
+        <div class="count" id="programs-count">Loading…</div>
+      </div>
+      <div id="programs-list" class="loading-state">Loading programs…</div>
+      <div class="add-new-card" id="add-program-btn">+ Add a new program</div>
+    </div>
+
+    <!-- BOOKS TAB -->
+    <div class="tab-panel" id="panel-books">
+      <div class="panel-toolbar">
+        <div class="count" id="books-count">Loading…</div>
+      </div>
+      <div id="books-list" class="loading-state">Loading books…</div>
+      <div class="add-new-card" id="add-book-btn">+ Add a new book</div>
+    </div>
+
+    <!-- SITE / FOUNDER TAB -->
+    <div class="tab-panel" id="panel-site">
+      <div class="item-card site-content-form" id="site-content-form">
+        <div class="loading-state" id="site-loading">Loading site content…</div>
+      </div>
+    </div>
+
+    <div class="deploy-note">
+      <strong>About this editor —</strong> saves write to a placeholder JSON-file data store. In local development these changes persist normally. Once deployed to Vercel, writes are not guaranteed to persist between requests until a real database (Vercel Postgres or similar) is connected — see <code>api/_db.js</code> for the exact swap-in steps.
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+
+  // ---------- Theme toggle (shared pattern) ----------
+  const themeToggle = document.getElementById('theme-toggle');
+  if(themeToggle){
+    function updateThemeLabel(){
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      const nextLabel = isLight ? 'Switch to dark mode' : 'Switch to light mode';
+      themeToggle.setAttribute('aria-label', nextLabel);
+      themeToggle.setAttribute('title', nextLabel);
+    }
+    updateThemeLabel();
+    themeToggle.addEventListener('click', function(){
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      if(isLight){
+        document.documentElement.removeAttribute('data-theme');
+        try{ localStorage.setItem('agc-theme', 'dark'); }catch(e){}
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        try{ localStorage.setItem('agc-theme', 'light'); }catch(e){}
+      }
+      updateThemeLabel();
+    });
+  }
+
+  // ---------- Elements ----------
+  const loginView = document.getElementById('login-view');
+  const adminView = document.getElementById('admin-view');
+  const loginForm = document.getElementById('login-form');
+  const loginError = document.getElementById('login-error');
+  const loginSubmitBtn = document.getElementById('login-submit-btn');
+  const logoutBtn = document.getElementById('logout-btn');
+  const whoLabel = document.getElementById('who-label');
+  const statusBanner = document.getElementById('status-banner');
+
+  let currentContent = { programs: [], books: [], siteContent: {} };
+
+  function showStatus(message, type){
+    statusBanner.textContent = message;
+    statusBanner.className = 'status-banner show ' + type;
+    setTimeout(() => { statusBanner.classList.remove('show'); }, 4000);
+  }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str == null ? '' : str;
+    return d.innerHTML;
+  }
+
+  // ---------- Auth flow ----------
+  async function checkSession(){
+    try{
+      const res = await fetch('/api/auth');
+      const data = await res.json();
+      if(data.authenticated){
+        showAdmin(data.email);
+      } else {
+        showLogin();
+      }
+    }catch(e){
+      showLogin();
+    }
+  }
+
+  function showLogin(){
+    loginView.style.display = 'flex';
+    adminView.classList.remove('show');
+  }
+
+  function showAdmin(email){
+    loginView.style.display = 'none';
+    adminView.classList.add('show');
+    whoLabel.textContent = email || '';
+    loadAllContent();
+  }
+
+  loginForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    loginError.classList.remove('show');
+    loginSubmitBtn.disabled = true;
+    loginSubmitBtn.textContent = 'Signing in…';
+
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    try{
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'login', email, password })
+      });
+      const data = await res.json();
+      if(res.ok && data.ok){
+        showAdmin(data.email);
+      } else {
+        loginError.textContent = data.error || 'Incorrect email or password — try again.';
+        loginError.classList.add('show');
+      }
+    }catch(err){
+      loginError.textContent = 'Could not reach the server. Try again in a moment.';
+      loginError.classList.add('show');
+    }finally{
+      loginSubmitBtn.disabled = false;
+      loginSubmitBtn.textContent = 'Sign in →';
+    }
+  });
+
+  logoutBtn.addEventListener('click', async function(){
+    try{
+      await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logout' })
+      });
+    }catch(e){}
+    showLogin();
+  });
+
+  // ---------- Tabs ----------
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ---------- Load all content ----------
+  async function loadAllContent(){
+    try{
+      const res = await fetch('/api/content');
+      const data = await res.json();
+      currentContent = data;
+      renderPrograms();
+      renderBooks();
+      renderSiteContent();
+    }catch(err){
+      showStatus('Could not load content. Check your connection and try again.', 'error');
+    }
+  }
+
+  // ---------- PROGRAMS ----------
+  function renderPrograms(){
+    const list = document.getElementById('programs-list');
+    const programs = currentContent.programs || [];
+    document.getElementById('programs-count').textContent = programs.length + (programs.length === 1 ? ' program' : ' programs');
+
+    if(programs.length === 0){
+      list.innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">No programs yet. Add one below.</p>';
+      return;
+    }
+
+    list.innerHTML = programs.map(p => programCardHtml(p)).join('');
+    programs.forEach(p => wireProgramCard(p.id));
+  }
+
+  function programCardHtml(p){
+    const id = escapeHtml(p.id);
+    return `
+      <div class="item-card" data-program-id="${id}">
+        <div class="item-card-head">
+          <div>
+            <h3>${escapeHtml(p.name || '(untitled program)')}</h3>
+            <div class="tag-pill">${escapeHtml(p.tag || '')}</div>
+          </div>
+          <div class="item-card-actions">
+            <button class="btn-danger-sm" data-action="delete-program">Delete</button>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Program name</label>
+            <input type="text" data-field="name" value="${escapeHtml(p.name)}">
+          </div>
+          <div class="field">
+            <label>Tag (e.g. "Most Booked")</label>
+            <input type="text" data-field="tag" value="${escapeHtml(p.tag)}">
+          </div>
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <textarea data-field="description" rows="2">${escapeHtml(p.description)}</textarea>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Price label (e.g. "5 sessions / 30 min")</label>
+            <input type="text" data-field="priceLabel" value="${escapeHtml(p.priceLabel)}">
+          </div>
+          <div class="field">
+            <label>CTA button text</label>
+            <input type="text" data-field="ctaText" value="${escapeHtml(p.ctaText)}">
+          </div>
+        </div>
+        <div class="field featured-toggle">
+          <input type="checkbox" data-field="priceTbd" ${p.priceTbd ? 'checked' : ''}>
+          <label style="margin:0; text-transform:none; font-family:inherit; font-size:0.85rem; letter-spacing:normal; color:var(--bone-dim);">Show "PRICE TBD" badge</label>
+        </div>
+        <div class="field features-list">
+          <label>Feature list (one per line)</label>
+          <textarea data-field="features">${escapeHtml((p.features || []).join(String.fromCharCode(10)))}</textarea>
+          <div class="field-hint">Each line becomes one bullet on the program card.</div>
+        </div>
+        <div class="field featured-toggle">
+          <input type="checkbox" data-field="featured" ${p.featured ? 'checked' : ''}>
+          <label style="margin:0; text-transform:none; font-family:inherit; font-size:0.85rem; letter-spacing:normal; color:var(--bone-dim);">Highlight as featured / most popular</label>
+        </div>
+        <div class="save-row">
+          <button class="btn-primary" data-action="save-program">Save changes</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function wireProgramCard(id){
+    const card = document.querySelector(`[data-program-id="${id}"]`);
+    if(!card) return;
+
+    card.querySelector('[data-action="save-program"]').addEventListener('click', async () => {
+      const item = {
+        id,
+        name: card.querySelector('[data-field="name"]').value.trim(),
+        tag: card.querySelector('[data-field="tag"]').value.trim(),
+        description: card.querySelector('[data-field="description"]').value.trim(),
+        priceLabel: card.querySelector('[data-field="priceLabel"]').value.trim(),
+        priceTbd: card.querySelector('[data-field="priceTbd"]').checked,
+        ctaText: card.querySelector('[data-field="ctaText"]').value.trim(),
+        features: card.querySelector('[data-field="features"]').value.split('\n').map(s => s.trim()).filter(Boolean),
+        featured: card.querySelector('[data-field="featured"]').checked,
+      };
+      await saveResource('program', item);
+    });
+
+    card.querySelector('[data-action="delete-program"]').addEventListener('click', async () => {
+      if(!confirm('Delete this program? This cannot be undone.')) return;
+      await deleteResource('program', id);
+    });
+  }
+
+  document.getElementById('add-program-btn').addEventListener('click', async () => {
+    const tempId = 'program-' + Date.now();
+    const newProgram = {
+      id: tempId,
+      name: 'New Program',
+      tag: '',
+      description: '',
+      priceLabel: '',
+      priceTbd: true,
+      ctaText: 'Book a discovery call →',
+      features: [],
+      featured: false,
+      sortOrder: (currentContent.programs || []).length + 1,
+    };
+    await saveResource('program', newProgram, true);
+  });
+
+  // ---------- BOOKS ----------
+  function renderBooks(){
+    const list = document.getElementById('books-list');
+    const books = currentContent.books || [];
+    document.getElementById('books-count').textContent = books.length + (books.length === 1 ? ' book' : ' books');
+
+    if(books.length === 0){
+      list.innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">No books yet. Add one below.</p>';
+      return;
+    }
+
+    list.innerHTML = books.map(b => bookCardHtml(b)).join('');
+    books.forEach(b => wireBookCard(b.id));
+  }
+
+  function bookCardHtml(b){
+    const id = escapeHtml(b.id);
+    return `
+      <div class="item-card" data-book-id="${id}">
+        <div class="item-card-head">
+          <div>
+            <h3>${escapeHtml(b.title || '(untitled book)')}</h3>
+            <div class="tag-pill">${escapeHtml(b.tag || '')}</div>
+          </div>
+          <div class="item-card-actions">
+            <button class="btn-danger-sm" data-action="delete-book">Delete</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Title</label>
+          <input type="text" data-field="title" value="${escapeHtml(b.title)}">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Tag (e.g. "On Leadership") — optional</label>
+            <input type="text" data-field="tag" value="${escapeHtml(b.tag || '')}">
+          </div>
+          <div class="field">
+            <label>Amazon URL</label>
+            <input type="text" data-field="amazonUrl" value="${escapeHtml(b.amazonUrl)}">
+          </div>
+        </div>
+        <div class="field">
+          <label>Blurb (only shown for featured books) — optional</label>
+          <textarea data-field="blurb" rows="2">${escapeHtml(b.blurb || '')}</textarea>
+        </div>
+        <div class="field featured-toggle">
+          <input type="checkbox" data-field="featured" ${b.featured ? 'checked' : ''}>
+          <label style="margin:0; text-transform:none; font-family:inherit; font-size:0.85rem; letter-spacing:normal; color:var(--bone-dim);">Show as a featured card (with tag + blurb) rather than in the plain list</label>
+        </div>
+        <div class="save-row">
+          <button class="btn-primary" data-action="save-book">Save changes</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function wireBookCard(id){
+    const card = document.querySelector(`[data-book-id="${id}"]`);
+    if(!card) return;
+
+    card.querySelector('[data-action="save-book"]').addEventListener('click', async () => {
+      const item = {
+        id,
+        title: card.querySelector('[data-field="title"]').value.trim(),
+        tag: card.querySelector('[data-field="tag"]').value.trim() || null,
+        amazonUrl: card.querySelector('[data-field="amazonUrl"]').value.trim(),
+        blurb: card.querySelector('[data-field="blurb"]').value.trim() || null,
+        featured: card.querySelector('[data-field="featured"]').checked,
+      };
+      await saveResource('book', item);
+    });
+
+    card.querySelector('[data-action="delete-book"]').addEventListener('click', async () => {
+      if(!confirm('Delete this book? This cannot be undone.')) return;
+      await deleteResource('book', id);
+    });
+  }
+
+  document.getElementById('add-book-btn').addEventListener('click', async () => {
+    const tempId = 'book-' + Date.now();
+    const newBook = {
+      id: tempId,
+      title: 'New Book Title',
+      tag: null,
+      amazonUrl: '',
+      blurb: null,
+      featured: false,
+      sortOrder: (currentContent.books || []).length + 1,
+    };
+    await saveResource('book', newBook, true);
+  });
+
+  // ---------- SITE CONTENT (founder bio etc.) ----------
+  function renderSiteContent(){
+    const form = document.getElementById('site-content-form');
+    const sc = currentContent.siteContent || {};
+    form.innerHTML = `
+      <div class="field-row">
+        <div class="field">
+          <label>Founder name</label>
+          <input type="text" id="sc-founderName" value="${escapeHtml(sc.founderName)}">
+        </div>
+        <div class="field">
+          <label>Founder title</label>
+          <input type="text" id="sc-founderTitle" value="${escapeHtml(sc.founderTitle)}">
+        </div>
+      </div>
+      <div class="field">
+        <label>Founder bio (one paragraph per line)</label>
+        <textarea id="sc-founderBio" rows="6">${escapeHtml((sc.founderBioParagraphs || []).join(String.fromCharCode(10)))}</textarea>
+      </div>
+      <div class="field">
+        <label>Credentials (one per line)</label>
+        <textarea id="sc-founderCreds" rows="4">${escapeHtml((sc.founderCredentials || []).join(String.fromCharCode(10)))}</textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Contact email</label>
+          <input type="text" id="sc-contactEmail" value="${escapeHtml(sc.contactEmail)}">
+        </div>
+        <div class="field">
+          <label>Location line</label>
+          <input type="text" id="sc-location" value="${escapeHtml(sc.location)}">
+        </div>
+      </div>
+      <div class="field">
+        <label>Amazon author page URL</label>
+        <input type="text" id="sc-amazonAuthorPageUrl" value="${escapeHtml(sc.amazonAuthorPageUrl)}">
+      </div>
+      <div class="save-row">
+        <button class="btn-primary" id="save-site-content-btn">Save changes</button>
+      </div>
+    `;
+
+    document.getElementById('save-site-content-btn').addEventListener('click', async () => {
+      const partial = {
+        founderName: document.getElementById('sc-founderName').value.trim(),
+        founderTitle: document.getElementById('sc-founderTitle').value.trim(),
+        founderBioParagraphs: document.getElementById('sc-founderBio').value.split('\n').map(s => s.trim()).filter(Boolean),
+        founderCredentials: document.getElementById('sc-founderCreds').value.split('\n').map(s => s.trim()).filter(Boolean),
+        contactEmail: document.getElementById('sc-contactEmail').value.trim(),
+        location: document.getElementById('sc-location').value.trim(),
+        amazonAuthorPageUrl: document.getElementById('sc-amazonAuthorPageUrl').value.trim(),
+      };
+
+      try{
+        const res = await fetch('/api/content', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ siteContent: partial })
+        });
+        const data = await res.json();
+        if(res.ok){
+          currentContent.siteContent = data.siteContent;
+          showStatus('Site content saved.', 'success');
+        } else {
+          showStatus(data.error || 'Could not save. Try again.', 'error');
+        }
+      }catch(err){
+        showStatus('Could not reach the server. Try again.', 'error');
+      }
+    });
+  }
+
+  // ---------- Shared save/delete helpers ----------
+  async function saveResource(resource, item, isNew){
+    try{
+      const res = await fetch('/api/content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resource, item })
+      });
+      const data = await res.json();
+      if(res.ok){
+        showStatus((isNew ? 'Added.' : 'Saved.'), 'success');
+        await loadAllContent();
+      } else {
+        showStatus(data.error || 'Could not save. Try again.', 'error');
+      }
+    }catch(err){
+      showStatus('Could not reach the server. Try again.', 'error');
+    }
+  }
+
+  async function deleteResource(resource, id){
+    try{
+      const res = await fetch('/api/content', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resource, id })
+      });
+      const data = await res.json();
+      if(res.ok){
+        showStatus('Deleted.', 'success');
+        await loadAllContent();
+      } else {
+        showStatus(data.error || 'Could not delete. Try again.', 'error');
+      }
+    }catch(err){
+      showStatus('Could not reach the server. Try again.', 'error');
+    }
+  }
+
+  // ---------- Init ----------
+  checkSession();
+
+})();
+</script>
+
+</body>
+</html>
