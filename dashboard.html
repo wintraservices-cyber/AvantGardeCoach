@@ -661,7 +661,7 @@
 <div id="login-view">
   <div class="login-shell">
     <div class="login-side">
-      <a href="index.html" class="login-logo" style="text-decoration:none;">Avant-Garde <em>Coach</em></a>
+      <a href="/ class="login-logo" style="text-decoration:none;">Avant-Garde <em>Coach</em></a>
       <div>
         <p class="login-side-quote">"You have the power to <span class="mark">choose</span> when coaching happens — this is where you track what happens next."</p>
         <p class="login-side-attr">CLIENT WORKSPACE</p>
@@ -698,9 +698,9 @@
 <!-- ============ DASHBOARD VIEW ============ -->
 <div id="dashboard-view">
   <nav class="dash-nav">
-    <a href="index.html" class="dash-logo" style="text-decoration:none;">Avant-Garde <em>Coach</em></a>
+    <a href="/ class="dash-logo" style="text-decoration:none;">Avant-Garde <em>Coach</em></a>
     <div class="dash-user">
-      <a href="index.html" class="back-to-site" style="margin-right:0.4rem;">← Back to site</a>
+      <a href="/ class="back-to-site" style="margin-right:0.4rem;">← Back to site</a>
       <button class="theme-toggle" id="theme-toggle" aria-label="Switch to light mode" title="Switch theme">
         <svg class="tt-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
         <svg class="tt-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -1433,10 +1433,10 @@ RULES:
 
   function faqwLinkify(html){
     const linkMap = [
-      [/booking page/i, '<a href="booking.html" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">booking page</a>'],
+      [/booking page/i, '<a href="booking" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">booking page</a>'],
       [/Find Your Fit/i, '<a href="index.html#intake" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">Find Your Fit</a>'],
       [/Amazon author page/i, `<a href="https://www.amazon.ca/stores/author/B07D1SJNPH" target="_blank" rel="noopener" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">Amazon author page</a>`],
-      [/homepage/i, '<a href="index.html" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">homepage</a>']
+      [/homepage/i, '<a href="/ style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">homepage</a>']
     ];
     let result = html;
     linkMap.forEach(([pattern, replacement]) => {
