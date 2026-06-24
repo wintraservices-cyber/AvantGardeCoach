@@ -218,24 +218,6 @@
     height:100%;
     display:block;
   }
-
-  .hero-lineart-drift{
-    width:100%;
-    height:100%;
-    animation:lineartDrift 48s ease-in-out infinite;
-  }
-  @keyframes lineartDrift{
-    0%   { transform:translate(0, 0); }
-    16%  { transform:translate(14px, -10px); }
-    33%  { transform:translate(4px, 16px); }
-    50%  { transform:translate(-12px, 6px); }
-    66%  { transform:translate(-6px, -14px); }
-    83%  { transform:translate(10px, -2px); }
-    100% { transform:translate(0, 0); }
-  }
-  @media (prefers-reduced-motion: reduce){
-    .hero-lineart-drift{ animation:none; }
-  }
   .hero-lineart .lineart-path-main{
     fill:none;
     stroke:var(--vermillion);
@@ -1091,7 +1073,7 @@
       <svg class="tt-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
       <svg class="tt-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
-    <a href="booking" class="nav-cta">Book a Session</a>
+    <a href="booking.html" class="nav-cta">Book a Session</a>
   </div>
 </nav>
 
@@ -1114,7 +1096,7 @@
         needs to change. No shame. No guilt. Just clarity, on your schedule.
       </p>
       <div class="hero-actions">
-        <a href="booking" class="btn-primary">Book a discovery call →</a>
+        <a href="booking.html" class="btn-primary">Book a discovery call →</a>
         <a href="#programs" class="btn-ghost">See coaching programs</a>
       </div>
       <div class="hero-foot">
@@ -1125,14 +1107,12 @@
       </div>
     </div>
     <div class="hero-lineart" aria-hidden="true">
-      <div class="hero-lineart-drift">
-        <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid meet">
-          <path class="lineart-path-secondary" d="M 340 40 C 290 90, 310 140, 250 170 C 190 200, 150 160, 110 210 C 70 260, 120 290, 90 340 C 60 390, 30 400, 40 450" />
-          <path class="lineart-path-main" d="M 360 30 C 320 70, 330 110, 280 140 C 220 175, 230 230, 170 250 C 120 267, 95 235, 60 270 C 25 305, 55 350, 35 400 C 20 435, 45 455, 50 470" />
-          <circle class="lineart-dot" cx="50" cy="470" r="5" />
-          <circle class="lineart-dot" cx="360" cy="30" r="4" style="animation-delay:0.2s;" />
-        </svg>
-      </div>
+      <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid meet">
+        <path class="lineart-path-secondary" d="M 340 40 C 290 90, 310 140, 250 170 C 190 200, 150 160, 110 210 C 70 260, 120 290, 90 340 C 60 390, 30 400, 40 450" />
+        <path class="lineart-path-main" d="M 360 30 C 320 70, 330 110, 280 140 C 220 175, 230 230, 170 250 C 120 267, 95 235, 60 270 C 25 305, 55 350, 35 400 C 20 435, 45 455, 50 470" />
+        <circle class="lineart-dot" cx="50" cy="470" r="5" />
+        <circle class="lineart-dot" cx="360" cy="30" r="4" style="animation-delay:0.2s;" />
+      </svg>
     </div>
   </div>
 </header>
@@ -1216,7 +1196,7 @@
       <h3 id="rec-title">—</h3>
       <p class="why" id="rec-why">—</p>
       <div class="recommend-actions">
-        <a href="booking" class="btn-primary" id="rec-book-link">Book a discovery call →</a>
+        <a href="booking.html" class="btn-primary" id="rec-book-link">Book a discovery call →</a>
         <a href="mailto:hello@avant-gardecoach.ca" class="btn-ghost" id="rec-email-link">Email the team instead →</a>
       </div>
       <p class="recommend-note"><strong>How this works —</strong> this is an AI assistant suggesting a starting point based on what you've shared, not a final assessment. Mahal's team will confirm what's right for you on the discovery call.</p>
@@ -1294,7 +1274,7 @@
           <span>Phone or video</span>
           <span>Mon–Sat availability</span>
         </div>
-        <a href="booking" class="program-cta">Book a discovery call →</a>
+        <a href="booking.html" class="program-cta">Book a discovery call →</a>
       </div>
 
       <div class="program-card featured">
@@ -1307,7 +1287,7 @@
           <span>Leadership & assessment tools</span>
           <span>Flexible cadence</span>
         </div>
-        <a href="booking" class="program-cta">Book a discovery call →</a>
+        <a href="booking.html" class="program-cta">Book a discovery call →</a>
       </div>
 
       <div class="program-card">
@@ -1433,11 +1413,11 @@
     <div class="section-num reveal">VII — Begin</div>
     <h2 class="section-title reveal">Pick up the phone.<br>The rest <em>follows.</em></h2>
     <div class="cta-grid reveal">
-      <a href="booking" class="btn-primary">Book a discovery call →</a>
+      <a href="booking.html" class="btn-primary">Book a discovery call →</a>
       <div class="cta-info">
         <div>Email — <a href="mailto:hello@avant-gardecoach.ca">hello@avant-gardecoach.ca</a></div>
         <div>Toronto, Canada — Mon–Sat</div>
-        <div>Client login — <a href="dashboard" id="dashboard-link">Access your dashboard →</a></div>
+        <div>Client login — <a href="dashboard.html" id="dashboard-link">Access your dashboard →</a></div>
       </div>
     </div>
   </div>
@@ -1524,205 +1504,11 @@
     }, { passive: true });
   })();
 
-  (function(){
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(prefersReducedMotion) return;
-
-    const mainPath = document.querySelector('.lineart-path-main');
-    const secondaryPath = document.querySelector('.lineart-path-secondary');
-    const dots = document.querySelectorAll('.lineart-dot');
-    if(!mainPath || !secondaryPath) return;
-
-    const ERASE_MS = 900;
-    const PAUSE_MS = 350;
-    const DRAW_MS = 3000;
-    const HOLD_MS = 16000;
-
-    function rand(min, max){ return min + Math.random() * (max - min); }
-
-    function generatePath(){
-      const startX = rand(330, 370), startY = rand(20, 45);
-      const endX = rand(30, 60), endY = rand(440, 470);
-      const dx = (startX - endX) / 4;
-      const dy = (endY - startY) / 4;
-
-      let x = startX, y = startY;
-      let d = `M ${x.toFixed(0)} ${y.toFixed(0)}`;
-      for(let i = 0; i < 4; i++){
-        const targetX = startX - dx * (i + 1);
-        const targetY = startY + dy * (i + 1);
-        const c1x = x - dx * rand(0.3, 0.9) + rand(-25, 25);
-        const c1y = y + dy * rand(0.2, 0.6) + rand(-20, 20);
-        const c2x = targetX + dx * rand(0.2, 0.6) + rand(-25, 25);
-        const c2y = targetY - dy * rand(0.3, 0.9) + rand(-20, 20);
-        d += ` C ${c1x.toFixed(0)} ${c1y.toFixed(0)}, ${c2x.toFixed(0)} ${c2y.toFixed(0)}, ${targetX.toFixed(0)} ${targetY.toFixed(0)}`;
-        x = targetX; y = targetY;
-      }
-      return { d, startX, startY, endX: x, endY: y };
-    }
-
-    function offsetPath(base){
-      const jitter = () => rand(-18, 18);
-      return base.replace(/(-?\d+(\.\d+)?)/g, (num) => {
-        return (parseFloat(num) + jitter()).toFixed(0);
-      });
-    }
-
-    function redraw(){
-      const primary = generatePath();
-      const secondaryD = offsetPath(primary.d);
-
-      mainPath.style.animation = 'none';
-      secondaryPath.style.animation = 'none';
-      dots.forEach(dot => { dot.style.animation = 'none'; });
-
-      dots.forEach(dot => { dot.style.transition = 'opacity 0.4s ease'; dot.style.opacity = '0'; });
-
-      mainPath.style.transition = `stroke-dashoffset ${ERASE_MS}ms ease-in`;
-      secondaryPath.style.transition = `stroke-dashoffset ${ERASE_MS}ms ease-in`;
-      void mainPath.getBoundingClientRect();
-      mainPath.style.strokeDashoffset = '1400';
-      secondaryPath.style.strokeDashoffset = '1100';
-
-      setTimeout(() => {
-        mainPath.setAttribute('d', primary.d);
-        secondaryPath.setAttribute('d', secondaryD);
-        dots[0] && dots[0].setAttribute('cx', primary.endX.toFixed(0));
-        dots[0] && dots[0].setAttribute('cy', primary.endY.toFixed(0));
-        dots[1] && dots[1].setAttribute('cx', primary.startX.toFixed(0));
-        dots[1] && dots[1].setAttribute('cy', primary.startY.toFixed(0));
-
-        setTimeout(() => {
-          mainPath.style.transition = `stroke-dashoffset ${DRAW_MS}ms cubic-bezier(0.65, 0, 0.35, 1)`;
-          secondaryPath.style.transition = `stroke-dashoffset ${DRAW_MS + 400}ms cubic-bezier(0.65, 0, 0.35, 1)`;
-          void mainPath.getBoundingClientRect();
-          mainPath.style.strokeDashoffset = '0';
-          secondaryPath.style.strokeDashoffset = '0';
-
-          setTimeout(() => {
-            dots.forEach(dot => { dot.style.opacity = '1'; });
-          }, DRAW_MS + 100);
-        }, PAUSE_MS);
-      }, ERASE_MS);
-    }
-
-    setInterval(redraw, ERASE_MS + PAUSE_MS + DRAW_MS + HOLD_MS);
-  })();
-
   const reveals = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold: 0.15 });
   reveals.forEach(el => io.observe(el));
-
-  /* ===== Dynamic content from the CMS (/api/content) =====
-     On load, fetch live data and replace the static markup below with
-     it. If the fetch fails for any reason (offline, API down, CORS),
-     we deliberately do nothing further — the hardcoded HTML already in
-     this file stays exactly as-is and the page works normally. That
-     hardcoded HTML is also the fallback/seed content, so visitors never
-     see a broken or empty section just because a fetch failed. */
-  (function(){
-    function escapeHtml(str){
-      const d = document.createElement('div');
-      d.textContent = str == null ? '' : str;
-      return d.innerHTML;
-    }
-
-    function renderPrograms(programs){
-      const grid = document.querySelector('.programs-grid');
-      if(!grid || !programs || !programs.length) return;
-
-      grid.innerHTML = programs.map(p => {
-        const tbdBadge = p.priceTbd ? '<span class="tbd">PRICE TBD</span>' : '';
-        const features = (p.features || []).map(f => `<span>${escapeHtml(f)}</span>`).join('');
-        const featuredClass = p.featured ? ' featured' : '';
-        return `
-          <div class="program-card${featuredClass}">
-            <div class="program-tag">${escapeHtml(p.tag)}</div>
-            <div class="program-name">${escapeHtml(p.name)}</div>
-            <p class="program-desc">${escapeHtml(p.description)}</p>
-            <div class="program-price">${escapeHtml(p.priceLabel)} ${tbdBadge}</div>
-            <div class="program-feat">${features}</div>
-            <a href="${escapeHtml(p.ctaHref || 'booking')}" class="program-cta">${escapeHtml(p.ctaText || 'Book a discovery call →')}</a>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function renderFounder(siteContent){
-      if(!siteContent) return;
-
-      const nameEl = document.querySelector('.founder-name');
-      const titleEl = document.querySelector('.founder-title');
-      const bioEl = document.querySelector('.founder-bio');
-      const credsEl = document.querySelector('.founder-creds');
-
-      if(nameEl && siteContent.founderName) nameEl.textContent = siteContent.founderName;
-      if(titleEl && siteContent.founderTitle) titleEl.textContent = siteContent.founderTitle;
-
-      if(bioEl && siteContent.founderBioParagraphs && siteContent.founderBioParagraphs.length){
-        // Bio paragraphs may contain simple <em> emphasis in the source
-        // copy (e.g. book titles) — escape first, then allow that one
-        // tag back in deliberately, since this content comes from the
-        // CMS database (entered by trusted admins), not arbitrary users.
-        bioEl.innerHTML = siteContent.founderBioParagraphs
-          .map(p => `<p>${escapeHtml(p)}</p>`)
-          .join('');
-      }
-
-      if(credsEl && siteContent.founderCredentials && siteContent.founderCredentials.length){
-        credsEl.innerHTML = siteContent.founderCredentials
-          .map(c => `<span>${escapeHtml(c)}</span>`)
-          .join('');
-      }
-    }
-
-    function renderBooks(books){
-      if(!books || !books.length) return;
-
-      const featured = books.filter(b => b.featured);
-      const rest = books.filter(b => !b.featured);
-
-      const featuredWrap = document.querySelector('.books-featured');
-      if(featuredWrap && featured.length){
-        featuredWrap.innerHTML = featured.map(b => `
-          <div class="book-feature-card">
-            <div class="btag">${escapeHtml(b.tag)}</div>
-            <h4><a href="${escapeHtml(b.amazonUrl)}" target="_blank" rel="noopener">${escapeHtml(b.title)}</a></h4>
-            <p>${escapeHtml(b.blurb)}</p>
-          </div>
-        `).join('');
-      }
-
-      const listWrap = document.querySelector('.books-list');
-      if(listWrap && rest.length){
-        listWrap.innerHTML = rest.map((b, i) => `
-          <div class="book-row">
-            <span class="bnum">${String(i + 1).padStart(2, '0')}</span>
-            <span class="btitle"><a href="${escapeHtml(b.amazonUrl)}" target="_blank" rel="noopener">${escapeHtml(b.title)}</a></span>
-          </div>
-        `).join('');
-      }
-    }
-
-    fetch('/api/content')
-      .then(res => {
-        if(!res.ok) throw new Error('Content API returned ' + res.status);
-        return res.json();
-      })
-      .then(data => {
-        renderPrograms(data.programs);
-        renderFounder(data.siteContent);
-        renderBooks(data.books);
-      })
-      .catch(err => {
-        // Deliberately silent to the visitor — the hardcoded fallback
-        // markup already in this page is left exactly as it was.
-        console.warn('[dynamic content] Falling back to static markup:', err.message);
-      });
-  })();
-
 
   /* ===== Discovery-call intake assistant ===== */
   const intakeLog = document.getElementById('intake-log');
@@ -1816,6 +1602,23 @@ Only output that JSON block once you're actually ready to recommend. The "progra
     const subject = encodeURIComponent('Interested in: ' + (rec.program || ''));
     const body = encodeURIComponent(`Hi,\n\nI was pointed toward "${rec.program || ''}" and wanted to follow up.\n\nThanks!`);
     document.getElementById('rec-email-link').href = `mailto:hello@avant-gardecoach.ca?subject=${subject}&body=${body}`;
+
+    // Hand off the recommendation to booking.html, so its chat opens already
+    // knowing what intake learned instead of asking the same thing again.
+    // sessionStorage (not a URL param) keeps this out of the address bar and
+    // survives the navigation within the same tab/session, which is exactly
+    // the scope this needs — it's not meant to be a shareable/bookmarkable link.
+    try{
+      sessionStorage.setItem('agc_intake_handoff', JSON.stringify({
+        program: rec.program || '',
+        why: rec.why || '',
+        handoffAt: Date.now()
+      }));
+    }catch(e){
+      // sessionStorage can fail in some privacy modes — booking.html simply
+      // won't find a handoff and falls back to its normal cold-start chat.
+    }
+
     recommendPanel.classList.add('show');
     recommendPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
@@ -2185,61 +1988,6 @@ RULES:
     margin-top:0.2rem;
   }
 
-  .faqw-voice-mark{
-    width:30px;
-    height:30px;
-    border-radius:50%;
-    border:1.5px solid var(--vermillion);
-    flex-shrink:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    position:relative;
-  }
-  .faqw-voice-mark .faqw-voice-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:var(--vermillion);
-    transition:transform 0.15s ease;
-  }
-  .faqw-voice-mark.speaking{
-    animation:faqwPulseRing 1.1s ease-in-out infinite;
-  }
-  .faqw-voice-mark.speaking .faqw-voice-dot{
-    animation:faqwPulseDot 0.6s ease-in-out infinite;
-  }
-  @keyframes faqwPulseRing{
-    0%, 100%{box-shadow:0 0 0 0 rgba(200,64,30,0.35);}
-    50%{box-shadow:0 0 0 6px rgba(200,64,30,0.12);}
-  }
-  @keyframes faqwPulseDot{
-    0%, 100%{transform:scale(1);}
-    50%{transform:scale(1.35);}
-  }
-
-  .faqw-voice-toggle{
-    background:none;
-    appearance:none;
-    -webkit-appearance:none;
-    border:1px solid var(--rule);
-    border-radius:50%;
-    width:28px;
-    height:28px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:var(--bone-dim);
-    cursor:pointer;
-    transition:border-color 0.2s ease, color 0.2s ease;
-    flex-shrink:0;
-  }
-  .faqw-voice-toggle:hover{border-color:var(--vermillion-bright); color:var(--vermillion-bright);}
-  .faqw-voice-toggle.active{border-color:var(--vermillion); color:var(--vermillion-bright);}
-  .faqw-voice-toggle svg{width:14px; height:14px;}
-  .faqw-voice-toggle .fvt-off{display:none;}
-  .faqw-voice-toggle.muted .fvt-on{display:none;}
-  .faqw-voice-toggle.muted .fvt-off{display:block;}
 
   .faqw-log{
     flex:1;
@@ -2368,13 +2116,6 @@ RULES:
       <div class="faqw-sub">Avant-Garde Coach</div>
     </div>
     <div style="display:flex; align-items:center; gap:0.6rem;">
-      <div class="faqw-voice-mark" id="faqw-voice-mark" aria-hidden="true">
-        <div class="faqw-voice-dot"></div>
-      </div>
-      <button class="faqw-voice-toggle muted" id="faqw-voice-toggle" aria-label="Turn voice on" title="Turn voice on">
-        <svg class="fvt-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-        <svg class="fvt-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
-      </button>
     </div>
   </div>
   <div class="faqw-log" id="faqw-log">
@@ -2404,12 +2145,9 @@ RULES:
   const input = document.getElementById('faqw-input');
   const sendBtn = document.getElementById('faqw-send');
   const chips = document.getElementById('faqw-chips');
-  const voiceToggle = document.getElementById('faqw-voice-toggle');
-  const voiceMark = document.getElementById('faqw-voice-mark');
 
   let faqwConversation = [];
   let faqwOpened = false;
-  let faqwVoiceEnabled = false;
 
   const FAQW_SYSTEM_PROMPT = `You are a brief, friendly FAQ assistant for "Avant-Garde Coach," a life and leadership coaching practice in Toronto run by Mahal Hudson. You ONLY answer general factual questions about the practice using the facts below. You are NOT the discovery-call intake assistant and NOT the booking assistant — if someone wants to actually book a call or describe a personal situation they want coaching on, tell them briefly to use the "Find Your Fit" assistant on the homepage or the booking page chat, rather than trying to do that yourself.
 
@@ -2486,8 +2224,8 @@ RULES:
 
   function faqwLinkify(html){
     const linkMap = [
-      [/booking page/i, '<a href="booking" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">booking page</a>'],
-      [/discovery call/i, '<a href="booking" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">discovery call</a>'],
+      [/booking page/i, '<a href="booking.html" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">booking page</a>'],
+      [/discovery call/i, '<a href="booking.html" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">discovery call</a>'],
       [/Find Your Fit/i, '<a href="#intake" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">Find Your Fit</a>'],
       [/Amazon author page/i, `<a href="https://www.amazon.ca/stores/author/B07D1SJNPH" target="_blank" rel="noopener" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">Amazon author page</a>`]
     ];
@@ -2506,39 +2244,6 @@ RULES:
     return result;
   }
 
-  /* ===== Voice (browser-native speech synthesis, no new backend) ===== */
-  function faqwStripHtmlForSpeech(html){
-    const d = document.createElement('div');
-    d.innerHTML = html;
-    return d.textContent || d.innerText || '';
-  }
-
-  function faqwSpeak(html){
-    if(!faqwVoiceEnabled) return;
-    if(!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel(); // stop anything already speaking
-    const plainText = faqwStripHtmlForSpeech(html);
-    if(!plainText.trim()) return;
-    const utterance = new SpeechSynthesisUtterance(plainText);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    utterance.onstart = () => voiceMark.classList.add('speaking');
-    utterance.onend = () => voiceMark.classList.remove('speaking');
-    utterance.onerror = () => voiceMark.classList.remove('speaking');
-    window.speechSynthesis.speak(utterance);
-  }
-
-  voiceToggle.addEventListener('click', function(){
-    faqwVoiceEnabled = !faqwVoiceEnabled;
-    voiceToggle.classList.toggle('muted', !faqwVoiceEnabled);
-    voiceToggle.classList.toggle('active', faqwVoiceEnabled);
-    voiceToggle.setAttribute('aria-label', faqwVoiceEnabled ? 'Turn voice off' : 'Turn voice on');
-    voiceToggle.setAttribute('title', faqwVoiceEnabled ? 'Turn voice off' : 'Turn voice on');
-    if(!faqwVoiceEnabled && 'speechSynthesis' in window){
-      window.speechSynthesis.cancel();
-      voiceMark.classList.remove('speaking');
-    }
-  });
 
   async function faqwSend(text){
     if(!text || text.trim().length === 0) return;
@@ -2575,7 +2280,6 @@ RULES:
       const replyText = data.content?.filter(b => b.type === 'text').map(b => b.text).join('\n') || "I'm not sure how to answer that — try hello@avant-gardecoach.ca.";
       const faqwReplyHtml = faqwLinkify(faqwEscape(replyText).replace(/\n/g, '<br>'));
       faqwAddMsg('bot', faqwReplyHtml);
-      faqwSpeak(faqwReplyHtml);
       faqwConversation.push({ role: 'assistant', content: replyText });
 
     }catch(err){
