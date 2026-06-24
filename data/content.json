@@ -1,0 +1,237 @@
+{
+  "programs": [
+    {
+      "id": "check-in-coaching",
+      "tag": "Foundation",
+      "name": "Check-In Coaching",
+      "description": "Short, focused sessions for a specific decision or conversation you're navigating right now. Built for momentum, not a long commitment.",
+      "priceLabel": "5 sessions / 30 min",
+      "priceTbd": true,
+      "features": [
+        "Use within 2 months, your schedule",
+        "Phone or video",
+        "Mon–Sat availability"
+      ],
+      "featured": false,
+      "ctaText": "Book a discovery call →",
+      "ctaHref": "booking.html",
+      "sortOrder": 1
+    },
+    {
+      "id": "executive-career-coaching",
+      "tag": "Most Booked — 1:1 Performance",
+      "name": "Executive & Career Coaching",
+      "description": "Ongoing one-on-one coaching for leaders and professionals at a turning point — role transitions, team advocacy, and the harder conversations that come with both.",
+      "priceLabel": "Multi-session program",
+      "priceTbd": true,
+      "features": [
+        "Co-Active methodology",
+        "Leadership & assessment tools",
+        "Flexible cadence"
+      ],
+      "featured": true,
+      "ctaText": "Book a discovery call →",
+      "ctaHref": "booking.html",
+      "sortOrder": 2
+    },
+    {
+      "id": "transformational-retreats",
+      "tag": "Immersive",
+      "name": "Transformational Retreats",
+      "description": "A guided, in-person reset for people who need more than a phone call — space to step back, reflect, and return with a plan.",
+      "priceLabel": "Seasonal dates",
+      "priceTbd": true,
+      "features": [
+        "Small group format",
+        "Workshop activities",
+        "Community of peers"
+      ],
+      "featured": false,
+      "ctaText": "Ask about dates →",
+      "ctaHref": "#contact",
+      "sortOrder": 3
+    }
+  ],
+  "books": [
+    {
+      "id": "unleashing-authentic-leadership",
+      "featured": true,
+      "tag": "On Leadership",
+      "title": "Unleashing Authentic Leadership",
+      "blurb": "A journey from hypocrisy to integrity — for anyone leading a team while quietly wondering if they're leading themselves honestly.",
+      "amazonUrl": "https://www.amazon.ca/Unleashing-Authentic-Leadership-Hypocrisy-Integrity-ebook/dp/B0CR9D2PR1",
+      "sortOrder": 1
+    },
+    {
+      "id": "superheroes-unmasked",
+      "featured": true,
+      "tag": "On Fear",
+      "title": "Superheroes Unmasked",
+      "blurb": "10 powerful ways to lead without fear. The book this practice's whole philosophy traces back to.",
+      "amazonUrl": "https://www.amazon.ca/Superheroes-Unmasked-Powerful-Ways-Without-ebook/dp/B07D1LJJN3",
+      "sortOrder": 2
+    },
+    {
+      "id": "beyond-the-boardroom",
+      "featured": true,
+      "tag": "On Reinvention",
+      "title": "Beyond the Boardroom",
+      "blurb": "Redefining leadership in action — for the chapter after the title changes but the real work is just beginning.",
+      "amazonUrl": "https://www.amazon.ca/Beyond-Boardroom-Redefining-Leadership-Action-ebook/dp/B0CRKDP27L",
+      "sortOrder": 3
+    },
+    {
+      "id": "shine-bright",
+      "featured": false,
+      "tag": null,
+      "title": "Shine Bright: The Path to Kindness",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/Shine-Bright-Kindness-Mahal-Hudson-ebook/dp/B0F32L8J95",
+      "sortOrder": 4
+    },
+    {
+      "id": "breaking-free-from-trying-stage",
+      "featured": false,
+      "tag": null,
+      "title": "Breaking Free from the \"Trying\" Stage",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/Breaking-Free-Trying-Stage-Blueprint-ebook/dp/B0CSX6G5S1",
+      "sortOrder": 5
+    },
+    {
+      "id": "dream-big-act-fearlessly",
+      "featured": false,
+      "tag": null,
+      "title": "Dream Big, Act Fearlessly",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/Dream-Big-Fearlessly-Mahal-Hudson-ebook/dp/B0CRK126MZ",
+      "sortOrder": 6
+    },
+    {
+      "id": "reframing-doubt",
+      "featured": false,
+      "tag": null,
+      "title": "Reframing Doubt: Turning Negative Thoughts into Positive Action",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/Reframing-Doubt-Negative-Thoughts-Positive-ebook/dp/B0CRJX6SF6",
+      "sortOrder": 7
+    },
+    {
+      "id": "decode-the-boss-code",
+      "featured": false,
+      "tag": null,
+      "title": "Decode the Boss Code",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/Decode-Boss-Code-Mahal-Hudson-ebook/dp/B0CRGKG6LP",
+      "sortOrder": 8
+    },
+    {
+      "id": "igniting-the-flame-within",
+      "featured": false,
+      "tag": null,
+      "title": "Igniting the Flame Within",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/Igniting-Flame-Within-Sustaining-Passionate-ebook/dp/B0CRBYRW7Y",
+      "sortOrder": 9
+    },
+    {
+      "id": "burnout-to-breakthrough",
+      "featured": false,
+      "tag": null,
+      "title": "Burnout to Breakthrough: A Weekend Retreat for Powerful Women",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/Burnout-Breakthrough-Weekend-Retreat-Powerful-ebook/dp/B0CRBMSFK5",
+      "sortOrder": 10
+    },
+    {
+      "id": "unlocking-joy",
+      "featured": false,
+      "tag": null,
+      "title": "Unlocking Joy: A Gratitude-Fueled Journey",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/Unlocking-Joy-Gratitude-Fueled-Self-Discovery-Fulfillment-ebook/dp/B0CRBKXCSB",
+      "sortOrder": 11
+    },
+    {
+      "id": "choosing-hope",
+      "featured": false,
+      "tag": null,
+      "title": "Choosing Hope: A Journey of Heartache, Healing & the Power of Choice",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/Choosing-Hope-Journey-Heartache-Healing-ebook/dp/B0CR9F5CCQ",
+      "sortOrder": 12
+    },
+    {
+      "id": "unlock-the-fast-lane",
+      "featured": false,
+      "tag": null,
+      "title": "Unlock the Fast Lane to Your Dream Job",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/Unlock-Fast-Lane-Your-Dream-ebook/dp/B0CR9CYZ3C",
+      "sortOrder": 13
+    },
+    {
+      "id": "financial-freedom-made-simple",
+      "featured": false,
+      "tag": null,
+      "title": "Financial Freedom Made Simple",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/Financial-Freedom-Made-Simple-Management-ebook/dp/B0CR86QTZB",
+      "sortOrder": 14
+    },
+    {
+      "id": "hilarious-guide-inner-leader",
+      "featured": false,
+      "tag": null,
+      "title": "A Hilarious Guide to Unleashing Your Inner Leader",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/Hilarious-Guide-Unleashing-Inner-Leader-ebook/dp/B0CR861WGF",
+      "sortOrder": 15
+    },
+    {
+      "id": "sheignites",
+      "featured": false,
+      "tag": null,
+      "title": "SheIgnites: A Woman's Manifesto to Unleashing Power",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/SheIgnites-Womans-Manifesto-Unleashing-Living-ebook/dp/B0CR85RD56",
+      "sortOrder": 16
+    },
+    {
+      "id": "leadership-mastery",
+      "featured": false,
+      "tag": null,
+      "title": "Leadership Mastery: Unleashing Your Full Potential",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/Leadership-Mastery-Unleashing-Your-Potential-ebook/dp/B0CR77RJJ1",
+      "sortOrder": 17
+    },
+    {
+      "id": "awakening-love-within",
+      "featured": false,
+      "tag": null,
+      "title": "Awakening Love Within",
+      "blurb": null,
+      "amazonUrl": "https://www.amazon.ca/Awakening-Love-Within-Journey-Sanctuary-ebook/dp/B0CR75H98Y",
+      "sortOrder": 18
+    }
+  ],
+  "siteContent": {
+    "founderName": "Mahal Hudson",
+    "founderTitle": "Founder — Leadership Coach & Team Advocate",
+    "founderBioParagraphs": [
+      "\"I'm a dreamer, optimist, and a visionary. I want to feel alive every day — to be brave and authentic, and to empower one soul at a time.\" That line has anchored Avant-Garde Coach since the beginning, and it still does.",
+      "Trained through the Co-Active coaching tradition, Mahal works with individuals and teams navigating turning points — the conversation you're avoiding, the decision you're circling, the version of yourself you're growing into.",
+      "She's also the author of Superheroes Unmasked: 10 Powerful Ways to Lead Without Fear, and hosts Get Real with Mahal Hudson, a TV talk show built on unfiltered, unbiased conversations about the issues people are usually too polite to bring up."
+    ],
+    "founderCredentials": [
+      "Co-Active Coach (CTI)",
+      "Author, Superheroes Unmasked",
+      "Host, Get Real with Mahal Hudson",
+      "Toronto, Canada"
+    ],
+    "contactEmail": "hello@avant-gardecoach.ca",
+    "location": "Toronto, Canada — Mon–Sat",
+    "amazonAuthorPageUrl": "https://www.amazon.ca/stores/author/B07D1SJNPH"
+  }
+}
