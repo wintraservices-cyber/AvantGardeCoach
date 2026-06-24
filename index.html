@@ -1091,7 +1091,7 @@
       <svg class="tt-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
       <svg class="tt-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
-    <a href="booking.html" class="nav-cta">Book a Session</a>
+    <a href="booking" class="nav-cta">Book a Session</a>
   </div>
 </nav>
 
@@ -1114,7 +1114,7 @@
         needs to change. No shame. No guilt. Just clarity, on your schedule.
       </p>
       <div class="hero-actions">
-        <a href="booking.html" class="btn-primary">Book a discovery call →</a>
+        <a href="booking" class="btn-primary">Book a discovery call →</a>
         <a href="#programs" class="btn-ghost">See coaching programs</a>
       </div>
       <div class="hero-foot">
@@ -1216,7 +1216,7 @@
       <h3 id="rec-title">—</h3>
       <p class="why" id="rec-why">—</p>
       <div class="recommend-actions">
-        <a href="booking.html" class="btn-primary" id="rec-book-link">Book a discovery call →</a>
+        <a href="booking" class="btn-primary" id="rec-book-link">Book a discovery call →</a>
         <a href="mailto:hello@avant-gardecoach.ca" class="btn-ghost" id="rec-email-link">Email the team instead →</a>
       </div>
       <p class="recommend-note"><strong>How this works —</strong> this is an AI assistant suggesting a starting point based on what you've shared, not a final assessment. Mahal's team will confirm what's right for you on the discovery call.</p>
@@ -1294,7 +1294,7 @@
           <span>Phone or video</span>
           <span>Mon–Sat availability</span>
         </div>
-        <a href="booking.html" class="program-cta">Book a discovery call →</a>
+        <a href="booking" class="program-cta">Book a discovery call →</a>
       </div>
 
       <div class="program-card featured">
@@ -1307,7 +1307,7 @@
           <span>Leadership & assessment tools</span>
           <span>Flexible cadence</span>
         </div>
-        <a href="booking.html" class="program-cta">Book a discovery call →</a>
+        <a href="booking" class="program-cta">Book a discovery call →</a>
       </div>
 
       <div class="program-card">
@@ -1433,11 +1433,11 @@
     <div class="section-num reveal">VII — Begin</div>
     <h2 class="section-title reveal">Pick up the phone.<br>The rest <em>follows.</em></h2>
     <div class="cta-grid reveal">
-      <a href="booking.html" class="btn-primary">Book a discovery call →</a>
+      <a href="booking" class="btn-primary">Book a discovery call →</a>
       <div class="cta-info">
         <div>Email — <a href="mailto:hello@avant-gardecoach.ca">hello@avant-gardecoach.ca</a></div>
         <div>Toronto, Canada — Mon–Sat</div>
-        <div>Client login — <a href="dashboard.html" id="dashboard-link">Access your dashboard →</a></div>
+        <div>Client login — <a href="dashboard" id="dashboard-link">Access your dashboard →</a></div>
       </div>
     </div>
   </div>
@@ -1644,7 +1644,7 @@
             <p class="program-desc">${escapeHtml(p.description)}</p>
             <div class="program-price">${escapeHtml(p.priceLabel)} ${tbdBadge}</div>
             <div class="program-feat">${features}</div>
-            <a href="${escapeHtml(p.ctaHref || 'booking.html')}" class="program-cta">${escapeHtml(p.ctaText || 'Book a discovery call →')}</a>
+            <a href="${escapeHtml(p.ctaHref || 'booking')}" class="program-cta">${escapeHtml(p.ctaText || 'Book a discovery call →')}</a>
           </div>
         `;
       }).join('');
@@ -2486,8 +2486,8 @@ RULES:
 
   function faqwLinkify(html){
     const linkMap = [
-      [/booking page/i, '<a href="booking.html" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">booking page</a>'],
-      [/discovery call/i, '<a href="booking.html" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">discovery call</a>'],
+      [/booking page/i, '<a href="booking" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">booking page</a>'],
+      [/discovery call/i, '<a href="booking" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">discovery call</a>'],
       [/Find Your Fit/i, '<a href="#intake" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">Find Your Fit</a>'],
       [/Amazon author page/i, `<a href="https://www.amazon.ca/stores/author/B07D1SJNPH" target="_blank" rel="noopener" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">Amazon author page</a>`]
     ];
