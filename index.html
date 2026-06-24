@@ -182,10 +182,110 @@
   }
   @media (max-width:760px){ .hero-inner{padding-left:0;} }
 
+  .hero-text{
+    position:relative;
+    z-index:2;
+    max-width:680px;
+  }
+
+  .hero-lineart{
+    position:absolute;
+    top:50%;
+    right:0;
+    transform:translateY(-50%);
+    width:min(56%, 620px);
+    aspect-ratio:4/5;
+    z-index:1;
+    pointer-events:none;
+    opacity:0.85;
+  }
+  @media (max-width:900px){
+    .hero-lineart{
+      position:relative;
+      width:100%;
+      max-width:340px;
+      margin:0 auto 1.5rem;
+      right:auto;
+      top:auto;
+      transform:none;
+      aspect-ratio:1/1;
+      order:-1;
+    }
+    .hero-text{max-width:100%;}
+  }
+  .hero-lineart svg{
+    width:100%;
+    height:100%;
+    display:block;
+  }
+
+  .hero-lineart-drift{
+    width:100%;
+    height:100%;
+    animation:lineartDrift 48s ease-in-out infinite;
+  }
+  @keyframes lineartDrift{
+    0%   { transform:translate(0, 0); }
+    16%  { transform:translate(14px, -10px); }
+    33%  { transform:translate(4px, 16px); }
+    50%  { transform:translate(-12px, 6px); }
+    66%  { transform:translate(-6px, -14px); }
+    83%  { transform:translate(10px, -2px); }
+    100% { transform:translate(0, 0); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hero-lineart-drift{ animation:none; }
+  }
+  .hero-lineart .lineart-path-main{
+    fill:none;
+    stroke:var(--vermillion);
+    stroke-width:1.5;
+    stroke-linecap:round;
+    stroke-dasharray:1400;
+    stroke-dashoffset:1400;
+    animation:lineartDraw 3.2s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    animation-delay:0.3s;
+  }
+  .hero-lineart .lineart-path-secondary{
+    fill:none;
+    stroke:var(--rule-light);
+    stroke-width:1;
+    stroke-linecap:round;
+    stroke-dasharray:1100;
+    stroke-dashoffset:1100;
+    animation:lineartDraw 3.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    animation-delay:0.1s;
+    opacity:0.5;
+  }
+  .hero-lineart .lineart-dot{
+    fill:var(--vermillion-bright);
+    opacity:0;
+    animation:lineartDotIn 0.6s ease forwards;
+    animation-delay:3.1s;
+  }
+  @keyframes lineartDraw{
+    to{stroke-dashoffset:0;}
+  }
+  @keyframes lineartDotIn{
+    to{opacity:1;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hero-lineart .lineart-path-main,
+    .hero-lineart .lineart-path-secondary{
+      stroke-dashoffset:0;
+      animation:none;
+    }
+    .hero-lineart .lineart-dot{
+      opacity:1;
+      animation:none;
+    }
+  }
+
   .hero-marginal{
     position:absolute;
     left:6vw;
     top:0;
+    z-index:2;
     transform:translate(-2.1rem, 0) rotate(180deg);
     writing-mode:vertical-rl;
     font-family:'JetBrains Mono',monospace;
@@ -215,6 +315,7 @@
     font-size:clamp(2.8rem, 7.2vw, 6.4rem);
     letter-spacing:-0.01em;
     max-width:980px;
+    text-shadow:0 2px 24px rgba(var(--photo-tint),0.55);
   }
   .hero h1 .line2{
     margin-left:clamp(0px, 9vw, 7rem);
@@ -995,31 +1096,43 @@
 </nav>
 
 <header class="hero">
-  <div class="hero-rule"></div>
+  <div class="hero-rule" id="hero-rule"></div>
   <div class="hero-inner">
     <div class="hero-marginal">Toronto, Canada — Est. in Practice</div>
-    <div class="hero-eyebrow">
-      <span class="dot"></span>
-      <span class="eyebrow">Life & Leadership Coaching</span>
+    <div class="hero-text">
+      <div class="hero-eyebrow">
+        <span class="dot"></span>
+        <span class="eyebrow">Life & Leadership Coaching</span>
+      </div>
+      <h1>
+        Live with conviction.<br>
+        <span class="line2">Lead without <em>fear.</em></span>
+      </h1>
+      <p class="hero-sub">
+        One-on-one coaching for people standing at the edge of a decision —
+        a hard conversation, a career turn, a quieter sense that something
+        needs to change. No shame. No guilt. Just clarity, on your schedule.
+      </p>
+      <div class="hero-actions">
+        <a href="booking.html" class="btn-primary">Book a discovery call →</a>
+        <a href="#programs" class="btn-ghost">See coaching programs</a>
+      </div>
+      <div class="hero-foot">
+        <div><strong>1:1</strong> Performance Coaching</div>
+        <div><strong>Co-Active</strong> Trained Methodology</div>
+        <div><strong>Phone / Video</strong> — Your Schedule</div>
+        <a href="#books" style="text-decoration:none; color:inherit;"><div><strong>18-Book</strong> Author & TV Host</div></a>
+      </div>
     </div>
-    <h1>
-      Live with conviction.<br>
-      <span class="line2">Lead without <em>fear.</em></span>
-    </h1>
-    <p class="hero-sub">
-      One-on-one coaching for people standing at the edge of a decision —
-      a hard conversation, a career turn, a quieter sense that something
-      needs to change. No shame. No guilt. Just clarity, on your schedule.
-    </p>
-    <div class="hero-actions">
-      <a href="booking.html" class="btn-primary">Book a discovery call →</a>
-      <a href="#programs" class="btn-ghost">See coaching programs</a>
-    </div>
-    <div class="hero-foot">
-      <div><strong>1:1</strong> Performance Coaching</div>
-      <div><strong>Co-Active</strong> Trained Methodology</div>
-      <div><strong>Phone / Video</strong> — Your Schedule</div>
-      <a href="#books" style="text-decoration:none; color:inherit;"><div><strong>18-Book</strong> Author & TV Host</div></a>
+    <div class="hero-lineart" aria-hidden="true">
+      <div class="hero-lineart-drift">
+        <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid meet">
+          <path class="lineart-path-secondary" d="M 340 40 C 290 90, 310 140, 250 170 C 190 200, 150 160, 110 210 C 70 260, 120 290, 90 340 C 60 390, 30 400, 40 450" />
+          <path class="lineart-path-main" d="M 360 30 C 320 70, 330 110, 280 140 C 220 175, 230 230, 170 250 C 120 267, 95 235, 60 270 C 25 305, 55 350, 35 400 C 20 435, 45 455, 50 470" />
+          <circle class="lineart-dot" cx="50" cy="470" r="5" />
+          <circle class="lineart-dot" cx="360" cy="30" r="4" style="animation-delay:0.2s;" />
+        </svg>
+      </div>
     </div>
   </div>
 </header>
@@ -1365,11 +1478,251 @@
     });
   })();
 
+  /* ===== Hero parallax (gentle, capped, reduced-motion aware) ===== */
+  (function(){
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(prefersReducedMotion) return;
+
+    const heroLineart = document.querySelector('.hero-lineart');
+    const heroRuleEl = document.getElementById('hero-rule');
+    const heroEl = document.querySelector('.hero');
+    if(!heroLineart || !heroEl) return;
+
+    let ticking = false;
+
+    function updateParallax(){
+      const rect = heroEl.getBoundingClientRect();
+      // Only animate while the hero is actually in or near the viewport.
+      if(rect.bottom < 0 || rect.top > window.innerHeight){
+        ticking = false;
+        return;
+      }
+      const scrolled = Math.min(Math.max(-rect.top, 0), rect.height);
+      // Photo drifts slower than the page (depth effect), capped at ~50px.
+      // Only applied above the 900px breakpoint, where .hero-lineart is
+      // absolutely positioned and centered via translateY(-50%) — below
+      // that breakpoint it switches to a normal stacked layout with no
+      // transform to preserve.
+      if(window.innerWidth > 900){
+        const photoOffset = Math.min(scrolled * 0.12, 50);
+        heroLineart.style.transform = `translateY(-50%) translateY(${photoOffset}px)`;
+      }
+      // The vertical rule drifts at a different, smaller rate for a subtle
+      // layered feel, capped at ~20px.
+      if(heroRuleEl){
+        const ruleOffset = Math.min(scrolled * 0.05, 20);
+        heroRuleEl.style.transform = `translateY(${ruleOffset}px)`;
+      }
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', function(){
+      if(!ticking){
+        window.requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    }, { passive: true });
+  })();
+
+  (function(){
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(prefersReducedMotion) return;
+
+    const mainPath = document.querySelector('.lineart-path-main');
+    const secondaryPath = document.querySelector('.lineart-path-secondary');
+    const dots = document.querySelectorAll('.lineart-dot');
+    if(!mainPath || !secondaryPath) return;
+
+    const ERASE_MS = 900;
+    const PAUSE_MS = 350;
+    const DRAW_MS = 3000;
+    const HOLD_MS = 16000;
+
+    function rand(min, max){ return min + Math.random() * (max - min); }
+
+    function generatePath(){
+      const startX = rand(330, 370), startY = rand(20, 45);
+      const endX = rand(30, 60), endY = rand(440, 470);
+      const dx = (startX - endX) / 4;
+      const dy = (endY - startY) / 4;
+
+      let x = startX, y = startY;
+      let d = `M ${x.toFixed(0)} ${y.toFixed(0)}`;
+      for(let i = 0; i < 4; i++){
+        const targetX = startX - dx * (i + 1);
+        const targetY = startY + dy * (i + 1);
+        const c1x = x - dx * rand(0.3, 0.9) + rand(-25, 25);
+        const c1y = y + dy * rand(0.2, 0.6) + rand(-20, 20);
+        const c2x = targetX + dx * rand(0.2, 0.6) + rand(-25, 25);
+        const c2y = targetY - dy * rand(0.3, 0.9) + rand(-20, 20);
+        d += ` C ${c1x.toFixed(0)} ${c1y.toFixed(0)}, ${c2x.toFixed(0)} ${c2y.toFixed(0)}, ${targetX.toFixed(0)} ${targetY.toFixed(0)}`;
+        x = targetX; y = targetY;
+      }
+      return { d, startX, startY, endX: x, endY: y };
+    }
+
+    function offsetPath(base){
+      const jitter = () => rand(-18, 18);
+      return base.replace(/(-?\d+(\.\d+)?)/g, (num) => {
+        return (parseFloat(num) + jitter()).toFixed(0);
+      });
+    }
+
+    function redraw(){
+      const primary = generatePath();
+      const secondaryD = offsetPath(primary.d);
+
+      mainPath.style.animation = 'none';
+      secondaryPath.style.animation = 'none';
+      dots.forEach(dot => { dot.style.animation = 'none'; });
+
+      dots.forEach(dot => { dot.style.transition = 'opacity 0.4s ease'; dot.style.opacity = '0'; });
+
+      mainPath.style.transition = `stroke-dashoffset ${ERASE_MS}ms ease-in`;
+      secondaryPath.style.transition = `stroke-dashoffset ${ERASE_MS}ms ease-in`;
+      void mainPath.getBoundingClientRect();
+      mainPath.style.strokeDashoffset = '1400';
+      secondaryPath.style.strokeDashoffset = '1100';
+
+      setTimeout(() => {
+        mainPath.setAttribute('d', primary.d);
+        secondaryPath.setAttribute('d', secondaryD);
+        dots[0] && dots[0].setAttribute('cx', primary.endX.toFixed(0));
+        dots[0] && dots[0].setAttribute('cy', primary.endY.toFixed(0));
+        dots[1] && dots[1].setAttribute('cx', primary.startX.toFixed(0));
+        dots[1] && dots[1].setAttribute('cy', primary.startY.toFixed(0));
+
+        setTimeout(() => {
+          mainPath.style.transition = `stroke-dashoffset ${DRAW_MS}ms cubic-bezier(0.65, 0, 0.35, 1)`;
+          secondaryPath.style.transition = `stroke-dashoffset ${DRAW_MS + 400}ms cubic-bezier(0.65, 0, 0.35, 1)`;
+          void mainPath.getBoundingClientRect();
+          mainPath.style.strokeDashoffset = '0';
+          secondaryPath.style.strokeDashoffset = '0';
+
+          setTimeout(() => {
+            dots.forEach(dot => { dot.style.opacity = '1'; });
+          }, DRAW_MS + 100);
+        }, PAUSE_MS);
+      }, ERASE_MS);
+    }
+
+    setInterval(redraw, ERASE_MS + PAUSE_MS + DRAW_MS + HOLD_MS);
+  })();
+
   const reveals = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold: 0.15 });
   reveals.forEach(el => io.observe(el));
+
+  /* ===== Dynamic content from the CMS (/api/content) =====
+     On load, fetch live data and replace the static markup below with
+     it. If the fetch fails for any reason (offline, API down, CORS),
+     we deliberately do nothing further — the hardcoded HTML already in
+     this file stays exactly as-is and the page works normally. That
+     hardcoded HTML is also the fallback/seed content, so visitors never
+     see a broken or empty section just because a fetch failed. */
+  (function(){
+    function escapeHtml(str){
+      const d = document.createElement('div');
+      d.textContent = str == null ? '' : str;
+      return d.innerHTML;
+    }
+
+    function renderPrograms(programs){
+      const grid = document.querySelector('.programs-grid');
+      if(!grid || !programs || !programs.length) return;
+
+      grid.innerHTML = programs.map(p => {
+        const tbdBadge = p.priceTbd ? '<span class="tbd">PRICE TBD</span>' : '';
+        const features = (p.features || []).map(f => `<span>${escapeHtml(f)}</span>`).join('');
+        const featuredClass = p.featured ? ' featured' : '';
+        return `
+          <div class="program-card${featuredClass}">
+            <div class="program-tag">${escapeHtml(p.tag)}</div>
+            <div class="program-name">${escapeHtml(p.name)}</div>
+            <p class="program-desc">${escapeHtml(p.description)}</p>
+            <div class="program-price">${escapeHtml(p.priceLabel)} ${tbdBadge}</div>
+            <div class="program-feat">${features}</div>
+            <a href="${escapeHtml(p.ctaHref || 'booking.html')}" class="program-cta">${escapeHtml(p.ctaText || 'Book a discovery call →')}</a>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderFounder(siteContent){
+      if(!siteContent) return;
+
+      const nameEl = document.querySelector('.founder-name');
+      const titleEl = document.querySelector('.founder-title');
+      const bioEl = document.querySelector('.founder-bio');
+      const credsEl = document.querySelector('.founder-creds');
+
+      if(nameEl && siteContent.founderName) nameEl.textContent = siteContent.founderName;
+      if(titleEl && siteContent.founderTitle) titleEl.textContent = siteContent.founderTitle;
+
+      if(bioEl && siteContent.founderBioParagraphs && siteContent.founderBioParagraphs.length){
+        // Bio paragraphs may contain simple <em> emphasis in the source
+        // copy (e.g. book titles) — escape first, then allow that one
+        // tag back in deliberately, since this content comes from the
+        // CMS database (entered by trusted admins), not arbitrary users.
+        bioEl.innerHTML = siteContent.founderBioParagraphs
+          .map(p => `<p>${escapeHtml(p)}</p>`)
+          .join('');
+      }
+
+      if(credsEl && siteContent.founderCredentials && siteContent.founderCredentials.length){
+        credsEl.innerHTML = siteContent.founderCredentials
+          .map(c => `<span>${escapeHtml(c)}</span>`)
+          .join('');
+      }
+    }
+
+    function renderBooks(books){
+      if(!books || !books.length) return;
+
+      const featured = books.filter(b => b.featured);
+      const rest = books.filter(b => !b.featured);
+
+      const featuredWrap = document.querySelector('.books-featured');
+      if(featuredWrap && featured.length){
+        featuredWrap.innerHTML = featured.map(b => `
+          <div class="book-feature-card">
+            <div class="btag">${escapeHtml(b.tag)}</div>
+            <h4><a href="${escapeHtml(b.amazonUrl)}" target="_blank" rel="noopener">${escapeHtml(b.title)}</a></h4>
+            <p>${escapeHtml(b.blurb)}</p>
+          </div>
+        `).join('');
+      }
+
+      const listWrap = document.querySelector('.books-list');
+      if(listWrap && rest.length){
+        listWrap.innerHTML = rest.map((b, i) => `
+          <div class="book-row">
+            <span class="bnum">${String(i + 1).padStart(2, '0')}</span>
+            <span class="btitle"><a href="${escapeHtml(b.amazonUrl)}" target="_blank" rel="noopener">${escapeHtml(b.title)}</a></span>
+          </div>
+        `).join('');
+      }
+    }
+
+    fetch('/api/content')
+      .then(res => {
+        if(!res.ok) throw new Error('Content API returned ' + res.status);
+        return res.json();
+      })
+      .then(data => {
+        renderPrograms(data.programs);
+        renderFounder(data.siteContent);
+        renderBooks(data.books);
+      })
+      .catch(err => {
+        // Deliberately silent to the visitor — the hardcoded fallback
+        // markup already in this page is left exactly as it was.
+        console.warn('[dynamic content] Falling back to static markup:', err.message);
+      });
+  })();
+
 
   /* ===== Discovery-call intake assistant ===== */
   const intakeLog = document.getElementById('intake-log');
@@ -1546,9 +1899,9 @@ REAL BOOK LIST:
 RULES:
 - Respond in the same language the visitor writes in — English, French, or Filipino (Tagalog). The book titles themselves stay in English exactly as listed above (they are not published in other languages) — only your surrounding sentences switch language.
 - Ask at most ONE short clarifying question if needed, otherwise recommend right away.
-- Recommend 1-2 titles max, each with a one-sentence reason tied to what the person actually said.
-- Keep the whole reply to 2-4 sentences. No exclamation points, no corporate cheer.
-- Always mention that all books are available on Mahal's Amazon author page, and that most are free with Kindle Unlimited.
+- Recommend exactly 1 title (2 only if both are clearly and equally relevant), with a one-sentence reason tied to what the person actually said.
+- CRITICAL: Keep your ENTIRE reply to 3 sentences maximum, including the Amazon mention below. Do not exceed this. Brevity matters more than completeness here.
+- Your final sentence must always mention that the book(s) are available on Mahal's Amazon author page, and that most are free with Kindle Unlimited. Never end the reply without this sentence.
 - Never diagnose, give therapy advice, or treat this as a substitute for coaching — these are just books.
 - If something suggests a mental health crisis or risk to safety, do not recommend a book for it — gently say this isn't the right tool for that and suggest a crisis line, a doctor, or reaching out to Mahal directly, and stop there.`;
 
@@ -1659,7 +2012,7 @@ RULES:
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          max_tokens: 300,
+          max_tokens: 500,
           system: BOOKM_SYSTEM_PROMPT,
           messages: bookmConversation
         })
@@ -1675,7 +2028,14 @@ RULES:
       }
 
       const replyText = data.content?.filter(b => b.type === 'text').map(b => b.text).join('\n') || "Not sure what to recommend from that — try browsing the list below, or ask me something else.";
-      bookmAddMsg('bot', bookmLinkify(bookmEscape(replyText).replace(/\n/g, '<br>')));
+      let renderedReply = bookmLinkify(bookmEscape(replyText).replace(/\n/g, '<br>'));
+      // Safety net: if the response got cut short and never mentioned the
+      // Amazon page (e.g. hit a length limit mid-sentence), append the link
+      // separately so it's never missing entirely.
+      if(!/amazon author page/i.test(replyText)){
+        renderedReply += `<br><br><a href="${BOOKM_AUTHOR_URL}" target="_blank" rel="noopener" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">See all of Mahal's books on Amazon →</a>`;
+      }
+      bookmAddMsg('bot', renderedReply);
       bookmConversation.push({ role: 'assistant', content: replyText });
 
     }catch(err){
