@@ -148,6 +148,36 @@ module.exports = async function handler(req, res) {
         return;
       }
 
+      if (action === 'save-session') {
+        const { id, clientId, sessionDate, topic } = req.body || {};
+        if (!id || !clientId) {
+          res.status(400).json({ error: 'A session id and clientId are required.' });
+          return;
+        }
+        if (!sessionDate) {
+          res.status(400).json({ error: 'A session date is required.' });
+          return;
+        }
+        const saved = await db.saveSession(req.body);
+        res.status(200).json({ session: saved });
+        return;
+      }
+
+      if (action === 'save-resource') {
+        const { id, clientId, heading } = req.body || {};
+        if (!id || !clientId) {
+          res.status(400).json({ error: 'A resource id and clientId are required.' });
+          return;
+        }
+        if (!heading || !heading.trim()) {
+          res.status(400).json({ error: 'A heading is required.' });
+          return;
+        }
+        const saved = await db.saveResource(req.body);
+        res.status(200).json({ resource: saved });
+        return;
+      }
+
       res.status(400).json({ error: 'Unrecognized action.' });
       return;
     }
@@ -155,7 +185,7 @@ module.exports = async function handler(req, res) {
     if (req.method === 'DELETE') {
       const { resource, id } = req.body || {};
       if (!resource || !id) {
-        res.status(400).json({ error: 'Both resource ("client" or "milestone") and id are required.' });
+        res.status(400).json({ error: 'Both resource (one of "client", "milestone", "session", "resource") and id are required.' });
         return;
       }
 
@@ -171,7 +201,19 @@ module.exports = async function handler(req, res) {
         return;
       }
 
-      res.status(400).json({ error: 'resource must be "client" or "milestone".' });
+      if (resource === 'session') {
+        const deleted = await db.deleteSession(id);
+        res.status(200).json({ deleted });
+        return;
+      }
+
+      if (resource === 'resource') {
+        const deleted = await db.deleteResource(id);
+        res.status(200).json({ deleted });
+        return;
+      }
+
+      res.status(400).json({ error: 'resource must be "client", "milestone", "session", or "resource".' });
       return;
     }
 

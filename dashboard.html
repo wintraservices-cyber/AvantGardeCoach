@@ -740,45 +740,11 @@
     <div class="dash-grid reveal">
       <div class="dash-panel">
         <h3>Session history</h3>
-        <div class="session-row">
-          <span class="date">JUN 11</span>
-          <span class="topic">The relocation decision — final call</span>
-          <span class="tagdone">Logged</span>
-        </div>
-        <div class="session-row">
-          <span class="date">MAY 28</span>
-          <span class="topic">Weighing values vs. expectations</span>
-          <span class="tagdone">Logged</span>
-        </div>
-        <div class="session-row">
-          <span class="date">MAY 14</span>
-          <span class="topic">Discovery call — where things stand</span>
-          <span class="tagdone">Logged</span>
-        </div>
+        <div id="session-history-list"></div>
       </div>
       <div class="dash-panel">
         <h3>From Mahal</h3>
-        <div class="resource-row">
-          <span class="ic">→</span>
-          <div class="rtext">
-            <h4>Before our next session</h4>
-            <p>Write down the sentence you're avoiding — even half-formed.</p>
-          </div>
-        </div>
-        <div class="resource-row">
-          <span class="ic">→</span>
-          <div class="rtext">
-            <h4>Reading</h4>
-            <p>"Difficult Conversations" — chapters 1–3</p>
-          </div>
-        </div>
-        <div class="resource-row">
-          <span class="ic">→</span>
-          <div class="rtext">
-            <h4>Reminder</h4>
-            <p>No shame, no guilt. Just bring the truth of it.</p>
-          </div>
-        </div>
+        <div id="resources-list"></div>
       </div>
     </div>
   </div>
@@ -902,6 +868,56 @@
     }).join('');
   }
 
+  function formatSessionDate(dateStr){
+    // session_date comes from Postgres as 'YYYY-MM-DD' (a DATE column, no
+    // time component) — parse it as a plain date rather than via `new
+    // Date(dateStr)` directly, since that constructor interprets a
+    // date-only string as UTC midnight, which can roll over to the
+    // previous day in timezones behind UTC. Splitting and constructing
+    // with explicit year/month/day avoids that off-by-one.
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const d = new Date(year, month - 1, day);
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }).toUpperCase();
+  }
+
+  function renderSessionHistory(sessions){
+    const container = document.getElementById('session-history-list');
+    if(!container) return;
+
+    if(!sessions || sessions.length === 0){
+      container.innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">No sessions logged yet.</p>';
+      return;
+    }
+
+    container.innerHTML = sessions.map(s => `
+      <div class="session-row">
+        <span class="date">${escapeHtml(formatSessionDate(s.sessionDate))}</span>
+        <span class="topic">${escapeHtml(s.topic)}</span>
+        <span class="tagdone">Logged</span>
+      </div>
+    `).join('');
+  }
+
+  function renderResources(resources){
+    const container = document.getElementById('resources-list');
+    if(!container) return;
+
+    if(!resources || resources.length === 0){
+      container.innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">Nothing here yet.</p>';
+      return;
+    }
+
+    container.innerHTML = resources.map(r => `
+      <div class="resource-row">
+        <span class="ic">→</span>
+        <div class="rtext">
+          <h4>${escapeHtml(r.heading)}</h4>
+          <p>${escapeHtml(r.body)}</p>
+        </div>
+      </div>
+    `).join('');
+  }
+
   async function loadDashboardData(){
     try{
       const res = await fetch('/api/client-data');
@@ -913,6 +929,8 @@
       currentMilestones = data.milestones || [];
       renderHeroAndSession(currentClient);
       renderMilestones(currentMilestones);
+      renderSessionHistory(data.sessions || []);
+      renderResources(data.resources || []);
     }catch(err){
       console.error('[dashboard] Failed to load client data:', err);
       const container = document.getElementById('journey-path');

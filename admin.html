@@ -1147,6 +1147,8 @@
   // ---------- CLIENT DETAIL (profile + milestones for one client) ----------
   let currentClientDetail = null;
   let currentClientMilestones = [];
+  let currentClientSessions = [];
+  let currentClientResources = [];
 
   async function loadClientDetail(clientId){
     const content = document.getElementById('client-detail-content');
@@ -1161,6 +1163,8 @@
       }
       currentClientDetail = data.client;
       currentClientMilestones = data.milestones || [];
+      currentClientSessions = data.sessions || [];
+      currentClientResources = data.resources || [];
       renderClientDetail();
     }catch(err){
       content.innerHTML = '<p style="color:var(--vermillion-bright);">Could not reach the server.</p>';
@@ -1235,9 +1239,25 @@
       </div>
       <div id="cd-milestones-list"></div>
       <div class="add-new-card" id="cd-add-milestone-btn">+ Add a milestone</div>
+
+      <div class="panel-toolbar" style="margin-top:2rem;">
+        <h3 style="margin:0;">Session history</h3>
+        <div class="count">${currentClientSessions.length} session${currentClientSessions.length === 1 ? '' : 's'}</div>
+      </div>
+      <div id="cd-sessions-list"></div>
+      <div class="add-new-card" id="cd-add-session-btn">+ Add a session</div>
+
+      <div class="panel-toolbar" style="margin-top:2rem;">
+        <h3 style="margin:0;">Resources ("From Mahal")</h3>
+        <div class="count">${currentClientResources.length} item${currentClientResources.length === 1 ? '' : 's'}</div>
+      </div>
+      <div id="cd-resources-list"></div>
+      <div class="add-new-card" id="cd-add-resource-btn">+ Add a resource</div>
     `;
 
     renderClientMilestones();
+    renderClientSessions();
+    renderClientResources();
     wireClientDetailActions();
   }
 
@@ -1360,6 +1380,185 @@
     });
   }
 
+  // ---------- SESSIONS (within client detail) ----------
+  function renderClientSessions(){
+    const list = document.getElementById('cd-sessions-list');
+    if(currentClientSessions.length === 0){
+      list.innerHTML = '<p style="color:var(--muted); font-size:0.85rem; padding:0.5rem 0;">No sessions logged yet.</p>';
+      return;
+    }
+    list.innerHTML = currentClientSessions.map(s => sessionCardHtml(s)).join('');
+    currentClientSessions.forEach(s => wireSessionCard(s.id));
+  }
+
+  function sessionCardHtml(s){
+    const id = escapeHtml(s.id);
+    return `
+      <div class="item-card" data-session-id="${id}">
+        <div class="item-card-head">
+          <div>
+            <h3>${escapeHtml(s.topic || '(untitled session)')}</h3>
+            <div class="tag-pill">${escapeHtml(s.sessionDate || '')}</div>
+          </div>
+          <div class="item-card-actions">
+            <button class="btn-danger-sm" data-action="delete-session">Delete</button>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Date</label>
+            <input type="date" data-field="sessionDate" value="${escapeHtml(s.sessionDate || '')}">
+          </div>
+          <div class="field">
+            <label>Topic</label>
+            <input type="text" data-field="topic" value="${escapeHtml(s.topic || '')}">
+          </div>
+        </div>
+        <div class="save-row">
+          <button class="btn-primary" data-action="save-session">Save changes</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function wireSessionCard(id){
+    const card = document.querySelector(`[data-session-id="${id}"]`);
+    if(!card) return;
+
+    card.querySelector('[data-action="save-session"]').addEventListener('click', async () => {
+      const item = {
+        id,
+        clientId: currentClientDetail.id,
+        sessionDate: card.querySelector('[data-field="sessionDate"]').value,
+        topic: card.querySelector('[data-field="topic"]').value.trim(),
+      };
+      try{
+        const res = await fetch('/api/clients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'save-session', ...item })
+        });
+        const data = await res.json();
+        if(res.ok){
+          showStatus('Session saved.', 'success');
+          await loadClientDetail(currentClientDetail.id);
+        } else {
+          showStatus(data.error || 'Could not save this session.', 'error');
+        }
+      }catch(err){
+        showStatus('Could not reach the server.', 'error');
+      }
+    });
+
+    card.querySelector('[data-action="delete-session"]').addEventListener('click', async () => {
+      if(!confirm('Delete this session record? This cannot be undone.')) return;
+      try{
+        const res = await fetch('/api/clients', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ resource: 'session', id })
+        });
+        const data = await res.json();
+        if(res.ok){
+          showStatus('Session deleted.', 'success');
+          await loadClientDetail(currentClientDetail.id);
+        } else {
+          showStatus(data.error || 'Could not delete this session.', 'error');
+        }
+      }catch(err){
+        showStatus('Could not reach the server.', 'error');
+      }
+    });
+  }
+
+  // ---------- RESOURCES (within client detail) ----------
+  function renderClientResources(){
+    const list = document.getElementById('cd-resources-list');
+    if(currentClientResources.length === 0){
+      list.innerHTML = '<p style="color:var(--muted); font-size:0.85rem; padding:0.5rem 0;">No resources added yet.</p>';
+      return;
+    }
+    list.innerHTML = currentClientResources.map(r => resourceCardHtml(r)).join('');
+    currentClientResources.forEach(r => wireResourceCard(r.id));
+  }
+
+  function resourceCardHtml(r){
+    const id = escapeHtml(r.id);
+    return `
+      <div class="item-card" data-resource-id="${id}">
+        <div class="item-card-head">
+          <div>
+            <h3>${escapeHtml(r.heading || '(untitled)')}</h3>
+          </div>
+          <div class="item-card-actions">
+            <button class="btn-danger-sm" data-action="delete-resource">Delete</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Heading (e.g. "Before our next session", "Reading", "Reminder")</label>
+          <input type="text" data-field="heading" value="${escapeHtml(r.heading || '')}">
+        </div>
+        <div class="field">
+          <label>Body</label>
+          <textarea data-field="body" rows="2">${escapeHtml(r.body || '')}</textarea>
+        </div>
+        <div class="save-row">
+          <button class="btn-primary" data-action="save-resource">Save changes</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function wireResourceCard(id){
+    const card = document.querySelector(`[data-resource-id="${id}"]`);
+    if(!card) return;
+
+    card.querySelector('[data-action="save-resource"]').addEventListener('click', async () => {
+      const item = {
+        id,
+        clientId: currentClientDetail.id,
+        heading: card.querySelector('[data-field="heading"]').value.trim(),
+        body: card.querySelector('[data-field="body"]').value.trim(),
+      };
+      try{
+        const res = await fetch('/api/clients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'save-resource', ...item })
+        });
+        const data = await res.json();
+        if(res.ok){
+          showStatus('Resource saved.', 'success');
+          await loadClientDetail(currentClientDetail.id);
+        } else {
+          showStatus(data.error || 'Could not save this resource.', 'error');
+        }
+      }catch(err){
+        showStatus('Could not reach the server.', 'error');
+      }
+    });
+
+    card.querySelector('[data-action="delete-resource"]').addEventListener('click', async () => {
+      if(!confirm('Delete this resource? This cannot be undone.')) return;
+      try{
+        const res = await fetch('/api/clients', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ resource: 'resource', id })
+        });
+        const data = await res.json();
+        if(res.ok){
+          showStatus('Resource deleted.', 'success');
+          await loadClientDetail(currentClientDetail.id);
+        } else {
+          showStatus(data.error || 'Could not delete this resource.', 'error');
+        }
+      }catch(err){
+        showStatus('Could not reach the server.', 'error');
+      }
+    });
+  }
+
   function wireClientDetailActions(){
     document.getElementById('cd-save-profile-btn').addEventListener('click', async () => {
       const nextSessionAtRaw = document.getElementById('cd-nextSessionAt').value;
@@ -1465,6 +1664,61 @@
           await loadClientDetail(currentClientDetail.id);
         } else {
           showStatus(data.error || 'Could not add this milestone.', 'error');
+        }
+      }catch(err){
+        showStatus('Could not reach the server.', 'error');
+      }
+    });
+
+    document.getElementById('cd-add-session-btn').addEventListener('click', async () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const tempId = currentClientDetail.id + '-s-' + Date.now();
+      const newSession = {
+        id: tempId,
+        clientId: currentClientDetail.id,
+        sessionDate: today,
+        topic: 'New session',
+        sortOrder: currentClientSessions.length + 1,
+      };
+      try{
+        const res = await fetch('/api/clients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'save-session', ...newSession })
+        });
+        const data = await res.json();
+        if(res.ok){
+          showStatus('Session added.', 'success');
+          await loadClientDetail(currentClientDetail.id);
+        } else {
+          showStatus(data.error || 'Could not add this session.', 'error');
+        }
+      }catch(err){
+        showStatus('Could not reach the server.', 'error');
+      }
+    });
+
+    document.getElementById('cd-add-resource-btn').addEventListener('click', async () => {
+      const tempId = currentClientDetail.id + '-r-' + Date.now();
+      const newResourceItem = {
+        id: tempId,
+        clientId: currentClientDetail.id,
+        heading: 'New item',
+        body: '',
+        sortOrder: currentClientResources.length + 1,
+      };
+      try{
+        const res = await fetch('/api/clients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'save-resource', ...newResourceItem })
+        });
+        const data = await res.json();
+        if(res.ok){
+          showStatus('Resource added.', 'success');
+          await loadClientDetail(currentClientDetail.id);
+        } else {
+          showStatus(data.error || 'Could not add this resource.', 'error');
         }
       }catch(err){
         showStatus('Could not reach the server.', 'error');

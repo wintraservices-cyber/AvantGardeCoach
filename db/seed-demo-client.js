@@ -143,6 +143,42 @@ async function main() {
     console.log(`  ✓ ${m.id} (${m.status})`);
   }
 
+  console.log('Creating session history...');
+
+  const sessions = [
+    { id: `${actualClientId}-sess1`, sessionDate: '2026-06-11', topic: 'The relocation decision — final call', sortOrder: 3 },
+    { id: `${actualClientId}-sess2`, sessionDate: '2026-05-28', topic: 'Weighing values vs. expectations', sortOrder: 2 },
+    { id: `${actualClientId}-sess3`, sessionDate: '2026-05-14', topic: 'Discovery call — where things stand', sortOrder: 1 },
+  ];
+
+  for (const s of sessions) {
+    await sql`
+      INSERT INTO sessions (id, client_id, session_date, topic, sort_order)
+      VALUES (${s.id}, ${actualClientId}, ${s.sessionDate}, ${s.topic}, ${s.sortOrder})
+      ON CONFLICT (id) DO UPDATE SET
+        session_date = EXCLUDED.session_date, topic = EXCLUDED.topic, sort_order = EXCLUDED.sort_order
+    `;
+    console.log(`  ✓ ${s.id} (${s.sessionDate})`);
+  }
+
+  console.log('Creating resources...');
+
+  const resources = [
+    { id: `${actualClientId}-res1`, heading: 'Before our next session', body: "Write down the sentence you're avoiding — even half-formed.", sortOrder: 1 },
+    { id: `${actualClientId}-res2`, heading: 'Reading', body: '"Difficult Conversations" — chapters 1–3', sortOrder: 2 },
+    { id: `${actualClientId}-res3`, heading: 'Reminder', body: 'No shame, no guilt. Just bring the truth of it.', sortOrder: 3 },
+  ];
+
+  for (const r of resources) {
+    await sql`
+      INSERT INTO resources (id, client_id, heading, body, sort_order)
+      VALUES (${r.id}, ${actualClientId}, ${r.heading}, ${r.body}, ${r.sortOrder})
+      ON CONFLICT (id) DO UPDATE SET
+        heading = EXCLUDED.heading, body = EXCLUDED.body, sort_order = EXCLUDED.sort_order
+    `;
+    console.log(`  ✓ ${r.id} (${r.heading})`);
+  }
+
   console.log();
   console.log('Demo client seeded successfully.');
   console.log(`Login at /dashboard with: ${EMAIL} / ${PASSWORD}`);

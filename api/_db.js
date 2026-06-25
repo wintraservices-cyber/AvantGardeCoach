@@ -488,16 +488,146 @@ async function deleteMilestone(id) {
   return rows.length > 0;
 }
 
+// ---------------------------------------------------------------------------
+// SESSIONS (past session history for a client — flexible count, same
+// per-client pattern as milestones)
+// ---------------------------------------------------------------------------
+
+function rowToSession(row) {
+  return {
+    id: row.id,
+    clientId: row.client_id,
+    sessionDate: row.session_date,
+    topic: row.topic,
+    sortOrder: row.sort_order,
+  };
+}
+
 /**
- * Returns a client's full dashboard data in one call: profile + milestones.
+ * Returns all sessions for a client, most recent first.
  * @param {string} clientId
- * @returns {Promise<{client: Object, milestones: Array}|null>}
+ * @returns {Promise<Array<Object>>}
+ */
+async function getSessionsForClient(clientId) {
+  const rows = await sql`
+    SELECT * FROM sessions WHERE client_id = ${clientId} ORDER BY session_date DESC, sort_order DESC
+  `;
+  return rows.map(rowToSession);
+}
+
+/**
+ * Creates or updates a session record (upsert by id).
+ * @param {Object} session - must include id and clientId
+ * @returns {Promise<Object>} the saved session
+ */
+async function saveSession(session) {
+  if (!session || !session.id || !session.clientId) {
+    throw new Error('saveSession requires a session object with "id" and "clientId" fields.');
+  }
+
+  const existingRows = await sql`SELECT * FROM sessions WHERE id = ${session.id}`;
+  const existing = existingRows[0] ? rowToSession(existingRows[0]) : {};
+  const merged = { ...existing, ...session };
+
+  const rows = await sql`
+    INSERT INTO sessions (id, client_id, session_date, topic, sort_order)
+    VALUES (${merged.id}, ${merged.clientId}, ${merged.sessionDate}, ${merged.topic ?? null}, ${merged.sortOrder ?? 0})
+    ON CONFLICT (id) DO UPDATE SET
+      session_date = EXCLUDED.session_date,
+      topic = EXCLUDED.topic,
+      sort_order = EXCLUDED.sort_order
+    RETURNING *
+  `;
+  return rowToSession(rows[0]);
+}
+
+/**
+ * Deletes a session by id.
+ * @param {string} id
+ * @returns {Promise<boolean>} true if a session was removed
+ */
+async function deleteSession(id) {
+  const rows = await sql`DELETE FROM sessions WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
+// ---------------------------------------------------------------------------
+// RESOURCES (the "From Mahal" panel items — flexible count per client)
+// ---------------------------------------------------------------------------
+
+function rowToResource(row) {
+  return {
+    id: row.id,
+    clientId: row.client_id,
+    heading: row.heading,
+    body: row.body,
+    sortOrder: row.sort_order,
+  };
+}
+
+/**
+ * Returns all resources for a client, sorted by sortOrder.
+ * @param {string} clientId
+ * @returns {Promise<Array<Object>>}
+ */
+async function getResourcesForClient(clientId) {
+  const rows = await sql`
+    SELECT * FROM resources WHERE client_id = ${clientId} ORDER BY sort_order ASC
+  `;
+  return rows.map(rowToResource);
+}
+
+/**
+ * Creates or updates a resource (upsert by id).
+ * @param {Object} resource - must include id and clientId
+ * @returns {Promise<Object>} the saved resource
+ */
+async function saveResource(resource) {
+  if (!resource || !resource.id || !resource.clientId) {
+    throw new Error('saveResource requires a resource object with "id" and "clientId" fields.');
+  }
+
+  const existingRows = await sql`SELECT * FROM resources WHERE id = ${resource.id}`;
+  const existing = existingRows[0] ? rowToResource(existingRows[0]) : {};
+  const merged = { ...existing, ...resource };
+
+  const rows = await sql`
+    INSERT INTO resources (id, client_id, heading, body, sort_order)
+    VALUES (${merged.id}, ${merged.clientId}, ${merged.heading ?? null}, ${merged.body ?? null}, ${merged.sortOrder ?? 0})
+    ON CONFLICT (id) DO UPDATE SET
+      heading = EXCLUDED.heading,
+      body = EXCLUDED.body,
+      sort_order = EXCLUDED.sort_order
+    RETURNING *
+  `;
+  return rowToResource(rows[0]);
+}
+
+/**
+ * Deletes a resource by id.
+ * @param {string} id
+ * @returns {Promise<boolean>} true if a resource was removed
+ */
+async function deleteResource(id) {
+  const rows = await sql`DELETE FROM resources WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
+/**
+ * Returns a client's full dashboard data in one call: profile, milestones,
+ * sessions, and resources.
+ * @param {string} clientId
+ * @returns {Promise<{client: Object, milestones: Array, sessions: Array, resources: Array}|null>}
  */
 async function getClientDashboard(clientId) {
   const client = await getClientById(clientId);
   if (!client) return null;
-  const milestones = await getMilestonesForClient(clientId);
-  return { client, milestones };
+  const [milestones, sessions, resources] = await Promise.all([
+    getMilestonesForClient(clientId),
+    getSessionsForClient(clientId),
+    getResourcesForClient(clientId),
+  ]);
+  return { client, milestones, sessions, resources };
 }
 
 // ---------------------------------------------------------------------------
@@ -571,6 +701,12 @@ module.exports = {
   getMilestonesForClient,
   saveMilestone,
   deleteMilestone,
+  getSessionsForClient,
+  saveSession,
+  deleteSession,
+  getResourcesForClient,
+  saveResource,
+  deleteResource,
   getClientDashboard,
   getSiteContent,
   updateSiteContent,
