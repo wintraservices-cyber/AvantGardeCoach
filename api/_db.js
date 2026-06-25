@@ -300,6 +300,8 @@ function rowToClient(row) {
     nextSessionFormat: row.next_session_format,
     rescheduleUrl: row.reschedule_url,
     createdAt: row.created_at,
+    notionPageId: row.notion_page_id,
+    updatedAt: row.updated_at,
   };
 }
 
@@ -363,12 +365,13 @@ async function createClient(client) {
     throw new Error('createClient requires { id, email, passwordHash, displayName }.');
   }
   const rows = await sql`
-    INSERT INTO clients (id, email, password_hash, display_name, session_count, hero_headline, next_session_at, next_session_with, next_session_format, reschedule_url)
+    INSERT INTO clients (id, email, password_hash, display_name, session_count, hero_headline, next_session_at, next_session_with, next_session_format, reschedule_url, notion_page_id)
     VALUES (
       ${client.id}, ${client.email}, ${client.passwordHash}, ${client.displayName},
       ${client.sessionCount ?? 0}, ${client.heroHeadline ?? null},
       ${client.nextSessionAt ?? null}, ${client.nextSessionWith ?? 'Mahal Hudson'},
-      ${client.nextSessionFormat ?? 'Video call'}, ${client.rescheduleUrl ?? null}
+      ${client.nextSessionFormat ?? 'Video call'}, ${client.rescheduleUrl ?? null},
+      ${client.notionPageId ?? null}
     )
     RETURNING *
   `;
@@ -401,7 +404,8 @@ async function updateClient(client) {
       next_session_at = ${merged.nextSessionAt},
       next_session_with = ${merged.nextSessionWith},
       next_session_format = ${merged.nextSessionFormat},
-      reschedule_url = ${merged.rescheduleUrl}
+      reschedule_url = ${merged.rescheduleUrl},
+      notion_page_id = ${merged.notionPageId}
     WHERE id = ${client.id}
     RETURNING *
   `;
@@ -446,6 +450,8 @@ function rowToMilestone(row) {
     lockedReason: row.locked_reason,
     reflectionPrompt: row.reflection_prompt,
     sortOrder: row.sort_order,
+    notionPageId: row.notion_page_id,
+    updatedAt: row.updated_at,
   };
 }
 
@@ -476,11 +482,11 @@ async function saveMilestone(milestone) {
   const merged = { ...existing, ...milestone };
 
   const rows = await sql`
-    INSERT INTO milestones (id, client_id, tag, title, description, status, locked_reason, reflection_prompt, sort_order)
+    INSERT INTO milestones (id, client_id, tag, title, description, status, locked_reason, reflection_prompt, sort_order, notion_page_id)
     VALUES (
       ${merged.id}, ${merged.clientId}, ${merged.tag ?? null}, ${merged.title ?? null},
       ${merged.description ?? null}, ${merged.status ?? 'locked'}, ${merged.lockedReason ?? null},
-      ${merged.reflectionPrompt ?? null}, ${merged.sortOrder ?? 0}
+      ${merged.reflectionPrompt ?? null}, ${merged.sortOrder ?? 0}, ${merged.notionPageId ?? null}
     )
     ON CONFLICT (id) DO UPDATE SET
       tag = EXCLUDED.tag,
@@ -489,7 +495,8 @@ async function saveMilestone(milestone) {
       status = EXCLUDED.status,
       locked_reason = EXCLUDED.locked_reason,
       reflection_prompt = EXCLUDED.reflection_prompt,
-      sort_order = EXCLUDED.sort_order
+      sort_order = EXCLUDED.sort_order,
+      notion_page_id = EXCLUDED.notion_page_id
     RETURNING *
   `;
   return rowToMilestone(rows[0]);
@@ -517,6 +524,8 @@ function rowToSession(row) {
     sessionDate: row.session_date,
     topic: row.topic,
     sortOrder: row.sort_order,
+    notionPageId: row.notion_page_id,
+    updatedAt: row.updated_at,
   };
 }
 
@@ -547,12 +556,13 @@ async function saveSession(session) {
   const merged = { ...existing, ...session };
 
   const rows = await sql`
-    INSERT INTO sessions (id, client_id, session_date, topic, sort_order)
-    VALUES (${merged.id}, ${merged.clientId}, ${merged.sessionDate}, ${merged.topic ?? null}, ${merged.sortOrder ?? 0})
+    INSERT INTO sessions (id, client_id, session_date, topic, sort_order, notion_page_id)
+    VALUES (${merged.id}, ${merged.clientId}, ${merged.sessionDate}, ${merged.topic ?? null}, ${merged.sortOrder ?? 0}, ${merged.notionPageId ?? null})
     ON CONFLICT (id) DO UPDATE SET
       session_date = EXCLUDED.session_date,
       topic = EXCLUDED.topic,
-      sort_order = EXCLUDED.sort_order
+      sort_order = EXCLUDED.sort_order,
+      notion_page_id = EXCLUDED.notion_page_id
     RETURNING *
   `;
   return rowToSession(rows[0]);
@@ -579,6 +589,8 @@ function rowToResource(row) {
     heading: row.heading,
     body: row.body,
     sortOrder: row.sort_order,
+    notionPageId: row.notion_page_id,
+    updatedAt: row.updated_at,
   };
 }
 
@@ -609,12 +621,13 @@ async function saveResource(resource) {
   const merged = { ...existing, ...resource };
 
   const rows = await sql`
-    INSERT INTO resources (id, client_id, heading, body, sort_order)
-    VALUES (${merged.id}, ${merged.clientId}, ${merged.heading ?? null}, ${merged.body ?? null}, ${merged.sortOrder ?? 0})
+    INSERT INTO resources (id, client_id, heading, body, sort_order, notion_page_id)
+    VALUES (${merged.id}, ${merged.clientId}, ${merged.heading ?? null}, ${merged.body ?? null}, ${merged.sortOrder ?? 0}, ${merged.notionPageId ?? null})
     ON CONFLICT (id) DO UPDATE SET
       heading = EXCLUDED.heading,
       body = EXCLUDED.body,
-      sort_order = EXCLUDED.sort_order
+      sort_order = EXCLUDED.sort_order,
+      notion_page_id = EXCLUDED.notion_page_id
     RETURNING *
   `;
   return rowToResource(rows[0]);

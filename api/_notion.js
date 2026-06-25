@@ -538,6 +538,42 @@ async function getResourcePage(pageId) {
   return getPageById('resources', pageId);
 }
 
+/**
+ * Moves a page to Notion's trash (the API has no permanent-delete — this
+ * mirrors what happens when a page sits there for 30 days before Notion
+ * itself permanently removes it). Uses `in_trash`, NOT the older
+ * `archived` field — `archived` was removed as of Notion API version
+ * 2026-03-11 and silently does nothing on that version or newer, which is
+ * exactly the kind of "the call succeeds but accomplishes nothing" bug
+ * that's easy to ship without noticing. This project pins NOTION_VERSION
+ * to 2025-09-03 elsewhere, where `in_trash` already works and `archived`
+ * still would too — using `in_trash` here is the forward-compatible
+ * choice regardless of which version ends up in use later.
+ * @param {string} dataSourceKey - only used to resolve apiKey
+ * @param {string} pageId
+ * @returns {Promise<Object>}
+ */
+async function trashPage(dataSourceKey, pageId) {
+  const { apiKey } = getCredentials(dataSourceKey);
+
+  const response = await fetch(`${NOTION_API_BASE}/pages/${pageId}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Notion-Version': NOTION_VERSION,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ in_trash: true }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text().catch(() => '');
+    throw new Error(`Notion trash-page failed (${response.status}): ${errorBody}`);
+  }
+
+  return response.json();
+}
+
 module.exports = {
   createLeadPage,
   findLeadPageByBookingUid,
@@ -558,5 +594,6 @@ module.exports = {
   createResourcePage,
   updateResourcePage,
   getResourcePage,
+  trashPage,
 };
 
