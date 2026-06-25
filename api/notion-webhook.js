@@ -42,6 +42,19 @@
  * avoid leaving it visible longer than needed) but logging it briefly
  * during setup is not a bug.
  *
+ * VERIFICATION DETECTION — A REAL-WORLD CORRECTION TO NOTION'S OWN DOCS
+ * Notion's documentation describes the verification handshake request as
+ * having no X-Notion-Signature header, since no secret exists yet to
+ * sign it with. In practice, during this project's actual setup, Notion
+ * sent a signature header on the verification request anyway — confirmed
+ * via direct curl testing against a deployed diagnostic build, not
+ * assumed. This handler therefore detects the verification handshake by
+ * the presence of `verification_token` in the body ALONE, not by also
+ * requiring the signature header to be absent. If you're debugging this
+ * again later and verification still isn't completing, check the
+ * function logs for the literal body Notion sent — don't trust the
+ * documented shape over what's actually arriving.
+ *
  * SIGNATURE VERIFICATION — DIFFERENT FROM CAL.COM'S, ON PURPOSE
  * Notion's signature header is X-Notion-Signature (not x-cal-signature-256)
  * and its value is prefixed "sha256=<hex_digest>" — WITH the prefix,
@@ -426,7 +439,19 @@ module.exports = async function handler(req, res) {
   console.log('[notion-webhook] DIAGNOSTIC - x-notion-signature header:', JSON.stringify(req.headers['x-notion-signature']));
   console.log('[notion-webhook] DIAGNOSTIC - all headers:', JSON.stringify(req.headers));
 
-  if (body && body.verification_token && !req.headers['x-notion-signature']) {
+  // The ONE-TIME verification handshake (setup step 5/6 in the header
+  // comment) arrives as a POST with a verification_token. Documentation
+  // describes this request as having no signature header (since no
+  // secret exists yet to sign it with) — but real-world testing during
+  // this project's setup showed Notion sends one anyway on at least some
+  // verification attempts. Rather than rely on signature-ABSENCE to
+  // detect this case (which real traffic contradicted), detect it purely
+  // by the presence of verification_token in the body — that field is
+  // unique to this one handshake request and never appears on a normal
+  // event payload, so checking for it alone is sufficient and more
+  // robust than also requiring a specific header state we can't fully
+  // rely on.
+  if (body && body.verification_token) {
     console.log('[notion-webhook] Verification token received (copy this into Notion to complete setup):', body.verification_token);
     res.status(200).json({ ok: true });
     return;
