@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Avant-Garde Coach</title>
+<title>Control Panel — Avant-Garde Coach</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -254,6 +254,8 @@
   .admin-header h1{font-family:'Fraunces',serif; font-size:1.9rem; font-weight:400; margin-top:0.4rem;}
 
   .tabs{display:flex; gap:0.4rem; border-bottom:1px solid var(--rule); margin-bottom:2.2rem;}
+  .tabs-group{display:flex; gap:0.4rem;}
+  .tabs-group-right{margin-left:auto;}
   .tab-btn{
     background:none;
     border:none;
@@ -363,11 +365,11 @@
       <a href="index.html" class="login-logo">Avant-Garde <em>Coach</em></a>
       <div>
         <p class="login-side-quote">"You have the power to <span class="mark">choose</span> when coaching happens — this is where you shape what visitors see."</p>
-        <p class="login-side-attr">ADMIN WORKSPACE</p>
+        <p class="login-side-attr">CONTROL PANEL</p>
       </div>
     </div>
     <div class="login-form-wrap">
-      <div class="eyebrow">Admin Login</div>
+      <div class="eyebrow">Control Panel Login</div>
       <h1>Edit the site.</h1>
       <p class="sub">Sign in to update programs, books, and founder content. Changes go live on the public site immediately after saving.</p>
 
@@ -407,18 +409,22 @@
     </nav>
 
     <div class="admin-header">
-      <div class="eyebrow">Content Editor</div>
+      <div class="eyebrow">Control Panel</div>
       <h1>What visitors see, in your words.</h1>
     </div>
 
     <div class="status-banner" id="status-banner"></div>
 
     <div class="tabs">
-      <button class="tab-btn active" data-tab="programs">Programs</button>
-      <button class="tab-btn" data-tab="books">Books</button>
-      <button class="tab-btn" data-tab="site">Founder &amp; Site Info</button>
-      <button class="tab-btn" data-tab="clients">Clients</button>
-      <button class="tab-btn" data-tab="users">Admins</button>
+      <div class="tabs-group">
+        <button class="tab-btn active" data-tab="programs">Programs</button>
+        <button class="tab-btn" data-tab="books">Books</button>
+        <button class="tab-btn" data-tab="site">Founder &amp; Site Info</button>
+      </div>
+      <div class="tabs-group tabs-group-right">
+        <button class="tab-btn" data-tab="clients">Clients</button>
+        <button class="tab-btn" data-tab="users">Admins</button>
+      </div>
     </div>
 
     <!-- PROGRAMS TAB -->
