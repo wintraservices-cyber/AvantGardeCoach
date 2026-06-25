@@ -661,7 +661,7 @@
 <div id="login-view">
   <div class="login-shell">
     <div class="login-side">
-      <a href="index.html" class="login-logo" style="text-decoration:none;">Avant-Garde <em>Coach</em></a>
+      <a href="/" class="login-logo" style="text-decoration:none;">Avant-Garde <em>Coach</em></a>
       <div>
         <p class="login-side-quote">"You have the power to <span class="mark">choose</span> when coaching happens — this is where you track what happens next."</p>
         <p class="login-side-attr">CLIENT WORKSPACE</p>
@@ -672,7 +672,7 @@
       <h1>Welcome back.</h1>
       <p class="sub">Sign in to view your milestones, sessions, and reflections.</p>
 
-      <div class="login-error" id="login-error">That combination doesn't look right yet — try again, or use the demo below.</div>
+      <div class="login-error" id="login-error">Incorrect email or password — try again.</div>
 
       <form id="login-form" autocomplete="off">
         <div class="field">
@@ -683,14 +683,14 @@
           <label for="password">Password</label>
           <input type="password" id="password" placeholder="••••••••">
         </div>
-        <button type="submit" class="login-submit">Sign in →</button>
+        <button type="submit" class="login-submit" id="login-submit-btn">Sign in →</button>
       </form>
 
       <div class="login-divider">OR</div>
 
       <button class="login-demo" id="demo-btn">View demo dashboard</button>
 
-      <p class="login-note"><strong>Note —</strong> this workspace is a preview. No accounts or passwords are stored yet; any details entered, or the demo button, will open the same sample dashboard.</p>
+      <p class="login-note"><strong>Note —</strong> the demo button signs in as a real sample client account, so you can see exactly what this workspace looks like with live data.</p>
     </div>
   </div>
 </div>
@@ -698,9 +698,9 @@
 <!-- ============ DASHBOARD VIEW ============ -->
 <div id="dashboard-view">
   <nav class="dash-nav">
-    <a href="index.html" class="dash-logo" style="text-decoration:none;">Avant-Garde <em>Coach</em></a>
+    <a href="/" class="dash-logo" style="text-decoration:none;">Avant-Garde <em>Coach</em></a>
     <div class="dash-user">
-      <a href="index.html" class="back-to-site" style="margin-right:0.4rem;">← Back to site</a>
+      <a href="/" class="back-to-site" style="margin-right:0.4rem;">← Back to site</a>
       <button class="theme-toggle" id="theme-toggle" aria-label="Switch to light mode" title="Switch theme">
         <svg class="tt-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
         <svg class="tt-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -715,105 +715,25 @@
     <div class="dash-hero reveal">
       <div>
         <div class="eyebrow">Your Workspace</div>
-        <h1>Three sessions in. The thread is <em>coming back.</em></h1>
+        <h1 id="hero-headline">Loading your workspace…</h1>
         <p class="sub">Here's where things stand — your milestones, your next session, and the reflections you've logged along the way.</p>
       </div>
       <div class="next-session-card">
         <div class="eyebrow">Next Session</div>
-        <div class="when">Thu, June 25 — 4:30 PM</div>
-        <div class="with">With Mahal Hudson · Video call</div>
-        <a href="https://cal.com/wintra-services-mkzw1b/appointment" class="btn-small" target="_blank" rel="noopener">Reschedule →</a>
+        <div class="when" id="next-session-when">—</div>
+        <div class="with" id="next-session-with">—</div>
+        <a href="#" id="next-session-reschedule" class="btn-small" target="_blank" rel="noopener">Reschedule →</a>
       </div>
     </div>
 
     <div class="journey-section reveal">
       <div class="section-label">
         <h2>Your milestones</h2>
-        <div class="count">2 of 4 in progress</div>
+        <div class="count" id="milestone-count">—</div>
       </div>
 
-      <div class="journey-path">
-
-        <div class="milestone complete" data-id="m1">
-          <div class="milestone-dot"></div>
-          <div class="milestone-card" onclick="toggleMilestone('m1')">
-            <div class="milestone-top">
-              <div>
-                <div class="milestone-tag">Standing Question I</div>
-                <h3>Naming the decision you've been circling</h3>
-                <p>Get the decision out of your head and onto the table — what it actually is, and what's been making it hard to trust your own read on it.</p>
-              </div>
-              <div class="milestone-status">Complete</div>
-            </div>
-            <div class="milestone-detail" id="detail-m1">
-              <p class="prompt">"What did you decide, and what finally made it clear?"</p>
-              <textarea id="journal-m1" placeholder="Your reflection...">I decided to turn down the relocation. What made it clear was realizing I'd been treating it as an obligation, not a choice.</textarea>
-              <div class="save-row">
-                <span class="saved-note">Saved</span>
-                <button class="save-btn" onclick="saveNote(event, 'm1')">Save reflection</button>
-              </div>
-              <div class="followup-card" id="followup-m1">
-                <div class="fu-label">A question back</div>
-                <div class="fu-text" id="followup-text-m1"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="milestone active" data-id="m2">
-          <div class="milestone-dot"></div>
-          <div class="milestone-card" onclick="toggleMilestone('m2')">
-            <div class="milestone-top">
-              <div>
-                <div class="milestone-tag">Standing Question II — In Progress</div>
-                <h3>Having the conversation you've been avoiding</h3>
-                <p>Map out what you actually need to say, separate from how you're afraid it'll land — then plan when and how to say it.</p>
-              </div>
-              <div class="milestone-status">In progress</div>
-            </div>
-            <div class="milestone-detail" id="detail-m2">
-              <p class="prompt">"What's the one sentence you keep avoiding saying out loud?"</p>
-              <textarea id="journal-m2" placeholder="Write it here, even if it's rough..."></textarea>
-              <div class="save-row">
-                <span class="saved-note">Saved</span>
-                <button class="save-btn" onclick="saveNote(event, 'm2')">Save reflection</button>
-              </div>
-              <div class="followup-card" id="followup-m2">
-                <div class="fu-label">A question back</div>
-                <div class="fu-text" id="followup-text-m2"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="milestone locked" data-id="m3">
-          <div class="milestone-dot"></div>
-          <div class="milestone-card locked-card">
-            <div class="milestone-top">
-              <div>
-                <div class="milestone-tag">Standing Question III</div>
-                <h3>Picking the thread back up</h3>
-                <p>Reconnect with the version of yourself that had a clear sense of direction — and figure out what's worth carrying forward.</p>
-              </div>
-              <div class="milestone-status">Unlocks after Session 4</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="milestone locked" data-id="m4">
-          <div class="milestone-dot"></div>
-          <div class="milestone-card locked-card">
-            <div class="milestone-top">
-              <div>
-                <div class="milestone-tag">Standing Question IV</div>
-                <h3>Catching up to who you've become</h3>
-                <p>Name the transformation that's already happened, and build the version of your routine that actually fits it.</p>
-              </div>
-              <div class="milestone-status">Unlocks after Session 4</div>
-            </div>
-          </div>
-        </div>
-
+      <div class="journey-path" id="journey-path">
+        <div class="loading-state" style="padding:2rem; text-align:center; color:var(--muted);">Loading your milestones…</div>
       </div>
     </div>
 
@@ -866,46 +786,218 @@
 
 <script>
   const loginForm = document.getElementById('login-form');
-  const demoBtn = document.getElementById('demo-btn');
   const loginView = document.getElementById('login-view');
   const dashView = document.getElementById('dashboard-view');
   const logoutBtn = document.getElementById('logout-btn');
   const userLabel = document.getElementById('user-label');
   const loginError = document.getElementById('login-error');
+  const loginSubmitBtn = document.getElementById('login-submit-btn');
 
-  function enterDashboard(name){
+  let currentClient = null;
+  let currentMilestones = [];
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str == null ? '' : str;
+    return d.innerHTML;
+  }
+
+  function enterDashboard(client){
     loginView.classList.add('hidden');
     dashView.classList.add('active');
-    if(name){ userLabel.textContent = 'Welcome back, ' + name; }
+    if(client && client.displayName){
+      const first = client.displayName.split(' ')[0];
+      userLabel.textContent = 'Welcome back, ' + first;
+    }
     revealOnEnter();
     window.scrollTo(0,0);
   }
 
-  loginForm.addEventListener('submit', function(e){
-    e.preventDefault();
-    const email = document.getElementById('email').value.trim();
-    // mockup: any non-empty input signs you in to the same demo data
-    if(email.length === 0){
-      loginError.classList.add('show');
+  function renderHeroAndSession(client){
+    const headlineEl = document.getElementById('hero-headline');
+    if(headlineEl){
+      headlineEl.textContent = client.heroHeadline || `${client.sessionCount || 0} sessions in.`;
+    }
+
+    const whenEl = document.getElementById('next-session-when');
+    const withEl = document.getElementById('next-session-with');
+    const rescheduleEl = document.getElementById('next-session-reschedule');
+
+    if(whenEl){
+      if(client.nextSessionAt){
+        const d = new Date(client.nextSessionAt);
+        whenEl.textContent = d.toLocaleDateString(undefined, { weekday: 'short', month: 'long', day: 'numeric' }) + ' — ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+      } else {
+        whenEl.textContent = 'Not yet scheduled';
+      }
+    }
+    if(withEl){
+      withEl.textContent = `With ${client.nextSessionWith || 'Mahal Hudson'} · ${client.nextSessionFormat || 'Video call'}`;
+    }
+    if(rescheduleEl && client.rescheduleUrl){
+      rescheduleEl.href = client.rescheduleUrl;
+    }
+  }
+
+  function statusLabel(status){
+    if(status === 'complete') return 'Complete';
+    if(status === 'active') return 'In progress';
+    return 'Locked';
+  }
+
+  function renderMilestones(milestones){
+    const container = document.getElementById('journey-path');
+    const countEl = document.getElementById('milestone-count');
+    if(!container) return;
+
+    if(!milestones || milestones.length === 0){
+      container.innerHTML = '<p style="color:var(--muted); padding:1.5rem 0;">No milestones set up yet — check back after your first session.</p>';
+      if(countEl) countEl.textContent = '';
       return;
     }
+
+    const inProgressCount = milestones.filter(m => m.status === 'active' || m.status === 'complete').length;
+    if(countEl) countEl.textContent = `${inProgressCount} of ${milestones.length} in progress`;
+
+    container.innerHTML = milestones.map(m => {
+      const isLocked = m.status === 'locked';
+      const cardClass = isLocked ? 'milestone-card locked-card' : 'milestone-card';
+      const onclick = isLocked ? '' : `onclick="toggleMilestone('${escapeHtml(m.id)}')"`;
+      const tagText = m.status === 'active' ? `${escapeHtml(m.tag || '')} — In Progress` : escapeHtml(m.tag || '');
+
+      let detailHtml = '';
+      if(!isLocked){
+        detailHtml = `
+          <div class="milestone-detail" id="detail-${escapeHtml(m.id)}">
+            ${m.reflectionPrompt ? `<p class="prompt">${escapeHtml(m.reflectionPrompt)}</p>` : ''}
+            <textarea id="journal-${escapeHtml(m.id)}" placeholder="Your reflection..."></textarea>
+            <div class="save-row">
+              <span class="saved-note">Saved</span>
+              <button class="save-btn" onclick="saveNote(event, '${escapeHtml(m.id)}')">Save reflection</button>
+            </div>
+            <div class="followup-card" id="followup-${escapeHtml(m.id)}">
+              <div class="fu-label">A question back</div>
+              <div class="fu-text" id="followup-text-${escapeHtml(m.id)}"></div>
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="milestone ${escapeHtml(m.status)}" data-id="${escapeHtml(m.id)}">
+          <div class="milestone-dot"></div>
+          <div class="${cardClass}" ${onclick}>
+            <div class="milestone-top">
+              <div>
+                <div class="milestone-tag">${tagText}</div>
+                <h3>${escapeHtml(m.title)}</h3>
+                <p>${escapeHtml(m.description || '')}</p>
+              </div>
+              <div class="milestone-status">${isLocked ? escapeHtml(m.lockedReason || 'Locked') : statusLabel(m.status)}</div>
+            </div>
+            ${detailHtml}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function loadDashboardData(){
+    try{
+      const res = await fetch('/api/client-data');
+      if(!res.ok){
+        throw new Error('Could not load dashboard data (status ' + res.status + ')');
+      }
+      const data = await res.json();
+      currentClient = data.client;
+      currentMilestones = data.milestones || [];
+      renderHeroAndSession(currentClient);
+      renderMilestones(currentMilestones);
+    }catch(err){
+      console.error('[dashboard] Failed to load client data:', err);
+      const container = document.getElementById('journey-path');
+      if(container){
+        container.innerHTML = '<p style="color:var(--vermillion-bright); padding:1.5rem 0;">Could not load your dashboard right now. Try refreshing, or reach out to Mahal if this keeps happening.</p>';
+      }
+    }
+  }
+
+  async function checkExistingSession(){
+    try{
+      const res = await fetch('/api/client-auth');
+      const data = await res.json();
+      if(data.authenticated){
+        await loadDashboardData();
+        enterDashboard(currentClient || { displayName: data.email });
+      }
+    }catch(err){
+      // Not authenticated, or network error — just show the login screen,
+      // which is already the default state.
+    }
+  }
+
+  loginForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    await attemptLogin(email, password);
+  });
+
+  const demoBtn = document.getElementById('demo-btn');
+  demoBtn.addEventListener('click', async function(){
+    // This is a real account, not a fake bypass — see db/seed-demo-client.js
+    // for the exact credentials this signs in with. Using the real login
+    // flow here means the demo button exercises the same code path a real
+    // client would, so it's an honest preview, not a separate fake state.
+    await attemptLogin('demo@avant-gardecoach.ca', 'DemoClient2026!');
+  });
+
+  async function attemptLogin(email, password){
     loginError.classList.remove('show');
-    const first = email.split('@')[0].split(/[._-]/)[0];
-    const display = first.charAt(0).toUpperCase() + first.slice(1);
-    enterDashboard(display);
-  });
+    loginSubmitBtn.disabled = true;
+    loginSubmitBtn.textContent = 'Signing in…';
 
-  demoBtn.addEventListener('click', function(){
-    enterDashboard('Jordan');
-  });
+    try{
+      const res = await fetch('/api/client-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'login', email, password })
+      });
+      const data = await res.json();
 
-  logoutBtn.addEventListener('click', function(){
+      if(res.ok && data.ok){
+        await loadDashboardData();
+        enterDashboard(currentClient || { displayName: email });
+      } else {
+        loginError.textContent = data.error || 'Incorrect email or password — try again.';
+        loginError.classList.add('show');
+      }
+    }catch(err){
+      loginError.textContent = 'Could not reach the server. Try again in a moment.';
+      loginError.classList.add('show');
+    }finally{
+      loginSubmitBtn.disabled = false;
+      loginSubmitBtn.textContent = 'Sign in →';
+    }
+  }
+
+  logoutBtn.addEventListener('click', async function(){
+    try{
+      await fetch('/api/client-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logout' })
+      });
+    }catch(err){}
     dashView.classList.remove('active');
     loginView.classList.remove('hidden');
     document.getElementById('email').value = '';
     document.getElementById('password').value = '';
     window.scrollTo(0,0);
   });
+
+  checkExistingSession();
+
 
   function toggleMilestone(id){
     const detail = document.getElementById('detail-' + id);
@@ -1368,10 +1460,10 @@ RULES:
 
   function faqwLinkify(html){
     const linkMap = [
-      [/booking page/i, '<a href="booking.html" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">booking page</a>'],
+      [/booking page/i, '<a href="booking" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">booking page</a>'],
       [/Find Your Fit/i, '<a href="index.html#intake" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">Find Your Fit</a>'],
       [/Amazon author page/i, `<a href="https://www.amazon.ca/stores/author/B07D1SJNPH" target="_blank" rel="noopener" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">Amazon author page</a>`],
-      [/homepage/i, '<a href="index.html" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">homepage</a>']
+      [/homepage/i, '<a href="/" style="color:var(--vermillion-bright); border-bottom:1px solid var(--vermillion);">homepage</a>']
     ];
     let result = html;
     linkMap.forEach(([pattern, replacement]) => {
