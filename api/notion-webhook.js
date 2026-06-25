@@ -426,20 +426,6 @@ module.exports = async function handler(req, res) {
   }
 
   // The ONE-TIME verification handshake (setup step 5/6 in the header
-  // comment) arrives as a POST with a verification_token and nothing
-  // else — it has no signature to check yet, since the secret doesn't
-  // exist as a configured value until THIS step gives it to us. We log
-  // it (safe — see header comment) and acknowledge with 200 so Notion
-  // considers the URL reachable.
-  // TEMPORARY DIAGNOSTIC — remove once verification handshake is confirmed
-  // working. Logs the exact body and signature header for every incoming
-  // request, so we can see what Notion actually sent rather than only
-  // what we expected based on documentation.
-  console.log('[notion-webhook] DIAGNOSTIC - body:', JSON.stringify(body));
-  console.log('[notion-webhook] DIAGNOSTIC - x-notion-signature header:', JSON.stringify(req.headers['x-notion-signature']));
-  console.log('[notion-webhook] DIAGNOSTIC - all headers:', JSON.stringify(req.headers));
-
-  // The ONE-TIME verification handshake (setup step 5/6 in the header
   // comment) arrives as a POST with a verification_token. Documentation
   // describes this request as having no signature header (since no
   // secret exists yet to sign it with) — but real-world testing during
