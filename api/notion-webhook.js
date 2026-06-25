@@ -418,6 +418,14 @@ module.exports = async function handler(req, res) {
   // exist as a configured value until THIS step gives it to us. We log
   // it (safe — see header comment) and acknowledge with 200 so Notion
   // considers the URL reachable.
+  // TEMPORARY DIAGNOSTIC — remove once verification handshake is confirmed
+  // working. Logs the exact body and signature header for every incoming
+  // request, so we can see what Notion actually sent rather than only
+  // what we expected based on documentation.
+  console.log('[notion-webhook] DIAGNOSTIC - body:', JSON.stringify(body));
+  console.log('[notion-webhook] DIAGNOSTIC - x-notion-signature header:', JSON.stringify(req.headers['x-notion-signature']));
+  console.log('[notion-webhook] DIAGNOSTIC - all headers:', JSON.stringify(req.headers));
+
   if (body && body.verification_token && !req.headers['x-notion-signature']) {
     console.log('[notion-webhook] Verification token received (copy this into Notion to complete setup):', body.verification_token);
     res.status(200).json({ ok: true });
