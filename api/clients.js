@@ -7,6 +7,12 @@
  * use to log in and see their own dashboard. An admin uses THIS route to
  * set up and edit any client's data.
  *
+ * NOTION SYNC
+ * Every save and delete in this file also syncs to Notion via
+ * api/_notion-sync.js, so an admin can manage the same data from either
+ * the Control Panel or Notion directly. Sync failures never fail the
+ * request — see the comment above the notionSync import below for why.
+ *
  * GET /api/clients
  *   Admin-only. Returns the list of all clients (id, email, displayName,
  *   etc. — never password hashes).
@@ -37,6 +43,40 @@
 const crypto = require('crypto');
 const db = require('./_db');
 const { hashPassword, verifySessionFromRequest } = require('./_auth-helpers');
+const notionSync = require('./_notion-sync');
+
+// Every notionSync.* call below is awaited (not fire-and-forget) — Vercel's
+// serverless functions terminate background work the instant a response
+// is sent, so a Notion sync still in flight when this function returns
+// would simply get killed mid-request, accomplishing nothing. Awaiting it
+// is what guarantees the sync attempt actually completes. This does mean
+// admin saves take slightly longer (Notion's own API latency, typically
+// well under a second) — a deliberate, simpler tradeoff over adding
+// @vercel/functions' waitUntil for a marginal speed gain. None of these
+// calls can fail the request, though — _notion-sync.js catches its own
+// errors internally and never throws past its own boundary, so a Notion
+// outage degrades to "this edit didn't sync yet," never to "saving is broken."
+
+
+/**
+ * Calls a notionSync function, but guarantees it can NEVER cause this
+ * route to return an error response — even if notionSync itself has a
+ * bug and throws past its own internal error handling (which it's
+ * designed not to do, but "designed not to" and "structurally cannot"
+ * are different guarantees, and this is the second, stronger one). The
+ * Postgres save has already succeeded by the time this runs; the worst
+ * a Notion sync failure should ever cause is a missed sync, logged here
+ * for visibility, never a misleading 500 on a request that actually
+ * completed its real job.
+ * @param {Promise} syncPromise
+ */
+async function safeSync(syncPromise) {
+  try {
+    await syncPromise;
+  } catch (err) {
+    console.error('[api/clients.js] Notion sync threw unexpectedly (this should not happen — _notion-sync.js is designed to catch its own errors):', err);
+  }
+}
 
 function isValidEmail(email) {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -103,6 +143,7 @@ module.exports = async function handler(req, res) {
           nextSessionFormat: nextSessionFormat || 'Video call',
           rescheduleUrl: rescheduleUrl || null,
         });
+        await safeSync(notionSync.syncClient(newClient.id));
         res.status(200).json({ client: newClient });
         return;
       }
@@ -115,6 +156,7 @@ module.exports = async function handler(req, res) {
         }
         try {
           const updated = await db.updateClient(req.body);
+          await safeSync(notionSync.syncClient(updated.id));
           res.status(200).json({ client: updated });
         } catch (err) {
           res.status(404).json({ error: err.message });
@@ -144,6 +186,7 @@ module.exports = async function handler(req, res) {
           return;
         }
         const saved = await db.saveMilestone(req.body);
+        await safeSync(notionSync.syncMilestone(saved.id, saved.clientId));
         res.status(200).json({ milestone: saved });
         return;
       }
@@ -159,6 +202,7 @@ module.exports = async function handler(req, res) {
           return;
         }
         const saved = await db.saveSession(req.body);
+        await safeSync(notionSync.syncSession(saved.id, saved.clientId));
         res.status(200).json({ session: saved });
         return;
       }
@@ -174,6 +218,7 @@ module.exports = async function handler(req, res) {
           return;
         }
         const saved = await db.saveResource(req.body);
+        await safeSync(notionSync.syncResource(saved.id, saved.clientId));
         res.status(200).json({ resource: saved });
         return;
       }
@@ -191,24 +236,28 @@ module.exports = async function handler(req, res) {
 
       if (resource === 'client') {
         const deleted = await db.deleteClient(id);
+        await safeSync(notionSync.syncDeletion('clients', id));
         res.status(200).json({ deleted });
         return;
       }
 
       if (resource === 'milestone') {
         const deleted = await db.deleteMilestone(id);
+        await safeSync(notionSync.syncDeletion('milestones', id));
         res.status(200).json({ deleted });
         return;
       }
 
       if (resource === 'session') {
         const deleted = await db.deleteSession(id);
+        await safeSync(notionSync.syncDeletion('sessions', id));
         res.status(200).json({ deleted });
         return;
       }
 
       if (resource === 'resource') {
         const deleted = await db.deleteResource(id);
+        await safeSync(notionSync.syncDeletion('resources', id));
         res.status(200).json({ deleted });
         return;
       }
