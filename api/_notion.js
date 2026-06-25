@@ -575,6 +575,7 @@ async function trashPage(dataSourceKey, pageId) {
 }
 
 module.exports = {
+  getPageById,
   createLeadPage,
   findLeadPageByBookingUid,
   updateLeadOnReschedule,
