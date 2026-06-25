@@ -706,7 +706,7 @@
         <svg class="tt-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
       </button>
       <span id="user-label">Welcome back</span>
-      <span class="avatar">J</span>
+      <span class="avatar" id="user-avatar">J</span>
       <button class="logout-btn" id="logout-btn">Sign out</button>
     </div>
   </nav>
@@ -774,6 +774,8 @@
     if(client && client.displayName){
       const first = client.displayName.split(' ')[0];
       userLabel.textContent = 'Welcome back, ' + first;
+      const avatarEl = document.getElementById('user-avatar');
+      if(avatarEl) avatarEl.textContent = first.charAt(0).toUpperCase();
     }
     revealOnEnter();
     window.scrollTo(0,0);
@@ -834,7 +836,7 @@
       let detailHtml = '';
       if(!isLocked){
         detailHtml = `
-          <div class="milestone-detail" id="detail-${escapeHtml(m.id)}">
+          <div class="milestone-detail" id="detail-${escapeHtml(m.id)}" onclick="event.stopPropagation()">
             ${m.reflectionPrompt ? `<p class="prompt">${escapeHtml(m.reflectionPrompt)}</p>` : ''}
             <textarea id="journal-${escapeHtml(m.id)}" placeholder="Your reflection..."></textarea>
             <div class="save-row">

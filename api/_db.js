@@ -323,6 +323,23 @@ async function getClientById(id) {
 }
 
 /**
+ * Looks up a client by email, WITHOUT their password hash — safe to call
+ * from any context that has no business handling credentials (e.g. the
+ * Cal.com webhook matching a booking's attendee email to a client record).
+ * Deliberately separate from getClientWithPasswordHash, which exists only
+ * for the login flow — keeping them apart means a future caller can't
+ * accidentally end up with a password hash in scope just because it
+ * needed a basic email lookup for something unrelated to authentication.
+ * @param {string} email
+ * @returns {Promise<Object|null>}
+ */
+async function getClientByEmail(email) {
+  if (!email) return null;
+  const rows = await sql`SELECT * FROM clients WHERE lower(email) = lower(${email})`;
+  return rows[0] ? rowToClient(rows[0]) : null;
+}
+
+/**
  * Looks up a client by email, INCLUDING their password hash. Used only by
  * the client login flow to verify a password — never returned to the
  * frontend as-is.
@@ -693,6 +710,7 @@ module.exports = {
   deleteUser,
   getClients,
   getClientById,
+  getClientByEmail,
   getClientWithPasswordHash,
   createClient,
   updateClient,
