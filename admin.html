@@ -1320,10 +1320,6 @@
             <input type="text" id="cd-nextSessionFormat" value="${escapeHtml(c.nextSessionFormat || 'Video call')}">
           </div>
         </div>
-        <div class="field">
-          <label>Reschedule URL</label>
-          <input type="text" id="cd-rescheduleUrl" value="${escapeHtml(c.rescheduleUrl || '')}">
-        </div>
         <div class="save-row" style="margin-bottom:0.8rem;">
           <button class="btn-primary" id="cd-save-profile-btn">Save profile</button>
         </div>
@@ -1941,7 +1937,6 @@
         nextSessionAt: nextSessionAtRaw ? new Date(nextSessionAtRaw).toISOString() : null,
         nextSessionWith: document.getElementById('cd-nextSessionWith').value.trim(),
         nextSessionFormat: document.getElementById('cd-nextSessionFormat').value.trim(),
-        rescheduleUrl: document.getElementById('cd-rescheduleUrl').value.trim(),
       };
 
       try{

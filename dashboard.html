@@ -723,7 +723,7 @@
         <div class="when" id="next-session-when">—</div>
         <div class="with" id="next-session-with">—</div>
         <a href="#" id="next-session-reschedule" class="btn-small" target="_blank" rel="noopener">Reschedule →</a>
-        <a href="/booking" id="next-session-book" class="btn-small">Book a session →</a>
+        <a href="https://cal.com/wintra-services-mkzw1b/discovery" id="next-session-book" class="btn-small" target="_blank" rel="noopener">Book a session →</a>
       </div>
     </div>
 
@@ -782,6 +782,21 @@
     window.scrollTo(0,0);
   }
 
+  // Both "Reschedule" and "Book a session" point to the same Cal.com
+  // booking flow — rescheduling and booking a first session go through
+  // the exact same calendar regardless of who initiates it (the client
+  // directly, the client via this site's /booking page, or Mahal
+  // booking on the client's behalf), so there's no real per-client
+  // variation to account for. This replaced an earlier design with a
+  // separate "Reschedule URL" field on each client's profile that an
+  // admin had to remember to fill in correctly — since every client
+  // actually goes through this same link, that field was one more thing
+  // to maintain for no real benefit, and is removed entirely. If a
+  // genuinely different booking link is ever needed per client (e.g. a
+  // different program's own Cal.com event type), reintroduce a
+  // per-client override here rather than changing this constant.
+  const CAL_BOOKING_URL = 'https://cal.com/wintra-services-mkzw1b/discovery';
+
   function renderHeroAndSession(client, realSessionCount){
     const headlineEl = document.getElementById('hero-headline');
     if(headlineEl){
@@ -825,21 +840,15 @@
         : '';
     }
     if(rescheduleEl){
-      if(hasScheduledSession && client.rescheduleUrl){
-        rescheduleEl.href = client.rescheduleUrl;
-        rescheduleEl.style.display = '';
-      } else {
-        // Either nothing is scheduled, or it is but no reschedule URL
-        // was set — either way, there's nothing useful to reschedule
-        // right now, so hide this rather than leave a dead href="#"
-        // button that looks clickable but goes nowhere.
-        rescheduleEl.style.display = 'none';
-      }
+      rescheduleEl.href = CAL_BOOKING_URL;
+      rescheduleEl.style.display = hasScheduledSession ? '' : 'none';
     }
     if(bookEl){
       // Shown exactly when Reschedule isn't — never both at once, since
       // showing two competing calls-to-action for the same slot is more
-      // confusing than helpful.
+      // confusing than helpful. bookEl's href is already set directly
+      // in the markup, since it's a fixed link, not something that
+      // varies per client.
       bookEl.style.display = hasScheduledSession ? 'none' : '';
     }
   }
