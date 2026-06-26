@@ -723,6 +723,7 @@
         <div class="when" id="next-session-when">—</div>
         <div class="with" id="next-session-with">—</div>
         <a href="#" id="next-session-reschedule" class="btn-small" target="_blank" rel="noopener">Reschedule →</a>
+        <a href="/booking" id="next-session-book" class="btn-small">Book a session →</a>
       </div>
     </div>
 
@@ -781,18 +782,37 @@
     window.scrollTo(0,0);
   }
 
-  function renderHeroAndSession(client){
+  function renderHeroAndSession(client, realSessionCount){
     const headlineEl = document.getElementById('hero-headline');
     if(headlineEl){
-      headlineEl.textContent = client.heroHeadline || `${client.sessionCount || 0} sessions in.`;
+      // realSessionCount comes from the actual number of session records
+      // returned alongside this client (see loadDashboardData) — this is
+      // always accurate, unlike the old approach of reading a separate,
+      // manually-typed "Session Count" field on the client's profile,
+      // which had no connection to the real session list and could
+      // silently drift out of sync (e.g. showing "0 sessions in" after
+      // an admin had already logged 2 real sessions, simply because
+      // nobody remembered to also update that separate number).
+      const count = realSessionCount ?? 0;
+      headlineEl.textContent = client.heroHeadline || `${count} session${count === 1 ? '' : 's'} in.`;
     }
 
     const whenEl = document.getElementById('next-session-when');
     const withEl = document.getElementById('next-session-with');
     const rescheduleEl = document.getElementById('next-session-reschedule');
+    const bookEl = document.getElementById('next-session-book');
+
+    // hasScheduledSession is the single source of truth this whole card
+    // branches on — both whether to show the "With ___" line and which
+    // action button (Reschedule vs Book) makes sense. A client with
+    // nothing on the calendar yet shouldn't see "With Mahal Hudson ·
+    // Video call" (there's nothing to be "with" yet) or a Reschedule
+    // button (there's nothing to reschedule) — they should see a clear
+    // path to book their first session instead.
+    const hasScheduledSession = !!client.nextSessionAt;
 
     if(whenEl){
-      if(client.nextSessionAt){
+      if(hasScheduledSession){
         const d = new Date(client.nextSessionAt);
         whenEl.textContent = d.toLocaleDateString(undefined, { weekday: 'short', month: 'long', day: 'numeric' }) + ' — ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
       } else {
@@ -800,18 +820,27 @@
       }
     }
     if(withEl){
-      withEl.textContent = `With ${client.nextSessionWith || 'Mahal Hudson'} · ${client.nextSessionFormat || 'Video call'}`;
+      withEl.textContent = hasScheduledSession
+        ? `With ${client.nextSessionWith || 'Mahal Hudson'} · ${client.nextSessionFormat || 'Video call'}`
+        : '';
     }
     if(rescheduleEl){
-      if(client.rescheduleUrl){
+      if(hasScheduledSession && client.rescheduleUrl){
         rescheduleEl.href = client.rescheduleUrl;
         rescheduleEl.style.display = '';
       } else {
-        // No real URL to send them to — hide the link entirely rather
-        // than leave a dead href="#" button that looks clickable but
-        // goes nowhere useful.
+        // Either nothing is scheduled, or it is but no reschedule URL
+        // was set — either way, there's nothing useful to reschedule
+        // right now, so hide this rather than leave a dead href="#"
+        // button that looks clickable but goes nowhere.
         rescheduleEl.style.display = 'none';
       }
+    }
+    if(bookEl){
+      // Shown exactly when Reschedule isn't — never both at once, since
+      // showing two competing calls-to-action for the same slot is more
+      // confusing than helpful.
+      bookEl.style.display = hasScheduledSession ? 'none' : '';
     }
   }
 
@@ -946,7 +975,7 @@
       const data = await res.json();
       currentClient = data.client;
       currentMilestones = data.milestones || [];
-      renderHeroAndSession(currentClient);
+      renderHeroAndSession(currentClient, (data.sessions || []).length);
       renderMilestones(currentMilestones);
       renderSessionHistory(data.sessions || []);
       renderResources(data.resources || []);

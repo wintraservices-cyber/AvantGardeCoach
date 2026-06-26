@@ -1304,16 +1304,11 @@
         <div class="field">
           <label>Hero headline (e.g. "Three sessions in. The thread is coming back.")</label>
           <input type="text" id="cd-heroHeadline" value="${escapeHtml(c.heroHeadline || '')}">
+          <p style="font-size:0.78rem; color:var(--muted); margin-top:0.4rem;">Leave blank to show an automatic headline based on the client's real session count below — no need to type a number here or keep it updated by hand.</p>
         </div>
-        <div class="field-row">
-          <div class="field">
-            <label>Session count</label>
-            <input type="number" id="cd-sessionCount" value="${c.sessionCount || 0}">
-          </div>
-          <div class="field">
-            <label>Next session date/time</label>
-            <input type="datetime-local" id="cd-nextSessionAt" value="${c.nextSessionAt ? new Date(c.nextSessionAt).toISOString().slice(0,16) : ''}">
-          </div>
+        <div class="field">
+          <label>Next session date/time</label>
+          <input type="datetime-local" id="cd-nextSessionAt" value="${c.nextSessionAt ? new Date(c.nextSessionAt).toISOString().slice(0,16) : ''}">
         </div>
         <div class="field-row">
           <div class="field">
@@ -1943,7 +1938,6 @@
         displayName: document.getElementById('cd-displayName').value.trim(),
         email: document.getElementById('cd-email').value.trim(),
         heroHeadline: document.getElementById('cd-heroHeadline').value.trim(),
-        sessionCount: parseInt(document.getElementById('cd-sessionCount').value, 10) || 0,
         nextSessionAt: nextSessionAtRaw ? new Date(nextSessionAtRaw).toISOString() : null,
         nextSessionWith: document.getElementById('cd-nextSessionWith').value.trim(),
         nextSessionFormat: document.getElementById('cd-nextSessionFormat').value.trim(),
