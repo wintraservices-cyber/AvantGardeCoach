@@ -357,6 +357,11 @@
     padding:1.6rem;
     margin-bottom:1rem;
     border-radius:2px;
+    transition:border-color 0.4s ease, background 0.4s ease;
+  }
+  .item-card.just-saved{
+    border-color:var(--vermillion-bright);
+    background:var(--ink-card);
   }
   .item-card-head{display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:1.1rem;}
   .item-card-head h3{font-family:'Fraunces',serif; font-size:1.15rem; font-weight:500;}
@@ -607,6 +612,42 @@
     const d = document.createElement('div');
     d.textContent = str == null ? '' : str;
     return d.innerHTML;
+  }
+
+  // A type="date" input's value attribute requires EXACTLY "yyyy-MM-dd" —
+  // nothing else. The API can return session dates as either a plain
+  // "2026-06-24" string or a full ISO datetime like
+  // "2026-06-24T00:00:00.000Z" (the latter happens when the date round-
+  // trips through JSON.stringify on a JS Date-like value somewhere in
+  // the chain). If the browser receives anything other than the strict
+  // format, it silently rejects it and renders the field EMPTY — which
+  // is exactly what looked like "the date isn't saving": the save
+  // genuinely succeeded, but the re-rendered input couldn't display the
+  // value it got back. This normalizes either shape down to the one
+  // format the input actually accepts, by taking just the date portion
+  // before any "T".
+  function toDateInputValue(value){
+    if(!value) return '';
+    return String(value).slice(0, 10);
+  }
+
+  // Scrolls a freshly-added or just-saved item into view and briefly
+  // highlights it. Used after loadClientDetail()'s full re-render, which
+  // otherwise leaves the admin looking at wherever the page happened to
+  // be scrolled to — usually the top — with no indication of where their
+  // change actually landed, which is exactly what looked like "nothing
+  // happened" for both adds and saves.
+  function scrollToAndHighlight(selector){
+    // Wait a tick for the DOM to actually update before querying it —
+    // calling this synchronously right after setting innerHTML can race
+    // the browser's own layout/paint cycle on some pages.
+    setTimeout(() => {
+      const el = document.querySelector(selector);
+      if(!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('just-saved');
+      setTimeout(() => el.classList.remove('just-saved'), 1600);
+    }, 50);
   }
 
   // ---------- Auth flow ----------
@@ -1423,6 +1464,7 @@
         if(res.ok){
           showStatus('Milestone saved.', 'success');
           await loadClientDetail(currentClientDetail.id);
+          scrollToAndHighlight(`[data-milestone-id="${item.id}"]`);
         } else {
           showStatus(data.error || 'Could not save this milestone.', 'error');
         }
@@ -1452,6 +1494,109 @@
     });
   }
 
+  // Same draft-card pattern as openDraftSessionCard — see that function's
+  // comment for why nothing is created until the admin actually saves.
+  function openDraftMilestoneCard(){
+    const list = document.getElementById('cd-milestones-list');
+    const draftHtml = `
+      <div class="item-card" data-draft="milestone">
+        <div class="item-card-head">
+          <div><h3>New milestone</h3></div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Tag (e.g. "Standing Question I")</label>
+            <input type="text" data-field="tag" placeholder="Standing Question I">
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select data-field="status">
+              <option value="complete">Complete</option>
+              <option value="active">Active</option>
+              <option value="locked" selected>Locked</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Title</label>
+          <input type="text" data-field="title" placeholder="Milestone title">
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <textarea data-field="description" rows="2" placeholder="What this milestone is about"></textarea>
+        </div>
+        <div class="field">
+          <label>Reflection prompt (shown above the journal textarea, when unlocked)</label>
+          <input type="text" data-field="reflectionPrompt" placeholder="A question for the client to reflect on">
+        </div>
+        <div class="field">
+          <label>Locked reason (shown only when status is Locked, e.g. "Unlocks after Session 4")</label>
+          <input type="text" data-field="lockedReason" placeholder="Unlocks after Session 4">
+        </div>
+        <div class="field">
+          <label>Sort order</label>
+          <input type="number" data-field="sortOrder" value="${currentClientMilestones.length + 1}" style="max-width:120px;">
+        </div>
+        <div class="save-row">
+          <button class="btn-ghost-sm" data-action="cancel-draft">Cancel</button>
+          <button class="btn-primary" data-action="save-draft">Save milestone</button>
+        </div>
+      </div>
+    `;
+
+    if(currentClientMilestones.length === 0){
+      list.innerHTML = '';
+    }
+    list.insertAdjacentHTML('afterbegin', draftHtml);
+
+    const card = list.querySelector('[data-draft="milestone"]');
+    scrollToAndHighlight('[data-draft="milestone"]');
+    card.querySelector('[data-field="title"]').focus();
+
+    card.querySelector('[data-action="cancel-draft"]').addEventListener('click', () => {
+      card.remove();
+      if(currentClientMilestones.length === 0){
+        renderClientMilestones();
+      }
+    });
+
+    card.querySelector('[data-action="save-draft"]').addEventListener('click', async () => {
+      const title = card.querySelector('[data-field="title"]').value.trim();
+      if(!title){
+        showStatus('A title is required.', 'error');
+        return;
+      }
+
+      const newId = currentClientDetail.id + '-m-' + Date.now();
+      try{
+        const res = await fetch('/api/clients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'save-milestone', id: newId, clientId: currentClientDetail.id,
+            tag: card.querySelector('[data-field="tag"]').value.trim(),
+            title,
+            description: card.querySelector('[data-field="description"]').value.trim(),
+            status: card.querySelector('[data-field="status"]').value,
+            lockedReason: card.querySelector('[data-field="lockedReason"]').value.trim(),
+            reflectionPrompt: card.querySelector('[data-field="reflectionPrompt"]').value.trim(),
+            sortOrder: parseInt(card.querySelector('[data-field="sortOrder"]').value, 10) || 0,
+          })
+        });
+        const data = await res.json();
+        if(res.ok){
+          showStatus('Milestone added.', 'success');
+          await loadClientDetail(currentClientDetail.id);
+          scrollToAndHighlight(`[data-milestone-id="${newId}"]`);
+        } else {
+          showStatus(data.error || 'Could not add this milestone.', 'error');
+        }
+      }catch(err){
+        showStatus('Could not reach the server.', 'error');
+      }
+    });
+  }
+
   // ---------- SESSIONS (within client detail) ----------
   function renderClientSessions(){
     const list = document.getElementById('cd-sessions-list');
@@ -1470,7 +1615,7 @@
         <div class="item-card-head">
           <div>
             <h3>${escapeHtml(s.topic || '(untitled session)')}</h3>
-            <div class="tag-pill">${escapeHtml(s.sessionDate || '')}</div>
+            <div class="tag-pill">${escapeHtml(toDateInputValue(s.sessionDate))}</div>
           </div>
           <div class="item-card-actions">
             <button class="btn-danger-sm" data-action="delete-session">Delete</button>
@@ -1479,7 +1624,7 @@
         <div class="field-row">
           <div class="field">
             <label>Date</label>
-            <input type="date" data-field="sessionDate" value="${escapeHtml(s.sessionDate || '')}">
+            <input type="date" data-field="sessionDate" value="${escapeHtml(toDateInputValue(s.sessionDate))}">
           </div>
           <div class="field">
             <label>Topic</label>
@@ -1514,6 +1659,7 @@
         if(res.ok){
           showStatus('Session saved.', 'success');
           await loadClientDetail(currentClientDetail.id);
+          scrollToAndHighlight(`[data-session-id="${item.id}"]`);
         } else {
           showStatus(data.error || 'Could not save this session.', 'error');
         }
@@ -1536,6 +1682,91 @@
           await loadClientDetail(currentClientDetail.id);
         } else {
           showStatus(data.error || 'Could not delete this session.', 'error');
+        }
+      }catch(err){
+        showStatus('Could not reach the server.', 'error');
+      }
+    });
+  }
+
+  // Opens an empty, editable session card at the top of the list — no
+  // database row exists yet. Nothing is created until the admin actually
+  // clicks Save on this card; clicking Cancel just removes it from the
+  // page with no server call at all. This replaces the older pattern
+  // where "+ Add" immediately created a placeholder row that then had
+  // to be edited and re-saved — that meant every add was at minimum two
+  // round trips and briefly left a half-default row in the database
+  // even if the admin never finished filling it in.
+  function openDraftSessionCard(){
+    const list = document.getElementById('cd-sessions-list');
+    const today = new Date().toISOString().slice(0, 10);
+    const draftHtml = `
+      <div class="item-card" data-draft="session">
+        <div class="item-card-head">
+          <div><h3>New session</h3></div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Date</label>
+            <input type="date" data-field="sessionDate" value="${today}">
+          </div>
+          <div class="field">
+            <label>Topic</label>
+            <input type="text" data-field="topic" placeholder="What was this session about?">
+          </div>
+        </div>
+        <div class="save-row">
+          <button class="btn-ghost-sm" data-action="cancel-draft">Cancel</button>
+          <button class="btn-primary" data-action="save-draft">Save session</button>
+        </div>
+      </div>
+    `;
+
+    // If "No sessions logged yet" is currently showing, clear it first —
+    // otherwise the draft card would render right alongside that message.
+    if(currentClientSessions.length === 0){
+      list.innerHTML = '';
+    }
+    list.insertAdjacentHTML('afterbegin', draftHtml);
+
+    const card = list.querySelector('[data-draft="session"]');
+    scrollToAndHighlight('[data-draft="session"]');
+    card.querySelector('[data-field="topic"]').focus();
+
+    card.querySelector('[data-action="cancel-draft"]').addEventListener('click', () => {
+      card.remove();
+      // Restore the empty-state message if that draft was the only thing in the list.
+      if(currentClientSessions.length === 0){
+        renderClientSessions();
+      }
+    });
+
+    card.querySelector('[data-action="save-draft"]').addEventListener('click', async () => {
+      const sessionDate = card.querySelector('[data-field="sessionDate"]').value;
+      const topic = card.querySelector('[data-field="topic"]').value.trim();
+
+      if(!sessionDate){
+        showStatus('A session date is required.', 'error');
+        return;
+      }
+
+      const newId = currentClientDetail.id + '-s-' + Date.now();
+      try{
+        const res = await fetch('/api/clients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'save-session', id: newId, clientId: currentClientDetail.id,
+            sessionDate, topic: topic || 'New session', sortOrder: currentClientSessions.length + 1,
+          })
+        });
+        const data = await res.json();
+        if(res.ok){
+          showStatus('Session added.', 'success');
+          await loadClientDetail(currentClientDetail.id);
+          scrollToAndHighlight(`[data-session-id="${newId}"]`);
+        } else {
+          showStatus(data.error || 'Could not add this session.', 'error');
         }
       }catch(err){
         showStatus('Could not reach the server.', 'error');
@@ -1602,6 +1833,7 @@
         if(res.ok){
           showStatus('Resource saved.', 'success');
           await loadClientDetail(currentClientDetail.id);
+          scrollToAndHighlight(`[data-resource-id="${item.id}"]`);
         } else {
           showStatus(data.error || 'Could not save this resource.', 'error');
         }
@@ -1624,6 +1856,77 @@
           await loadClientDetail(currentClientDetail.id);
         } else {
           showStatus(data.error || 'Could not delete this resource.', 'error');
+        }
+      }catch(err){
+        showStatus('Could not reach the server.', 'error');
+      }
+    });
+  }
+
+  // Same draft-card pattern as openDraftSessionCard.
+  function openDraftResourceCard(){
+    const list = document.getElementById('cd-resources-list');
+    const draftHtml = `
+      <div class="item-card" data-draft="resource">
+        <div class="item-card-head">
+          <div><h3>New resource</h3></div>
+        </div>
+        <div class="field">
+          <label>Heading (e.g. "Before our next session", "Reading", "Reminder")</label>
+          <input type="text" data-field="heading" placeholder="Heading">
+        </div>
+        <div class="field">
+          <label>Body</label>
+          <textarea data-field="body" rows="2" placeholder="What should the client see here?"></textarea>
+        </div>
+        <div class="save-row">
+          <button class="btn-ghost-sm" data-action="cancel-draft">Cancel</button>
+          <button class="btn-primary" data-action="save-draft">Save resource</button>
+        </div>
+      </div>
+    `;
+
+    if(currentClientResources.length === 0){
+      list.innerHTML = '';
+    }
+    list.insertAdjacentHTML('afterbegin', draftHtml);
+
+    const card = list.querySelector('[data-draft="resource"]');
+    scrollToAndHighlight('[data-draft="resource"]');
+    card.querySelector('[data-field="heading"]').focus();
+
+    card.querySelector('[data-action="cancel-draft"]').addEventListener('click', () => {
+      card.remove();
+      if(currentClientResources.length === 0){
+        renderClientResources();
+      }
+    });
+
+    card.querySelector('[data-action="save-draft"]').addEventListener('click', async () => {
+      const heading = card.querySelector('[data-field="heading"]').value.trim();
+      if(!heading){
+        showStatus('A heading is required.', 'error');
+        return;
+      }
+
+      const newId = currentClientDetail.id + '-r-' + Date.now();
+      try{
+        const res = await fetch('/api/clients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'save-resource', id: newId, clientId: currentClientDetail.id,
+            heading, body: card.querySelector('[data-field="body"]').value.trim(),
+            sortOrder: currentClientResources.length + 1,
+          })
+        });
+        const data = await res.json();
+        if(res.ok){
+          showStatus('Resource added.', 'success');
+          await loadClientDetail(currentClientDetail.id);
+          scrollToAndHighlight(`[data-resource-id="${newId}"]`);
+        } else {
+          showStatus(data.error || 'Could not add this resource.', 'error');
         }
       }catch(err){
         showStatus('Could not reach the server.', 'error');
@@ -1711,90 +2014,16 @@
       }
     });
 
-    document.getElementById('cd-add-milestone-btn').addEventListener('click', async () => {
-      const tempId = currentClientDetail.id + '-m-' + Date.now();
-      const newMilestone = {
-        id: tempId,
-        clientId: currentClientDetail.id,
-        tag: '',
-        title: 'New Milestone',
-        description: '',
-        status: 'locked',
-        lockedReason: '',
-        reflectionPrompt: '',
-        sortOrder: currentClientMilestones.length + 1,
-      };
-      try{
-        const res = await fetch('/api/clients', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'save-milestone', ...newMilestone })
-        });
-        const data = await res.json();
-        if(res.ok){
-          showStatus('Milestone added.', 'success');
-          await loadClientDetail(currentClientDetail.id);
-        } else {
-          showStatus(data.error || 'Could not add this milestone.', 'error');
-        }
-      }catch(err){
-        showStatus('Could not reach the server.', 'error');
-      }
+    document.getElementById('cd-add-milestone-btn').addEventListener('click', () => {
+      openDraftMilestoneCard();
     });
 
-    document.getElementById('cd-add-session-btn').addEventListener('click', async () => {
-      const today = new Date().toISOString().slice(0, 10);
-      const tempId = currentClientDetail.id + '-s-' + Date.now();
-      const newSession = {
-        id: tempId,
-        clientId: currentClientDetail.id,
-        sessionDate: today,
-        topic: 'New session',
-        sortOrder: currentClientSessions.length + 1,
-      };
-      try{
-        const res = await fetch('/api/clients', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'save-session', ...newSession })
-        });
-        const data = await res.json();
-        if(res.ok){
-          showStatus('Session added.', 'success');
-          await loadClientDetail(currentClientDetail.id);
-        } else {
-          showStatus(data.error || 'Could not add this session.', 'error');
-        }
-      }catch(err){
-        showStatus('Could not reach the server.', 'error');
-      }
+    document.getElementById('cd-add-session-btn').addEventListener('click', () => {
+      openDraftSessionCard();
     });
 
-    document.getElementById('cd-add-resource-btn').addEventListener('click', async () => {
-      const tempId = currentClientDetail.id + '-r-' + Date.now();
-      const newResourceItem = {
-        id: tempId,
-        clientId: currentClientDetail.id,
-        heading: 'New item',
-        body: '',
-        sortOrder: currentClientResources.length + 1,
-      };
-      try{
-        const res = await fetch('/api/clients', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'save-resource', ...newResourceItem })
-        });
-        const data = await res.json();
-        if(res.ok){
-          showStatus('Resource added.', 'success');
-          await loadClientDetail(currentClientDetail.id);
-        } else {
-          showStatus(data.error || 'Could not add this resource.', 'error');
-        }
-      }catch(err){
-        showStatus('Could not reach the server.', 'error');
-      }
+    document.getElementById('cd-add-resource-btn').addEventListener('click', () => {
+      openDraftResourceCard();
     });
   }
 

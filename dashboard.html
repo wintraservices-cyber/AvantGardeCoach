@@ -879,13 +879,22 @@
   }
 
   function formatSessionDate(dateStr){
-    // session_date comes from Postgres as 'YYYY-MM-DD' (a DATE column, no
-    // time component) — parse it as a plain date rather than via `new
-    // Date(dateStr)` directly, since that constructor interprets a
-    // date-only string as UTC midnight, which can roll over to the
-    // previous day in timezones behind UTC. Splitting and constructing
-    // with explicit year/month/day avoids that off-by-one.
-    const [year, month, day] = dateStr.split('-').map(Number);
+    // Postgres's DATE column can come back as either a plain 'YYYY-MM-DD'
+    // string or a full ISO datetime like '2026-06-24T00:00:00.000Z'
+    // (confirmed in practice — the exact shape depends on how the value
+    // round-trips through the driver and JSON serialization, not
+    // something to rely on staying one way). Slicing to the first 10
+    // characters normalizes either shape down to just the date portion
+    // before doing the manual year/month/day parse — splitting the full
+    // ISO string directly would put time-of-day text into the "day"
+    // component and produce "Invalid Date".
+    //
+    // The manual parse itself (rather than `new Date(dateStr)` directly)
+    // still matters even after normalizing: that constructor interprets
+    // a date-only string as UTC midnight, which can roll over to the
+    // previous day in timezones behind UTC.
+    const datePart = String(dateStr).slice(0, 10);
+    const [year, month, day] = datePart.split('-').map(Number);
     const d = new Date(year, month - 1, day);
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }).toUpperCase();
   }
