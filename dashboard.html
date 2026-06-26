@@ -802,8 +802,16 @@
     if(withEl){
       withEl.textContent = `With ${client.nextSessionWith || 'Mahal Hudson'} · ${client.nextSessionFormat || 'Video call'}`;
     }
-    if(rescheduleEl && client.rescheduleUrl){
-      rescheduleEl.href = client.rescheduleUrl;
+    if(rescheduleEl){
+      if(client.rescheduleUrl){
+        rescheduleEl.href = client.rescheduleUrl;
+        rescheduleEl.style.display = '';
+      } else {
+        // No real URL to send them to — hide the link entirely rather
+        // than leave a dead href="#" button that looks clickable but
+        // goes nowhere useful.
+        rescheduleEl.style.display = 'none';
+      }
     }
   }
 

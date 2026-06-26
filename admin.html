@@ -93,44 +93,102 @@
     justify-content:center;
     padding:2rem 6vw;
   }
+  /* ===== Control Panel login — intentionally distinct from the public
+     site and the client dashboard, both visually and by name (see
+     project notes: "Control Panel" vs "Client Workspace"). A cooler,
+     more technical palette than the warm terracotta/clay used
+     everywhere else communicates "operator surface," not "welcome
+     space" — and a single centered panel (no marketing-style side
+     quote) keeps the focus purely on signing in. Scoped to #login-view
+     only, so the authenticated Control Panel beyond this screen keeps
+     its existing site-matching look untouched. */
+  #login-view{
+    --cp-bg:#0B0E14;
+    --cp-panel:#11151F;
+    --cp-border:#232938;
+    --cp-text:#E4E8F0;
+    --cp-text-dim:#8B93A7;
+    --cp-accent:#3DD6C4;
+    --cp-accent-dim:#2A9A8C;
+  }
+
   .login-shell{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    max-width:920px;
+    max-width:440px;
     width:100%;
-    border:1px solid var(--rule);
-    background:var(--ink-soft);
+    border:1px solid var(--cp-border);
+    background:var(--cp-panel);
+    padding:3.2rem 3rem;
   }
-  @media(max-width:860px){ .login-shell{grid-template-columns:1fr;} }
 
-  .login-side{
-    padding:3.4rem 3rem;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    background:linear-gradient(160deg, var(--ink-card), var(--ink));
-    border-right:1px solid var(--rule);
-  }
-  @media(max-width:860px){ .login-side{border-right:none; border-bottom:1px solid var(--rule);} }
-
-  .login-logo{font-family:'Fraunces',serif; font-size:1.1rem; font-weight:500;}
-  .login-logo em{font-style:italic; color:var(--vermillion-bright);}
-
-  .login-side-quote{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-size:1.5rem;
-    line-height:1.4;
-    margin-top:3rem;
-  }
-  .login-side-quote .mark{color:var(--vermillion-bright); font-style:normal;}
-  .login-side-attr{
-    margin-top:1.2rem;
+  .login-form-wrap .eyebrow{
     font-family:'JetBrains Mono',monospace;
-    font-size:0.68rem;
-    color:var(--clay);
-    letter-spacing:0.05em;
+    font-size:0.72rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--cp-accent);
   }
+  .login-form-wrap h1{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    color:var(--cp-text);
+    margin:0.5rem 0 0.6rem;
+  }
+  .login-form-wrap .sub{
+    color:var(--cp-text-dim);
+    font-size:0.92rem;
+    line-height:1.6;
+    margin-bottom:1.8rem;
+  }
+  .login-form-wrap .field label{
+    color:var(--cp-text-dim);
+  }
+  .login-form-wrap .field input{
+    background:var(--cp-bg);
+    border:1px solid var(--cp-border);
+    color:var(--cp-text);
+  }
+  .login-form-wrap .field input:focus{
+    border-color:var(--cp-accent);
+  }
+  .login-form-wrap .field input::placeholder{
+    color:var(--cp-text-dim);
+    opacity:0.6;
+  }
+  .login-form-wrap .login-submit{
+    background:var(--cp-accent);
+    color:var(--cp-bg);
+    border:none;
+  }
+  .login-form-wrap .login-submit:hover{
+    background:var(--cp-accent-dim);
+  }
+  .login-form-wrap .login-note{
+    color:var(--cp-text-dim);
+    border-top:1px solid var(--cp-border);
+  }
+  .login-form-wrap .login-note strong{
+    color:var(--cp-text);
+  }
+  .login-footer-links{
+    margin-top:1.4rem;
+    text-align:center;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.74rem;
+    letter-spacing:0.03em;
+  }
+  .login-footer-links a{
+    color:var(--cp-text-dim);
+    text-decoration:none;
+    transition:color 0.2s ease;
+  }
+  .login-footer-links a:hover{
+    color:var(--cp-accent);
+  }
+  .login-footer-links .sep{
+    color:var(--cp-border);
+    margin:0 0.6rem;
+  }
+
 
   .login-form-wrap{padding:3.4rem 3rem;}
   .login-form-wrap h1{
@@ -170,6 +228,21 @@
   }
   .field input:focus, .field textarea:focus{border-color:var(--vermillion); outline:none;}
   .field input::placeholder, .field textarea::placeholder{color:var(--muted);}
+  /* Chrome/Safari render the type="date" and type="datetime-local"
+     calendar icon in black by default, which is invisible against this
+     panel's dark background — it's not missing, just unreadable. Both
+     color-scheme and an icon-specific filter are applied: color-scheme
+     tells the browser to use its own dark-mode-aware controls where
+     supported, and the filter is the documented direct fix for browsers
+     where that alone isn't enough. */
+  .field input[type="date"], .field input[type="datetime-local"]{
+    color-scheme: dark;
+  }
+  .field input[type="date"]::-webkit-calendar-picker-indicator,
+  .field input[type="datetime-local"]::-webkit-calendar-picker-indicator{
+    filter: invert(1);
+    cursor: pointer;
+  }
   .field textarea{resize:vertical; line-height:1.5;}
   .field-hint{font-size:0.74rem; color:var(--muted); margin-top:0.4rem;}
 
@@ -226,7 +299,7 @@
 
   .login-error{
     font-size:0.8rem;
-    color:var(--vermillion-bright);
+    color:#E1582E;
     margin-bottom:1rem;
     display:none;
   }
@@ -361,17 +434,10 @@
 <!-- ============ LOGIN VIEW ============ -->
 <div id="login-view">
   <div class="login-shell">
-    <div class="login-side">
-      <a href="index.html" class="login-logo">Avant-Garde <em>Coach</em></a>
-      <div>
-        <p class="login-side-quote">"You have the power to <span class="mark">choose</span> when coaching happens — this is where you shape what visitors see."</p>
-        <p class="login-side-attr">CONTROL PANEL</p>
-      </div>
-    </div>
     <div class="login-form-wrap">
       <div class="eyebrow">Control Panel Login</div>
       <h1>Edit the site.</h1>
-      <p class="sub">Sign in to update programs, books, and founder content. Changes go live on the public site immediately after saving.</p>
+      <p class="sub">Sign in to update programs, books, founder content, and client accounts. Changes go live immediately after saving.</p>
 
       <div class="login-error" id="login-error">Incorrect email or password — try again.</div>
 
@@ -387,7 +453,13 @@
         <button type="submit" class="login-submit" id="login-submit-btn">Sign in →</button>
       </form>
 
-      <p class="login-note"><strong>Note —</strong> this is a placeholder authentication system backed by a JSON file, suitable for development and testing. Provision a real database before relying on this for production content edits — see the README for setup steps.</p>
+      <p class="login-note"><strong>Note —</strong> any admin can manage any other admin's account, including resetting passwords. There's no separate "super admin" role — this is intentional for a small, trusted team.</p>
+
+      <div class="login-footer-links">
+        <a href="/">← Back to site</a>
+        <span class="sep">·</span>
+        <a href="dashboard">Client login →</a>
+      </div>
     </div>
   </div>
 </div>
