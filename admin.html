@@ -206,6 +206,48 @@
   }
 
   .field{margin-bottom:1.4rem;}
+
+  .client-reflection-readonly{
+    margin-bottom:1.4rem;
+    padding:1.1rem 1.3rem;
+    background:var(--ink);
+    border:1px solid var(--rule-light);
+    border-left:2px solid var(--clay);
+  }
+  .client-reflection-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.66rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--clay);
+    margin-bottom:0.5rem;
+    display:block;
+  }
+  .client-reflection-text{
+    font-family:'Fraunces',serif;
+    font-size:0.95rem;
+    line-height:1.6;
+    color:var(--bone);
+    white-space:pre-wrap;
+  }
+  .client-reflection-followup{
+    margin-top:1rem;
+    padding-top:1rem;
+    border-top:1px solid var(--rule-light);
+  }
+  .client-reflection-followup p{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-size:0.9rem;
+    color:var(--bone-dim);
+    margin-top:0.4rem;
+  }
+  .client-reflection-note{
+    font-size:0.74rem;
+    color:var(--muted);
+    margin-top:0.9rem;
+    font-style:italic;
+  }
   .field label{
     display:block;
     font-family:'JetBrains Mono',monospace;
@@ -996,6 +1038,20 @@
       </div>
       <div class="field-row">
         <div class="field">
+          <label>Facebook URL <span style="color:var(--muted); font-weight:400;">(leave blank to hide)</span></label>
+          <input type="text" id="sc-socialFacebook" value="${escapeHtml((sc.founderSocials || {}).facebook)}" placeholder="https://facebook.com/...">
+        </div>
+        <div class="field">
+          <label>X / Twitter URL <span style="color:var(--muted); font-weight:400;">(leave blank to hide)</span></label>
+          <input type="text" id="sc-socialTwitter" value="${escapeHtml((sc.founderSocials || {}).twitter)}" placeholder="https://x.com/...">
+        </div>
+      </div>
+      <div class="field">
+        <label>Instagram URL <span style="color:var(--muted); font-weight:400;">(leave blank to hide)</span></label>
+        <input type="text" id="sc-socialInstagram" value="${escapeHtml((sc.founderSocials || {}).instagram)}" placeholder="https://instagram.com/...">
+      </div>
+      <div class="field-row">
+        <div class="field">
           <label>Contact email</label>
           <input type="text" id="sc-contactEmail" value="${escapeHtml(sc.contactEmail)}">
         </div>
@@ -1019,6 +1075,11 @@
         founderTitle: document.getElementById('sc-founderTitle').value.trim(),
         founderBioParagraphs: document.getElementById('sc-founderBio').value.split('\n').map(s => s.trim()).filter(Boolean),
         founderCredentials: document.getElementById('sc-founderCreds').value.split('\n').map(s => s.trim()).filter(Boolean),
+        founderSocials: {
+          facebook: document.getElementById('sc-socialFacebook').value.trim(),
+          twitter: document.getElementById('sc-socialTwitter').value.trim(),
+          instagram: document.getElementById('sc-socialInstagram').value.trim(),
+        },
         contactEmail: document.getElementById('sc-contactEmail').value.trim(),
         location: document.getElementById('sc-location').value.trim(),
         amazonAuthorPageUrl: document.getElementById('sc-amazonAuthorPageUrl').value.trim(),
@@ -1414,6 +1475,14 @@
           <label>Reflection prompt (shown above the journal textarea, when unlocked)</label>
           <input type="text" data-field="reflectionPrompt" value="${escapeHtml(m.reflectionPrompt || '')}">
         </div>
+        ${m.reflectionText ? `
+        <div class="client-reflection-readonly">
+          <div class="client-reflection-label">What the client wrote — read-only</div>
+          <p class="client-reflection-text">${escapeHtml(m.reflectionText)}</p>
+          ${m.reflectionFollowup ? `<div class="client-reflection-followup"><span class="client-reflection-label">AI follow-up shown to them</span><p>${escapeHtml(m.reflectionFollowup)}</p></div>` : ''}
+          <p class="client-reflection-note">This is the client's own writing. It can't be edited here — only the client can change or delete it from their dashboard.</p>
+        </div>
+        ` : ''}
         <div class="field">
           <label>Locked reason (shown only when status is Locked, e.g. "Unlocks after Session 4")</label>
           <input type="text" data-field="lockedReason" value="${escapeHtml(m.lockedReason || '')}">

@@ -663,6 +663,28 @@
     color:var(--clay);
     letter-spacing:0.03em;
   }
+  .founder-socials{
+    margin-top:1.6rem;
+    display:flex;
+    gap:1.1rem;
+  }
+  .founder-socials:empty{display:none;}
+  .founder-social-link{
+    width:36px;
+    height:36px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid var(--rule);
+    border-radius:50%;
+    color:var(--clay);
+    transition:border-color 0.25s ease, color 0.25s ease;
+  }
+  .founder-social-link:hover{
+    border-color:var(--vermillion-bright);
+    color:var(--vermillion-bright);
+  }
+  .founder-social-link svg{width:17px; height:17px;}
 
   /* ===== CONTACT / CTA ===== */
   .cta-section{
@@ -1351,6 +1373,7 @@
           <span>Host, Get Real with Mahal Hudson</span>
           <span>Toronto, Canada</span>
         </div>
+        <div class="founder-socials" id="founder-socials"></div>
       </div>
     </div>
   </div>
@@ -1671,6 +1694,30 @@
         credsEl.innerHTML = siteContent.founderCredentials
           .map(c => `<span>${escapeHtml(c)}</span>`)
           .join('');
+      }
+
+      const socialsEl = document.getElementById('founder-socials');
+      if(socialsEl){
+        const socials = siteContent.founderSocials || {};
+        // Each platform is independently optional — a client may want
+        // only Instagram, or none at all, without the others needing to
+        // be explicitly "turned off" as separate booleans. An empty or
+        // missing URL for a platform is treated as "don't show this
+        // one," matching how every other optional field on this page
+        // (bio, credentials) already behaves.
+        const icons = {
+          facebook: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>',
+          twitter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M20 4L4 20"></path></svg>',
+          instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1"></circle></svg>',
+        };
+        const labels = { facebook: 'Facebook', twitter: 'X (Twitter)', instagram: 'Instagram' };
+
+        const linksHtml = Object.keys(icons)
+          .filter(key => socials[key] && socials[key].trim())
+          .map(key => `<a href="${escapeHtml(socials[key])}" target="_blank" rel="noopener" aria-label="${labels[key]}" class="founder-social-link">${icons[key]}</a>`)
+          .join('');
+
+        socialsEl.innerHTML = linksHtml;
       }
     }
 

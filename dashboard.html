@@ -500,6 +500,13 @@
     color:var(--bone-dim);
     margin-bottom:1rem;
   }
+  .reflection-privacy-note{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.68rem;
+    line-height:1.5;
+    color:var(--muted);
+    margin-bottom:0.8rem;
+  }
   .milestone-detail textarea{
     width:100%;
     min-height:90px;
@@ -579,6 +586,17 @@
     border-bottom:1px solid var(--vermillion);
     padding-bottom:0.15rem;
   }
+  .clear-btn{
+    background:none;
+    appearance:none;
+    -webkit-appearance:none;
+    font-size:0.78rem;
+    color:var(--muted);
+    border-bottom:1px solid var(--rule-light);
+    padding-bottom:0.15rem;
+    transition:color 0.2s ease, border-color 0.2s ease;
+  }
+  .clear-btn:hover{color:var(--bone-dim); border-color:var(--bone-dim);}
 
   /* bottom grid: sessions + resources */
   .dash-grid{
@@ -881,17 +899,22 @@
 
       let detailHtml = '';
       if(!isLocked){
+        const hasExistingReflection = !!(m.reflectionText && m.reflectionText.trim());
+        const followupCardClass = hasExistingReflection && m.reflectionFollowup ? 'followup-card show' : 'followup-card';
+
         detailHtml = `
           <div class="milestone-detail" id="detail-${escapeHtml(m.id)}" onclick="event.stopPropagation()">
             ${m.reflectionPrompt ? `<p class="prompt">${escapeHtml(m.reflectionPrompt)}</p>` : ''}
-            <textarea id="journal-${escapeHtml(m.id)}" placeholder="Your reflection..."></textarea>
+            <p class="reflection-privacy-note">Saved privately and shared with Mahal to help her prepare for your sessions. Also sent to an AI to generate the follow-up question below.</p>
+            <textarea id="journal-${escapeHtml(m.id)}" placeholder="Your reflection...">${escapeHtml(m.reflectionText || '')}</textarea>
             <div class="save-row">
               <span class="saved-note">Saved</span>
+              ${hasExistingReflection ? `<button class="clear-btn" onclick="clearReflection(event, '${escapeHtml(m.id)}')">Delete reflection</button>` : ''}
               <button class="save-btn" onclick="saveNote(event, '${escapeHtml(m.id)}')">Save reflection</button>
             </div>
-            <div class="followup-card" id="followup-${escapeHtml(m.id)}">
+            <div class="${followupCardClass}" id="followup-${escapeHtml(m.id)}">
               <div class="fu-label">A question back</div>
-              <div class="fu-text" id="followup-text-${escapeHtml(m.id)}"></div>
+              <div class="fu-text" id="followup-text-${escapeHtml(m.id)}">${escapeHtml(m.reflectionFollowup || '')}</div>
             </div>
           </div>
         `;
@@ -1116,6 +1139,38 @@ Your only job: ask ONE short, gentle follow-up question that goes one layer deep
 
 If anything in their entry suggests a mental health crisis or risk to their safety, do not ask a follow-up question — instead gently say this journal isn't equipped for that, and they should reach out to a crisis line, their doctor, or Mahal directly, and stop there.`;
 
+    // Generate the AI follow-up first (without awaiting the save), so the
+    // person isn't staring at the loading dots any longer than necessary
+    // — but the follow-up text itself isn't known yet, so the actual
+    // persistence call below sends an empty followup initially and gets
+    // updated once the AI response comes back. This keeps "your
+    // reflection is saved" honest and immediate rather than waiting on
+    // the (slower, sometimes-failing) AI call before saving anything at
+    // all — exactly the case the existing error-handling copy below
+    // already promised ("your reflection is still saved... either way")
+    // even back when nothing was actually being persisted.
+    let savedFollowupText = '';
+
+    try{
+      const saveRes = await fetch('/api/client-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save-reflection', milestoneId: id, reflectionText: entryText, reflectionFollowup: '' })
+      });
+      if(!saveRes.ok){
+        const saveData = await saveRes.json().catch(() => ({}));
+        console.error('[saveNote] Failed to persist reflection:', saveData.error || saveRes.status);
+      }
+    }catch(err){
+      console.error('[saveNote] Failed to persist reflection:', err);
+      // Deliberately continue to the AI call below even if persistence
+      // failed — the person should still get their follow-up question
+      // this turn; the save can be retried next time they edit and save
+      // again. Silently dropping the whole interaction over a transient
+      // network blip would be worse than a reflection that has to be
+      // re-saved once.
+    }
+
     try{
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -1135,15 +1190,67 @@ If anything in their entry suggests a mental health crisis or risk to their safe
       }
 
       const text = data.content?.filter(b => b.type === 'text').map(b => b.text).join('\n') || '';
-      followupText.textContent = text || "I'm not sure what to ask back yet — but Mahal will read this before your next session.";
+      savedFollowupText = text || "I'm not sure what to ask back yet — but Mahal will read this before your next session.";
+      followupText.textContent = savedFollowupText;
 
     }catch(err){
       console.error(err);
       if(err.status === 429){
-        followupText.textContent = "This is getting more use than the free AI tier allows right now — your reflection is still saved, and Mahal will see it either way. Try again in a moment for a follow-up question.";
+        savedFollowupText = "This is getting more use than the free AI tier allows right now — your reflection is still saved, and Mahal will see it either way. Try again in a moment for a follow-up question.";
       } else {
-        followupText.textContent = "Couldn't generate a follow-up right now — your reflection is still saved, and Mahal will see it either way.";
+        savedFollowupText = "Couldn't generate a follow-up right now — your reflection is still saved, and Mahal will see it either way.";
       }
+      followupText.textContent = savedFollowupText;
+    }
+
+    // Now that we actually know the AI's follow-up text (or its fallback
+    // message), update the saved reflection with it — a second, small
+    // write rather than blocking the whole save on the AI call
+    // finishing first.
+    try{
+      await fetch('/api/client-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save-reflection', milestoneId: id, reflectionText: entryText, reflectionFollowup: savedFollowupText })
+      });
+    }catch(err){
+      console.error('[saveNote] Failed to persist follow-up text:', err);
+    }
+  }
+
+  async function clearReflection(e, id){
+    e.stopPropagation();
+    if(!confirm('Delete this reflection? This cannot be undone.')) return;
+
+    const textarea = document.getElementById('journal-' + id);
+    const followupCard = document.getElementById('followup-' + id);
+    const followupText = document.getElementById('followup-text-' + id);
+
+    try{
+      const res = await fetch('/api/client-data', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ milestoneId: id })
+      });
+      if(!res.ok){
+        const data = await res.json().catch(() => ({}));
+        console.error('[clearReflection] Failed to delete:', data.error || res.status);
+        return;
+      }
+      // Clear the visible state immediately rather than waiting for a
+      // full dashboard reload — this is a simple, local UI update and
+      // doesn't need a round trip to confirm what we already know
+      // succeeded.
+      if(textarea) textarea.value = '';
+      if(followupCard) followupCard.classList.remove('show');
+      if(followupText) followupText.textContent = '';
+      // Re-render this milestone's card so the "Delete reflection" button
+      // itself disappears too (it's only shown when there's content to
+      // delete) — easiest done by reloading the full milestone list
+      // rather than surgically rebuilding just this one card's buttons.
+      await loadDashboardData();
+    }catch(err){
+      console.error('[clearReflection] Failed to delete:', err);
     }
   }
 

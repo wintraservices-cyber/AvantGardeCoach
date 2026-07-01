@@ -452,6 +452,15 @@ function rowToMilestone(row) {
     sortOrder: row.sort_order,
     notionPageId: row.notion_page_id,
     updatedAt: row.updated_at,
+    // The client's own reflection text and the AI's follow-up — see
+    // saveClientReflection/deleteClientReflection below. Deliberately
+    // NOT writable through saveMilestone (the admin-facing save path):
+    // an admin should be able to READ a client's reflection to prepare
+    // for a session, but never silently rewrite what the client
+    // actually wrote. Only the client-facing route can change these.
+    reflectionText: row.reflection_text,
+    reflectionFollowup: row.reflection_followup,
+    reflectionSavedAt: row.reflection_saved_at,
   };
 }
 
@@ -499,6 +508,63 @@ async function saveMilestone(milestone) {
       notion_page_id = EXCLUDED.notion_page_id
     RETURNING *
   `;
+  return rowToMilestone(rows[0]);
+}
+
+/**
+ * Saves a client's own reflection text and the AI's follow-up question
+ * for a milestone. Deliberately separate from saveMilestone — this is
+ * the ONLY function that writes reflection_text/reflection_followup,
+ * and it's called exclusively from the client-facing route
+ * (api/client-data.js), never from the admin route. This separation is
+ * what actually enforces "admins can read but not rewrite a client's
+ * reflection" — there's no code path from the admin side that can reach
+ * these columns at all, not just a convention that's easy to violate
+ * later by accident.
+ *
+ * Ownership is verified by the caller (api/client-data.js checks the
+ * milestone belongs to the session's own clientId before calling this)
+ * — this function itself trusts the milestoneId it's given, the same
+ * way saveMilestone does.
+ * @param {string} milestoneId
+ * @param {string} reflectionText
+ * @param {string} reflectionFollowup
+ * @returns {Promise<Object>} the updated milestone
+ */
+async function saveClientReflection(milestoneId, reflectionText, reflectionFollowup) {
+  const rows = await sql`
+    UPDATE milestones SET
+      reflection_text = ${reflectionText},
+      reflection_followup = ${reflectionFollowup},
+      reflection_saved_at = now()
+    WHERE id = ${milestoneId}
+    RETURNING *
+  `;
+  if (!rows[0]) {
+    throw new Error(`No milestone found with id "${milestoneId}".`);
+  }
+  return rowToMilestone(rows[0]);
+}
+
+/**
+ * Deletes a client's reflection (but not the milestone itself) — lets a
+ * client remove something they wrote without needing an admin involved.
+ * Same ownership-verification note as saveClientReflection above.
+ * @param {string} milestoneId
+ * @returns {Promise<Object>} the updated milestone, with reflection fields cleared
+ */
+async function deleteClientReflection(milestoneId) {
+  const rows = await sql`
+    UPDATE milestones SET
+      reflection_text = NULL,
+      reflection_followup = NULL,
+      reflection_saved_at = NULL
+    WHERE id = ${milestoneId}
+    RETURNING *
+  `;
+  if (!rows[0]) {
+    throw new Error(`No milestone found with id "${milestoneId}".`);
+  }
   return rowToMilestone(rows[0]);
 }
 
@@ -731,6 +797,8 @@ module.exports = {
   deleteClient,
   getMilestonesForClient,
   saveMilestone,
+  saveClientReflection,
+  deleteClientReflection,
   deleteMilestone,
   getSessionsForClient,
   saveSession,
